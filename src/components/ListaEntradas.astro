@@ -1,0 +1,14 @@
+---
+import { r, peq, fechaLarga } from '../lib/sitio.js';
+const { entradas } = Astro.props;
+---
+<div class="lista-entradas">
+  {entradas.map((e) => (
+    <a class="tarjeta" href={r(e.ruta)}>
+      {e.portada && <div class="foto"><img src={r(peq(e.portada.src))} alt={e.portada.alt} loading="lazy" width="800" height="600" /></div>}
+      <time datetime={e.fecha}>{fechaLarga(e.fecha)}</time>
+      <h3><span>{e.titulo}</span></h3>
+      <p>{e.descripcion}</p>
+    </a>
+  ))}
+</div>

@@ -1,0 +1,40 @@
+---
+// Páginas y entradas que vienen de WordPress, con las mismas direcciones que tenían.
+import Base from '../layouts/Base.astro';
+import paginas from '../datos/paginas.json';
+import { r, conBase, entradasVisibles, fechaLarga, EMPRESA } from '../lib/sitio.js';
+
+export function getStaticPaths() {
+  const propias = ['contacto', 'entradas-del-blog']; // tienen su propia plantilla
+  const p = paginas.filter((x) => !propias.includes(x.slug)).map((x) => ({ params: { ruta: x.ruta.replace(/^\/|\/$/g, '') }, props: { tipo: 'pagina', item: x } }));
+  const e = entradasVisibles().map((x) => ({ params: { ruta: x.ruta.replace(/^\/|\/$/g, '') }, props: { tipo: 'entrada', item: x } }));
+  return [...p, ...e];
+}
+const { tipo, item } = Astro.props;
+const legal = ['aviso-legal', 'politica-de-privacidad', 'politica-de-cookies'].includes(item.slug);
+const conFoto = tipo === 'pagina' && item.portada && !legal && !['destacado-2'].includes(item.slug);
+const schema = tipo === 'entrada' ? { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: item.titulo, datePublished: item.fecha, author: { '@type': 'Organization', name: EMPRESA.nombre }, image: item.portada ? 'https://mueblescarrascosa.com' + item.portada.src : undefined } : undefined;
+---
+<Base titulo={item.tituloSeo || item.titulo} descripcion={item.descripcion} imagen={item.portada?.src} noindex={item.noindex || legal} schema={schema}>
+  {conFoto ? (
+    <header class="cabeza-foto">
+      <img src={r(item.portada.src)} alt={item.portada.alt} fetchpriority="high" />
+      <div class="ancho" data-entra><h1>{item.titulo}</h1></div>
+    </header>
+  ) : (
+    <header class="cabeza-pagina estrecho" data-entra>
+      {tipo === 'entrada' && <p class="migas"><a href={r('/entradas-del-blog/')}>Blog</a> · <time datetime={item.fecha}>{fechaLarga(item.fecha)}</time>{item.categorias.length > 0 && <> · {item.categorias.map((c, i) => <>{i > 0 && ', '}<a href={r(`/category/${c.slug}/`)}>{c.nombre}</a></>)}</>}</p>}
+      <h1>{item.titulo}</h1>
+    </header>
+  )}
+  {tipo === 'entrada' && item.portada && <figure class="estrecho" style="margin-block:0 1rem"><img src={r(item.portada.src)} alt={item.portada.alt} style="border-radius:4px;width:100%;aspect-ratio:16/10;object-fit:cover" /></figure>}
+  <article class="contenido" set:html={conBase(item.html)} />
+  {tipo === 'entrada' && (
+    <section class="seccion azul">
+      <div class="ancho cierre">
+        <div><h2>¿Lo hablamos para tu casa?</h2><p>Te asesoramos y te preparamos el presupuesto sin compromiso.</p></div>
+        <div class="botones" style="margin:0"><a class="boton blanco" href={r('/contacto/')}>Pide presupuesto</a><a class="boton contorno" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Escríbenos por WhatsApp</a></div>
+      </div>
+    </section>
+  )}
+</Base>

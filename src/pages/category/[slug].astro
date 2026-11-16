@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import Lista from '../../components/ListaEntradas.astro';
+import categorias from '../../datos/categorias.json';
+import { r, entradasVisibles } from '../../lib/sitio.js';
+export function getStaticPaths() {
+  return categorias.map((c) => ({ params: { slug: c.slug }, props: { c } }));
+}
+const { c } = Astro.props;
+const entradas = entradasVisibles().filter((e) => e.categorias.some((x) => x.slug === c.slug));
+---
+<Base titulo={`${c.nombre} · Blog`} descripcion={`Guías de ${c.nombre.toLowerCase()} de Muebles Carrascosa, carpintería a medida en Jaén.`}>
+  <header class="cabeza-pagina ancho" data-entra>
+    <p class="migas"><a href={r('/entradas-del-blog/')}>Blog</a></p>
+    <h1>{c.nombre}</h1>
+  </header>
+  <div class="ancho" style="padding-bottom:clamp(3rem,7vw,5rem)">
+    <nav class="etiquetas" aria-label="Categorías"><a href={r('/entradas-del-blog/')}>Todas</a>{categorias.map((x) => <a href={r(`/category/${x.slug}/`)} aria-current={x.slug === c.slug ? 'page' : undefined}>{x.nombre}</a>)}</nav>
+    {entradas.length ? <Lista entradas={entradas} /> : <p>Pronto habrá guías en esta categoría.</p>}
+  </div>
+</Base>

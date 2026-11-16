@@ -1,0 +1,43 @@
+# Construye la web y la publica en GitHub Pages: al subir cambios y cada mañana
+# (así las entradas programadas del blog aparecen solas en su fecha).
+name: Publicar la web
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '30 8 * * *'   # 9:30 en invierno y 10:30 en verano (hora de Madrid)
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Mientras se prueba vive en mueblescarrascosa.github.io/web.
+      - run: npx astro build
+        env:
+          BASE: /web   # al apuntar el dominio: quitar esta línea
+          SITIO: https://mueblescarrascosa.github.io
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  publicar:
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - id: despliegue
+        uses: actions/deploy-pages@v4

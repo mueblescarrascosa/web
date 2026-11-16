@@ -1,0 +1,31 @@
+---
+import { r } from '../lib/sitio.js';
+const { portada = false } = Astro.props;
+const servicios = [
+  ['/cocinas/', 'Cocinas a medida'], ['/armarios/', 'Armarios y vestidores'], ['/muebles-de-bano-a-medida/', 'Muebles de baño'],
+  ['/puertas/', 'Puertas de madera'], ['/disenos-3d/', 'Diseños en 3D'], ['/miscelanea/', 'Otros trabajos'], ['/destacado/', 'Todos los trabajos'],
+];
+const ruta = Astro.url.pathname;
+const activo = (p) => ruta.endsWith(p) ? 'page' : undefined;
+---
+<header class={`cabecera ${portada ? 'sobre-foto' : ''}`}>
+  <div class="cabecera-in">
+    <a class="logo" href={r('/')} aria-label="Muebles Carrascosa, inicio">
+      <img src={r(portada ? '/img/carrascosa-horizontal-blanco-4096-800.webp' : '/logo-negro.png')} alt="Carrascosa, madera de diseño" width="200" height="40" />
+    </a>
+    <button class="menu-boton" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir el menú"><span></span><span></span><span></span></button>
+    <nav id="menu" class="menu" aria-label="Principal">
+      <ul>
+        <li class="desplegable">
+          <button type="button" aria-expanded="false">Servicios</button>
+          <ul>{servicios.map(([h, t]) => <li><a href={r(h)} aria-current={activo(h)}>{t}</a></li>)}</ul>
+        </li>
+        <li><a href={r('/entradas-del-blog/')} aria-current={activo('/entradas-del-blog/')}>Blog</a></li>
+        <li><a href={r('/donde-trabajamos/')} aria-current={activo('/donde-trabajamos/')}>Zonas</a></li>
+        <li><a href={r('/acerca-de/')} aria-current={activo('/acerca-de/')}>Nosotros</a></li>
+        <li><a href={r('/contacto/')} aria-current={activo('/contacto/')}>Contacto</a></li>
+      </ul>
+      <a class="boton" href={r('/contacto/')}>Pide presupuesto</a>
+    </nav>
+  </div>
+</header>

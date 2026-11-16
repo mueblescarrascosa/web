@@ -1,0 +1,47 @@
+---
+import '@fontsource-variable/lora';
+import '@fontsource-variable/source-sans-3';
+import '../styles/global.css';
+import Cabecera from '../components/Cabecera.astro';
+import Pie from '../components/Pie.astro';
+import { r, EMPRESA } from '../lib/sitio.js';
+
+const { titulo, descripcion = EMPRESA.lema, imagen, noindex = false, portada = false, schema } = Astro.props;
+const tituloCompleto = titulo ? (titulo.includes('Carrascosa') ? titulo : `${titulo} | ${EMPRESA.nombre}`) : `${EMPRESA.nombre} · ${EMPRESA.lema}`;
+const canonica = new URL(Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), '') || '/', 'https://mueblescarrascosa.com').href;
+const og = imagen ? new URL(r(imagen), Astro.site).href : new URL(r('/img/imagen-de-whatsapp-2024-01-12-a-las-11.55.13-b35fe81d.webp'), Astro.site).href;
+---
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{tituloCompleto}</title>
+  <meta name="description" content={descripcion} />
+  <link rel="canonical" href={canonica} />
+  {(noindex || import.meta.env.BASE_URL !== '/') && <meta name="robots" content="noindex" />}
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_ES" />
+  <meta property="og:site_name" content={EMPRESA.nombre} />
+  <meta property="og:title" content={tituloCompleto} />
+  <meta property="og:description" content={descripcion} />
+  <meta property="og:image" content={og} />
+  <meta property="og:url" content={canonica} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#0017BF" />
+  <link rel="icon" href={r('/favicon.png')} type="image/png" />
+  {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+</head>
+<body class={portada ? 'es-portada' : ''}>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <Cabecera portada={portada} />
+  <main id="contenido">
+    <slot />
+  </main>
+  <Pie />
+  <a class="wa-flotante" href={EMPRESA.whatsapp} target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+    <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7a10.7 10.7 0 0 1-5.5-1.5l-.4-.2-3.9 1 1-3.8-.2-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1a8.8 8.8 0 0 1-4.4-3.8c-.3-.6.3-.5 1-1.7.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.8.4 3.5 3.5 0 0 0-1.1 2.6 6.1 6.1 0 0 0 1.3 3.2 13.9 13.9 0 0 0 5.3 4.7c2 .8 2.7.9 3.7.7a3.1 3.1 0 0 0 2-1.4 2.5 2.5 0 0 0 .2-1.4c-.1-.1-.3-.2-.6-.3z"/></svg>
+  </a>
+  <script src={r('/js/sitio.js')} defer></script>
+</body>
+</html>

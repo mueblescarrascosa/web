@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import Lista from '../../components/ListaEntradas.astro';
+import categorias from '../../datos/categorias.json';
+import { r, entradasVisibles } from '../../lib/sitio.js';
+const entradas = entradasVisibles();
+const usadas = categorias.filter((c) => entradas.some((e) => e.categorias.some((x) => x.slug === c.slug)));
+---
+<Base titulo="Blog: guías para elegir cocina, armario y materiales" descripcion="Guías y consejos de Muebles Carrascosa para elegir cocina, armario, encimera, puertas y materiales antes de encargar muebles a medida.">
+  <header class="cabeza-pagina ancho" data-entra>
+    <span class="antetitulo">Blog</span>
+    <h1>Guías para decidir con calma</h1>
+    <p class="entradilla">Lo que solemos explicar en el taller, por escrito: materiales, medidas, precios y cómo se encarga un mueble a medida.</p>
+  </header>
+  <div class="ancho" style="padding-bottom:clamp(3rem,7vw,5rem)">
+    <nav class="etiquetas" aria-label="Categorías"><a href={r('/entradas-del-blog/')} aria-current="page">Todas</a>{usadas.map((c) => <a href={r(`/category/${c.slug}/`)}>{c.nombre}</a>)}</nav>
+    <Lista entradas={entradas} />
+  </div>
+</Base>

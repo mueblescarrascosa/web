@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { r } from '../lib/sitio.js';
+---
+<Base titulo="Página no encontrada" noindex>
+  <header class="cabeza-pagina estrecho" style="padding-bottom:6rem">
+    <span class="antetitulo">Error 404</span>
+    <h1>Esta página no existe o ha cambiado de sitio</h1>
+    <p class="entradilla">Puedes volver al inicio o ver nuestros trabajos.</p>
+    <div class="botones"><a class="boton" href={r('/')}>Ir al inicio</a><a class="boton contorno" style="color:var(--azul)" href={r('/destacado/')}>Ver trabajos</a></div>
+  </header>
+</Base>

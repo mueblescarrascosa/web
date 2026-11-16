@@ -1,0 +1,28 @@
+---
+import { r, EMPRESA } from '../lib/sitio.js';
+---
+<footer class="pie">
+  <div class="ancho pie-in">
+    <div>
+      <img src={r('/img/carrascosa-horizontal-blanco-4096-800.webp')} alt="Carrascosa, madera de diseño" width="200" height="40" loading="lazy" />
+      <p class="pie-lema">Carpintería y muebles a medida desde 1969.</p>
+    </div>
+    <div>
+      <h2>El taller</h2>
+      <p>{EMPRESA.calle}<br />{EMPRESA.cp} {EMPRESA.pueblo}<br />{EMPRESA.provincia}</p>
+      <p><a href={EMPRESA.comoLlegar} target="_blank" rel="noopener">Cómo llegar al taller</a></p>
+    </div>
+    <div>
+      <h2>Contacto</h2>
+      <p><a href={`tel:${EMPRESA.tel}`}>{EMPRESA.telefono}</a><br /><a href={EMPRESA.whatsapp} target="_blank" rel="noopener">Escríbenos por WhatsApp</a><br /><a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a></p>
+      <p class="pie-redes"><a href={EMPRESA.facebook} target="_blank" rel="noopener">Facebook</a> · <a href={EMPRESA.instagram} target="_blank" rel="noopener">Instagram</a></p>
+    </div>
+    <div>
+      <h2>Horario</h2>
+      <dl>{EMPRESA.horario.map(([d, h]) => <><dt>{d}</dt><dd>{h}</dd></>)}</dl>
+    </div>
+  </div>
+  <div class="ancho pie-legal">
+    <a href={r('/aviso-legal/')}>Aviso legal</a> · <a href={r('/politica-de-privacidad/')}>Privacidad</a> · <a href={r('/politica-de-cookies/')}>Cookies</a> · © {new Date().getFullYear()} {EMPRESA.razon}
+  </div>
+</footer>

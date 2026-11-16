@@ -1,0 +1,22 @@
+[
+ {
+  "id": 792727840,
+  "nombre": "Armarios",
+  "slug": "armarios-blog"
+ },
+ {
+  "id": 792727839,
+  "nombre": "Cocinas",
+  "slug": "cocinas-blog"
+ },
+ {
+  "id": 18352,
+  "nombre": "Consejos",
+  "slug": "consejos"
+ },
+ {
+  "id": 53865,
+  "nombre": "Materiales",
+  "slug": "materiales"
+ }
+]

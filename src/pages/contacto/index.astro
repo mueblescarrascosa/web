@@ -1,0 +1,50 @@
+---
+import Base from '../../layouts/Base.astro';
+import { r, EMPRESA } from '../../lib/sitio.js';
+import paginas from '../../datos/paginas.json';
+const p = paginas.find((x) => x.slug === 'contacto');
+const schema = {
+  '@context': 'https://schema.org', '@type': 'HomeAndConstructionBusiness', name: EMPRESA.nombre, telephone: EMPRESA.tel, email: EMPRESA.email,
+  address: { '@type': 'PostalAddress', streetAddress: EMPRESA.calle, postalCode: EMPRESA.cp, addressLocality: EMPRESA.pueblo, addressRegion: EMPRESA.provincia, addressCountry: 'ES' },
+  openingHoursSpecification: [
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], opens: '08:30', closes: '14:00' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], opens: '16:00', closes: '19:00' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Friday', opens: '08:30', closes: '14:00' },
+  ],
+};
+---
+<Base titulo={p?.tituloSeo || 'Contacto y presupuesto'} descripcion={p?.descripcion} schema={schema}>
+  <header class="cabeza-pagina ancho" data-entra>
+    <span class="antetitulo">Contacto</span>
+    <h1>Pide presupuesto sin compromiso</h1>
+    <p class="entradilla">¿Tienes en mente una cocina, un armario o cualquier mueble a medida? Cuéntanos qué necesitas. Puedes escribirnos aquí, llamarnos, mandarnos un WhatsApp o pasarte por el taller.</p>
+  </header>
+  <section class="ancho contacto" style="padding-bottom:clamp(3rem,7vw,5rem)">
+    <form id="pide-presupuesto" class="formulario" novalidate>
+      <label>Tu nombre<input name="nombre" autocomplete="name" required /></label>
+      <label>Teléfono (opcional)<input name="telefono" type="tel" inputmode="tel" autocomplete="tel" /></label>
+      <label>¿Qué necesitas?
+        <select name="tipo" required>
+          <option>Cocina a medida</option><option>Armario o vestidor</option><option>Mueble de baño</option><option>Puertas</option><option>Otro mueble a medida</option>
+        </select>
+      </label>
+      <label>Pueblo (opcional)<input name="pueblo" autocomplete="address-level2" /></label>
+      <label>Cuéntanos tu proyecto<textarea name="mensaje" required placeholder="Medidas aproximadas, colores que te gustan, cuándo lo necesitas…"></textarea></label>
+      <div class="botones" style="margin:.5rem 0 0">
+        <button class="boton" type="submit" value="whatsapp">Enviar por WhatsApp</button>
+        <button class="boton contorno" type="submit" value="correo" style="color:var(--azul)">Enviar por correo</button>
+      </div>
+      <p class="nota">Al enviar se abre WhatsApp o tu correo con el mensaje ya escrito. Usamos tus datos solo para responderte. <a href={r('/politica-de-privacidad/')}>Política de privacidad</a>.</p>
+    </form>
+    <aside class="ficha">
+      <h2>El taller</h2>
+      <p>{EMPRESA.calle}<br />{EMPRESA.cp} {EMPRESA.pueblo} ({EMPRESA.provincia})<br />En la comarca de Las Villas, a los pies de las sierras de Cazorla y Segura.</p>
+      <h2>Horario</h2>
+      <dl>{EMPRESA.horario.map(([d, h]) => <><dt>{d}</dt><dd>{h}</dd></>)}</dl>
+      <div class="botones">
+        <a class="boton" href={`tel:${EMPRESA.tel}`}>Llamar al {EMPRESA.telefono}</a>
+        <a class="boton contorno" style="color:var(--azul)" href={EMPRESA.comoLlegar} target="_blank" rel="noopener">Cómo llegar</a>
+      </div>
+    </aside>
+  </section>
+</Base>
