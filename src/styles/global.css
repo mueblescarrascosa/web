@@ -677,3 +677,25 @@ body.menu-abierto .cabecera { backdrop-filter: none; -webkit-backdrop-filter: no
 .precio-cifra { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem; color: var(--suave); }
 .precio-cifra b { font: 700 clamp(1.9rem, 3.4vw, 2.5rem)/1 var(--display); letter-spacing: -.04em; color: #fff; }
 .precio-nota { margin: 0; font-size: .85rem; color: var(--suave); } .precio-nota strong { color: var(--madera); }
+
+/* Quiz «¿Qué cocina va contigo?» */
+.quiz { padding-bottom: clamp(3rem, 7vw, 5rem); max-width: 980px; }
+.quiz-progreso { height: 4px; background: var(--linea); border-radius: 4px; overflow: hidden; }
+.quiz-progreso i { display: block; height: 100%; background: linear-gradient(90deg, var(--azul-vivo), var(--madera)); transform-origin: left; transform: scaleX(0); transition: transform .5s var(--t); }
+.quiz-paso { color: var(--madera); font-size: .85rem; letter-spacing: .12em; text-transform: uppercase; margin: .9rem 0 0; }
+.quiz-pregunta { border: 0; padding: 0; margin: 1rem 0 0; }
+.quiz-pregunta legend { font: 650 clamp(1.9rem, 4.5vw, 3.2rem)/1.05 var(--display); letter-spacing: -.035em; color: #fff; margin-bottom: 1.6rem; padding: 0; }
+.quiz-opciones { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: .8rem; }
+.quiz-op { text-align: left; min-height: 96px; padding: 1.1rem 1.25rem; border-radius: var(--radio); border: 1px solid var(--linea); background: var(--fondo-2); color: #fff; cursor: pointer; display: grid; gap: .3rem; align-content: center; transition: border-color .2s, background .2s, transform .25s var(--t); }
+.quiz-op b { font: 650 1.25rem/1.15 var(--display); letter-spacing: -.02em; } .quiz-op span { color: var(--suave); font-size: .92rem; }
+.quiz-op:hover { border-color: var(--azul-vivo); transform: translateY(-2px); }
+.quiz-op[aria-pressed="true"] { border-color: var(--azul-vivo); background: linear-gradient(135deg, rgb(61 85 255 / .22), transparent 70%), var(--fondo-2); }
+.quiz-atras { margin-top: 1.4rem; background: none; border: 0; cursor: pointer; font: inherit; }
+.quiz-resultado { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(1.5rem, 4vw, 3rem); margin-top: 1.4rem; align-items: start; scroll-margin-top: 100px; }
+.quiz-resultado h2 { font-size: clamp(2rem, 4vw, 3rem); }
+.quiz-dibujo .cocina { border-radius: var(--radio); }
+@media (max-width: 860px) { .quiz-resultado { grid-template-columns: 1fr; } }
+.cita { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; padding-bottom: clamp(3rem, 7vw, 5rem); scroll-margin-top: 100px; }
+@media (max-width: 900px) { .cita { grid-template-columns: 1fr; } }
+.cita-aviso:empty { display: none; } .cita-aviso { color: var(--madera) !important; }
+.formulario input[type="date"] { color-scheme: dark; }

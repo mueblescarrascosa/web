@@ -48,6 +48,37 @@ const schema = {
       </div>
     </aside>
   </section>
+  <section class="ancho cita" id="cita" aria-labelledby="titulo-cita">
+    <div class="cita-texto">
+      <span class="etiqueta">Cita para medir</span>
+      <h2 id="titulo-cita" style="font-size:clamp(2rem,4.5vw,3.4rem)">Vamos a tu casa a medir.</h2>
+      <p class="suave">Elige el día y la franja que mejor te venga. Te llamamos para confirmarla y, si ese día no podemos, te proponemos otro.</p>
+    </div>
+    <form class="formulario" id="form-cita" novalidate>
+      <div class="dos">
+        <label>Día<input type="date" name="dia" required /></label>
+        <fieldset class="chips"><legend>Franja</legend>
+          <label><input type="radio" name="franja" value="mañana (de 9 a 14 h)" checked /><span>Mañana</span></label>
+          <label><input type="radio" name="franja" value="tarde (de 16 a 19 h)" /><span>Tarde</span></label>
+        </fieldset>
+      </div>
+      <p class="nota cita-aviso" aria-live="polite"></p>
+      <fieldset class="chips">
+        <legend>¿Qué hay que medir?</legend>
+        {['Cocina', 'Armario o vestidor', 'Baño', 'Puertas', 'Otro'].map((t, i) => <label><input type="radio" name="que" value={t} checked={i === 0} /><span>{t}</span></label>)}
+      </fieldset>
+      <div class="dos">
+        <label>Tu nombre<input name="nombre" autocomplete="name" required /></label>
+        <label>Teléfono<input name="telefono" type="tel" inputmode="tel" autocomplete="tel" required /></label>
+      </div>
+      <label>Dirección o pueblo<input name="donde" autocomplete="street-address" required /></label>
+      <div class="botones" style="margin:.5rem 0 0">
+        <button class="boton" type="submit" value="whatsapp">Pedir cita por WhatsApp</button>
+        <button class="boton contorno" type="submit" value="correo">Por correo</button>
+      </div>
+      <p class="nota">Medimos de lunes a viernes. La visita la confirmamos nosotros por teléfono o WhatsApp.</p>
+    </form>
+  </section>
   <section class="ancho" style="padding-bottom:clamp(4rem,8vw,6rem)" aria-labelledby="titulo-mapa">
     <span class="etiqueta">Dónde estamos</span>
     <h2 id="titulo-mapa" style="font-size:clamp(2rem,4.5vw,3.4rem)">Ven a ver el taller.</h2>

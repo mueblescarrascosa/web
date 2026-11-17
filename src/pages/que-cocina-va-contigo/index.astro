@@ -1,0 +1,118 @@
+---
+// Quiz «¿Qué cocina va contigo?»: cinco preguntas sobre cómo vives y cocinas, y una propuesta de distribución,
+// estilo, colores y encimera que se abre en el juego «Combina tu cocina».
+import Base from '../../layouts/Base.astro';
+import { r, EMPRESA } from '../../lib/sitio.js';
+
+const PREGUNTAS = [
+  { id: 'tam', p: '¿Cómo es tu cocina?', o: [['pequena', 'Pequeña o estrecha', 'Cada centímetro cuenta'], ['mediana', 'Mediana', 'Cabe una cocina en L'], ['grande', 'Grande', 'Hay sitio de sobra'], ['abierta', 'Abierta al salón', 'O la quiero abrir']] },
+  { id: 'uso', p: '¿Cuánto cocináis en casa?', o: [['poco', 'Poco', 'Algo rápido y a correr'], ['normal', 'Lo normal', 'Comida y cena casi a diario'], ['mucho', 'Mucho', 'Me encanta cocinar'], ['juntos', 'Cocinamos juntos', 'Y siempre hay alguien picando']] },
+  { id: 'amb', p: '¿Qué ambiente te gusta?', o: [['luz', 'Luminoso', 'Blanco, limpio y amplio'], ['calido', 'Cálido', 'Con madera y tonos suaves'], ['color', 'Con color', 'Verde, azul o terracota'], ['oscuro', 'Elegante', 'Negro, antracita y contraste']] },
+  { id: 'pri', p: '¿Qué es lo más importante para ti?', o: [['limpieza', 'Que se limpie fácil', 'Sin manías ni cuidados'], ['durar', 'Que dure muchos años', 'Resistente a todo'], ['guardar', 'Mucho almacenaje', 'Que quepa todo'], ['bonita', 'Que sea bonita', 'Que entre por los ojos']] },
+  { id: 'tir', p: '¿Y los tiradores?', o: [['sin', 'Sin tiradores', 'Líneas limpias, con gola o uñero'], ['vista', 'A la vista', 'Que se vean y se agarren bien'], ['igual', 'Me da igual', 'Lo que mejor quede']] },
+];
+---
+<Base titulo="¿Qué cocina va contigo? Quiz" descripcion="Cinco preguntas sobre cómo vives y cocinas, y te proponemos distribución, estilo, colores y encimera para tu cocina a medida. Por Muebles Carrascosa, Jaén.">
+  <header class="cabeza-pagina ancho" data-entra>
+    <span class="etiqueta">Juego · Quiz</span>
+    <h1>¿Qué cocina va contigo?</h1>
+    <p class="entradilla">Cinco preguntas rápidas sobre cómo vives y cocinas. Al final te proponemos distribución, estilo, colores y encimera, y la abres en nuestro juego para retocarla.</p>
+  </header>
+
+  <section class="ancho quiz" id="quiz">
+    <div class="quiz-progreso" aria-hidden="true"><i></i></div>
+    <p class="quiz-paso"><span id="q-n">1</span> de {PREGUNTAS.length}</p>
+    {PREGUNTAS.map((q, i) => (
+      <fieldset class="quiz-pregunta" data-i={i} data-id={q.id} hidden={i > 0}>
+        <legend>{q.p}</legend>
+        <div class="quiz-opciones">
+          {q.o.map(([v, t, s]) => <button type="button" class="quiz-op" data-v={v}><b>{t}</b><span>{s}</span></button>)}
+        </div>
+      </fieldset>
+    ))}
+    <button type="button" class="enlace quiz-atras" hidden>← Anterior</button>
+
+    <div class="quiz-resultado" hidden>
+      <div class="quiz-dibujo"></div>
+      <div>
+        <span class="etiqueta">Tu cocina</span>
+        <h2 id="q-titulo"></h2>
+        <ul class="motivos" id="q-motivos"></ul>
+        <div class="botones">
+          <a class="boton" id="q-juego" href={r('/combina-tu-cocina/')}>Ábrela en el juego <span class="flecha" aria-hidden="true">→</span></a>
+          <a class="boton contorno" id="q-wa" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Pídenos presupuesto</a>
+          <button type="button" class="boton contorno" id="q-otra">Volver a empezar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion claro cierre">
+    <div class="ancho">
+      <span class="etiqueta">¿Hablamos de tu cocina?</span><br />
+      <a class="frase" href={r('/contacto/')}>Hablemos <span aria-hidden="true">→</span></a>
+      <div class="botones"><a class="boton" href={r('/contacto/')}>Pide presupuesto</a><a class="boton contorno" href={r('/combina-tu-cocina/')}>Combina tu cocina</a></div>
+    </div>
+  </section>
+
+  <script>
+    import { LISTAS, INICIAL, PROPUESTAS, puntuar, estiloVars } from '../../datos/combina.js';
+    import { svgCocina, VISTA } from '../../scripts/cocina-dibujo.js';
+    const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const base = (document.querySelector('link[rel=icon]')?.getAttribute('href') || '/favicon.png').replace(/\/favicon\.png$/, '');
+    const preguntas = $$('.quiz-pregunta'), total = preguntas.length, resp = {};
+    let actual = 0;
+
+    function ver(i, dir = 1) {
+      const antes = preguntas[actual], luego = preguntas[i];
+      actual = i;
+      $('#q-n').textContent = i + 1; $('.quiz-progreso i').style.transform = `scaleX(${i / total})`;
+      $('.quiz-atras').hidden = i === 0;
+      if (antes !== luego) { antes.hidden = true; luego.hidden = false; if (!quieto) luego.animate([{ opacity: 0, transform: `translateX(${dir * 40}px)` }, { opacity: 1, transform: 'none' }], { duration: 380, easing: 'cubic-bezier(.2,.75,.2,1)' }); }
+      $$('.quiz-op', luego).forEach((b) => b.setAttribute('aria-pressed', String(resp[luego.dataset.id] === b.dataset.v)));
+    }
+    $('#quiz').addEventListener('click', (ev) => {
+      const b = ev.target.closest('.quiz-op'); if (!b) return;
+      const f = b.closest('.quiz-pregunta'); resp[f.dataset.id] = b.dataset.v;
+      $$('.quiz-op', f).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      setTimeout(() => (actual < total - 1 ? ver(actual + 1) : resultado()), quieto ? 0 : 220);
+    });
+    $('.quiz-atras').addEventListener('click', () => { if (!$('.quiz-resultado').hidden) { $('.quiz-resultado').hidden = true; $('.quiz-paso').hidden = false; preguntas[actual].hidden = false; $('.quiz-progreso i').style.transform = `scaleX(${actual / total})`; return; } if (actual > 0) ver(actual - 1, -1); });
+    $('#q-otra').addEventListener('click', () => { Object.keys(resp).forEach((k) => delete resp[k]); $('.quiz-resultado').hidden = true; $('.quiz-paso').hidden = false; preguntas.forEach((p) => (p.hidden = true)); actual = 0; preguntas[0].hidden = false; ver(0); });
+
+    // ── De las respuestas a una cocina ──
+    function resultado() {
+      const { tam, uso, amb, pri, tir } = resp;
+      const dist = tam === 'pequena' ? 'lineal' : tam === 'abierta' ? (uso === 'juntos' ? 'isla' : 'peninsula') : tam === 'grande' ? (uso === 'mucho' || uso === 'juntos' ? 'isla' : 'L') : 'L';
+      const sin = tir === 'sin';
+      const nombre = { luz: sin ? 'Blanca total' : 'Nórdica', calido: sin ? 'Japandi' : 'Blanco y roble', color: tam === 'pequena' || sin ? 'Mediterránea' : 'Verde salvia y oro', oscuro: sin ? 'Negro y madera' : 'Industrial' }[amb];
+      const prop = PROPUESTAS.find((p) => p.nombre === nombre) || PROPUESTAS[0];
+      const { nombre: _n, ...valores } = prop;
+      const estado = { ...INICIAL, ...valores, dist };
+      if (tir === 'vista' && ['gola', 'unero'].includes(estado.tirador)) estado.tirador = 'negro';
+      if (sin && !['gola', 'unero'].includes(estado.tirador)) { estado.tirador = 'gola'; if (estado.puerta === 'moldura') estado.puerta = 'lisa'; }
+      if ((pri === 'limpieza' || pri === 'durar') && /roble-macizo|nogal-macizo/.test(estado.encimera)) estado.encimera = 'piedra';
+      if (pri === 'bonita' && ['blanca', 'piedra', 'hormigon'].includes(estado.encimera) && !['negro', 'antracita'].includes(estado.bajos)) estado.encimera = 'calacatta';
+      if (tam === 'pequena' && ['negro', 'antracita', 'marino', 'nogal'].includes(estado.altos)) estado.altos = 'blanco';
+      const L = LISTAS(), e = Object.fromEntries(Object.entries(estado).filter(([k]) => L[k]).map(([k, v]) => [k, L[k].find((x) => x.clave === v)]));
+      const n = puntuar(e);
+      const nombreDist = { lineal: 'lineal', L: 'en L', isla: 'con isla', peninsula: 'con península' }[dist];
+      $('#q-titulo').textContent = `${prop.nombre}, ${nombreDist}`;
+      const m = [];
+      m.push({ lineal: 'Lineal: en una cocina pequeña o estrecha es la que mejor aprovecha el espacio y deja paso libre.', L: 'En L: dos paredes de trabajo, más encimera y el rincón aprovechado con un rinconero extraíble.', isla: 'Con isla: ganáis encimera y sitio para comer; pide 90 cm de paso alrededor (120 si cocináis dos).', peninsula: 'Con península: separa la cocina del salón sin cerrarla y hace de barra.' }[dist]);
+      m.push(`Colores: ${e.bajos.nombre.toLowerCase()} abajo y ${e.altos.nombre.toLowerCase()} arriba, encimera ${e.encimera.nombre.toLowerCase()} y tiradores ${e.tirador.nombre.toLowerCase()}. Estilo ${n.estilo}, ${n.puntos}/100 en el juego.`);
+      m.push({ limpieza: 'Encimera: compacto o porcelánico, que no se manchan ni se hinchan con el agua; y frentes antihuellas si van oscuros.', durar: 'Encimera: porcelánico de 2 cm, para nuestro gusto la mejor: aguanta calor, rayas, manchas y sol.', guardar: 'Almacenaje: columnas y altos hasta el techo, cajones en vez de puertas abajo y rinconero extraíble.', bonita: 'Encimera: una con vetas, como la Calacatta, y que la encimera contraste con los muebles bajos.' }[pri]);
+      m.push({ poco: 'Como cocináis poco: lo práctico, cajones grandes y una barra para desayunar.', normal: 'Entre el fregadero y la placa, deja 60–90 cm de encimera libre para preparar.', mucho: 'Si cocinas mucho: 90 cm o más de encimera libre entre fregadero y placa, y la placa con 40 cm a cada lado.', juntos: 'Para cocinar juntos: dos zonas de trabajo y pasos de 120 cm para no chocar.' }[uso]);
+      $('#q-motivos').innerHTML = m.map((t) => `<li class="bien">${t}</li>`).join('');
+      $('.quiz-dibujo').innerHTML = `<svg class="cocina" viewBox="${VISTA}" style="${estiloVars(e)}" data-tirador="${e.tirador.tipo}" data-luz="dia" role="img" aria-label="Dibujo de la cocina propuesta">${svgCocina({ dist: estado.dist, puerta: estado.puerta })}</svg>`;
+      $('#q-juego').href = `${base}/combina-tu-cocina/#${new URLSearchParams(estado).toString()}`;
+      $('#q-wa').href = 'https://wa.me/34653451270?text=' + encodeURIComponent(`Hola, he hecho el quiz de vuestra web y me sale: ${prop.nombre}, ${nombreDist}. ${location.origin}${base}/combina-tu-cocina/#${new URLSearchParams(estado).toString()}`);
+      preguntas.forEach((p) => (p.hidden = true)); $('.quiz-paso').hidden = true; $('.quiz-progreso i').style.transform = 'scaleX(1)';
+      const res = $('.quiz-resultado'); res.hidden = false;
+      if (!quieto) res.animate([{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'none' }], { duration: 500, easing: 'cubic-bezier(.2,.75,.2,1)' });
+      res.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'start' });
+    }
+    ver(0);
+  </script>
+</Base>

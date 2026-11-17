@@ -156,6 +156,32 @@
     v.addEventListener('touchend', e => { if (x0 == null) return; const d = e.changedTouches[0].clientX - x0; if (Math.abs(d) > 50) ver(i + (d < 0 ? 1 : -1)); x0 = null; });
   }
 
+  // Cita para medir: de lunes a viernes, desde mañana; los viernes solo por la mañana
+  const cita = $('#form-cita');
+  if (cita) {
+    const dia = cita.elements.dia, aviso = $('.cita-aviso', cita), tarde = $('input[name="franja"][value^="tarde"]', cita);
+    const iso = (d) => d.toISOString().slice(0, 10), manana = new Date(Date.now() + 864e5), limite = new Date(Date.now() + 60 * 864e5);
+    dia.min = iso(manana); dia.max = iso(limite);
+    const revisar = () => {
+      aviso.textContent = ''; tarde.disabled = false; tarde.closest('label').style.opacity = '';
+      if (!dia.value) return true;
+      const d = new Date(dia.value + 'T12:00:00'), s = d.getDay();
+      if (s === 0 || s === 6) { aviso.textContent = 'Los fines de semana no medimos: elige de lunes a viernes.'; return false; }
+      if (s === 5) { tarde.disabled = true; tarde.closest('label').style.opacity = '.4'; if (tarde.checked) $('input[name="franja"]', cita).checked = true; aviso.textContent = 'Los viernes, solo por la mañana.'; }
+      return true;
+    };
+    dia.addEventListener('change', revisar);
+    cita.addEventListener('submit', e => {
+      e.preventDefault();
+      if (!cita.reportValidity() || !revisar()) return;
+      const d = new FormData(cita), fecha = new Date(d.get('dia') + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+      const texto = `Hola, soy ${d.get('nombre')}. Quiero pedir cita para medir: ${d.get('que').toLowerCase()}.\nDía: ${fecha}, por la ${d.get('franja')}.\nDónde: ${d.get('donde')}\nMi teléfono: ${d.get('telefono')}`;
+      location.href = e.submitter?.value === 'correo'
+        ? `mailto:carrascosamuebles@gmail.com?subject=${encodeURIComponent('Cita para medir: ' + d.get('que'))}&body=${encodeURIComponent(texto)}`
+        : `https://wa.me/34653451270?text=${encodeURIComponent(texto)}`;
+    });
+  }
+
   // Formulario de contacto: prepara el mensaje y lo abre en WhatsApp (o en el correo)
   const form = $('#pide-presupuesto');
   if (form) form.addEventListener('submit', e => {
