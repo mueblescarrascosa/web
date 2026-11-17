@@ -212,3 +212,17 @@ function estilo({ b, al, e, t, s, pu }) {
   if (t.tipo !== 'barra' && fams.every((f) => ['blanco', 'gris_claro', 'gris', 'oscuro', 'negro'].includes(f))) return 'minimalista';
   return 'moderno';
 }
+
+// ── Precio orientativo (con IVA) ──
+// Sacado de la app de Presupuestos (tarifa v16, motor 2) el 17/11/2026 con una cocina tipo de unos 4,1 m:
+// 2,9 m de bajos y altos más columna de horno y de frigorífico, con montaje, sin encimera ni electrodomésticos.
+// Por calidad, con IVA: económico 2.860 · básico 3.190 · entrada 3.850 · DM-laca medio 4.020 · alto 4.180 · premium 4.390 · alto gama 4.690 · exclusivo 5.025.
+export const GAMAS = [
+  { clave: 'economica', nombre: 'Económica', texto: 'Melaminas y laminados', ml: [700, 800] },
+  { clave: 'media', nombre: 'Media', texto: 'Laminados especiales y lacados de carta', ml: [900, 1000] },
+  { clave: 'alta', nombre: 'Alta', texto: 'Lacados a medida, supermates y madera', ml: [1000, 1250] },
+];
+export function precioOrientativo(metros, gama) {
+  const g = GAMAS.find((x) => x.clave === gama) || GAMAS[1], r100 = (v) => Math.round(v / 100) * 100;
+  return { desde: r100(metros * g.ml[0]), hasta: r100(metros * g.ml[1]), gama: g };
+}

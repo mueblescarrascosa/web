@@ -148,9 +148,11 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
       <div class="calc-mandos">
         <label>Largo de la pared <output id="mc-valor">420 cm</output><input id="mc-largo" type="range" min="150" max="600" value="420" step="5" /></label>
         <fieldset class="chips"><legend>En esta pared van…</legend>
-          <label><input type="checkbox" id="mc-frigo" checked /><span>Frigorífico integrable</span></label>
+          <label><input type="checkbox" id="mc-frigo" checked /><span>Frigorífico</span></label>
           <label><input type="checkbox" id="mc-horno" checked /><span>Columna de horno</span></label>
-          <label><input type="checkbox" id="mc-lava" checked /><span>Lavavajillas</span></label>
+        </fieldset>
+        <fieldset class="chips"><legend>Lavavajillas</legend>
+          <label><input type="radio" name="mc-lava" value="60" checked /><span>De 60</span></label><label><input type="radio" name="mc-lava" value="45" /><span>De 45</span></label><label><input type="radio" name="mc-lava" value="0" /><span>Sin lavavajillas</span></label>
         </fieldset>
         <div class="tiras tiras-muebles" id="mc-tiras"></div>
         <p class="veredicto-isla" id="mc-ver"></p>
@@ -179,9 +181,11 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
       <div class="calc-mandos">
         <label>Largo de la encimera <output id="en-enc-v">300 cm</output><input id="en-enc" type="range" min="120" max="700" value="300" step="10" /></label>
         <label>Largo de los muebles altos <output id="en-alt-v">240 cm</output><input id="en-alt" type="range" min="0" max="600" value="240" step="10" /></label>
+        <fieldset class="chips"><legend>Placa</legend>
+          <label><input type="radio" name="en-placa" value="induccion" checked /><span>Inducción o vitro</span></label><label><input type="radio" name="en-placa" value="gas" /><span>Gas</span></label>
+        </fieldset>
         <fieldset class="chips"><legend>Electrodomésticos</legend>
           <label><input type="checkbox" class="en-el" value="columna" checked /><span>Horno y micro en columna</span></label>
-          <label><input type="checkbox" class="en-el" value="induccion" checked /><span>Placa de inducción</span></label>
           <label><input type="checkbox" class="en-el" value="lava" checked /><span>Lavavajillas</span></label>
           <label><input type="checkbox" class="en-el" value="lavadora" /><span>Lavadora</span></label>
           <label><input type="checkbox" class="en-el" value="frigo" checked /><span>Frigorífico</span></label>
@@ -407,20 +411,23 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
     // ── ¿Cuántos muebles caben? Columnas al final del tramo; placa 90, fregadero 80, lavavajillas 60 pegado al fregadero;
     //    entre fregadero y placa, 60 mínimo y 90 cómodo para preparar; el resto en cajoneras de 30 a 60; lo que sobre, regleta ──
     function muebles() {
-      const L = +$('#mc-largo').value, frigo = $('#mc-frigo').checked, horno = $('#mc-horno').checked, lava = $('#mc-lava').checked;
+      const L = +$('#mc-largo').value, frigo = $('#mc-frigo').checked, horno = $('#mc-horno').checked, lava = +$('input[name=mc-lava]:checked').value;
       $('#mc-valor').textContent = L + ' cm';
       const cols = [...(frigo ? [['Frigo', 60, 'col']] : []), ...(horno ? [['Horno', 60, 'col']] : [])];
-      const fijos = cols.reduce((a, c) => a + c[1], 0) + 90 + 80 + (lava ? 60 : 0);
-      let resto = L - fijos; const prep = resto >= 90 ? 90 : resto >= 60 ? 60 : resto >= 40 ? resto : 0; resto -= prep;
+      // Orden: columnas al final del tramo · cajones · placa · zona de preparar (cajonera y lavavajillas) · fregadero · cajones
+      const fijos = cols.reduce((a, c) => a + c[1], 0) + 90 + 80 + lava;
+      let resto = L - fijos;
+      const falta = Math.max(0, 90 - lava), cajPrep = resto >= falta ? falta : resto >= 30 ? Math.floor(resto / 5) * 5 : 0; resto -= cajPrep;
+      const prep = cajPrep + lava;   // la encimera sobre el lavavajillas también sirve para preparar
       const extra = []; [60, 50, 45, 40, 30].forEach((m) => { while (resto >= m && extra.length < 6) { extra.push(m); resto -= m; } });
-      const tramo = [...cols, ...extra.slice(0, Math.ceil(extra.length / 2)).map((m) => ['Cajones', m, 'caj']), ['Placa', 90, 'placa'], ...(prep ? [['Preparar', prep, 'caj']] : []), ['Fregadero', 80, 'freg'], ...(lava ? [['Lavav.', 60, 'lava']] : []), ...extra.slice(Math.ceil(extra.length / 2)).map((m) => ['Cajones', m, 'caj']), ...(resto > 0 && L - fijos >= 0 ? [['Regleta', resto, 'reg']] : [])];
+      const mitad = Math.ceil(extra.length / 2);
+      const tramo = [...cols, ...extra.slice(0, mitad).map((m) => ['Cajones', m, 'caj']), ['Placa', 90, 'placa'], ...(cajPrep ? [['Cajones', cajPrep, 'caj']] : []), ...(lava ? [['Lavav.', lava, 'lava']] : []), ['Fregadero', 80, 'freg'], ...extra.slice(mitad).map((m) => ['Cajones', m, 'caj']), ...(resto > 0 && L - fijos >= 0 ? [['Regleta', resto, 'reg']] : [])];
       const total = Math.max(L, tramo.reduce((a, c) => a + c[1], 0));
       $('#mc-tiras').innerHTML = tramo.map(([n, w, c]) => `<span class="${c}" style="flex-basis:${(100 * w) / total}%"><b>${w}</b>${n}</span>`).join('');
       const v = $('#mc-ver'), d = $('#mc-det'), encimera = L - cols.reduce((a, c) => a + c[1], 0);
-      if (L < fijos) { v.textContent = 'No cabe todo en esta pared'; v.dataset.v = 'no'; d.textContent = `Faltan ${fijos - L} cm. Prueba a llevar el frigorífico o la columna a otra pared, o un lavavajillas de 45.`; }
-      else if (prep < 40) { v.textContent = 'Cabe, pero sin sitio para preparar'; v.dataset.v = 'no'; d.textContent = `Entre el fregadero y la placa no queda encimera para preparar (hacen falta 60, mejor 90). Lleva una columna a otra pared o pon un lavavajillas de 45.`; }
-      else if (prep < 60) { v.textContent = 'Cabe, pero muy justa'; v.dataset.v = 'justa'; d.textContent = `Entre el fregadero y la placa quedan solo ${prep} cm para preparar; lo mínimo son 60 y lo cómodo 90.`; }
-      else { v.textContent = prep >= 90 ? 'Cabe con holgura' : 'Cabe bien'; v.dataset.v = prep >= 90 ? 'si' : 'justa'; d.textContent = `Te quedan ${encimera} cm de encimera y ${prep} cm para preparar entre fregadero y placa${prep < 90 ? ' (lo cómodo son 90)' : ''}. Las columnas, juntas al final del tramo para no partir la encimera.${extra.length ? ` Además caben ${extra.length} ${extra.length === 1 ? 'cajonera' : 'cajoneras'} de ${extra.join(', ')} cm.` : ''}${resto > 0 ? ` Sobran ${resto} cm: van en una regleta o un mueble a medida.` : ''}`; }
+      if (L < fijos) { v.textContent = 'No cabe todo en esta pared'; v.dataset.v = 'no'; d.textContent = `Faltan ${fijos - L} cm. Prueba a llevar el frigorífico o la columna a otra pared${lava === 60 ? ', o un lavavajillas de 45' : ''}.`; }
+      else if (prep < 60) { v.textContent = 'Cabe, pero sin sitio para preparar'; v.dataset.v = 'no'; d.textContent = `Entre la placa y el fregadero solo quedan ${prep} cm de encimera para preparar; hacen falta 60, mejor 90. Lleva una columna a otra pared.`; }
+      else { v.textContent = prep >= 90 ? 'Cabe con holgura' : 'Cabe, aunque justa'; v.dataset.v = prep >= 90 ? 'si' : 'justa'; d.textContent = `Te quedan ${encimera} cm de encimera y ${prep} cm para preparar entre la placa y el fregadero${lava ? ' (contando la encimera sobre el lavavajillas, que va pegado al fregadero)' : ''}${prep < 90 ? '; lo cómodo son 90' : ''}. Las columnas, juntas al final del tramo para no partir la encimera.${extra.length ? ` Además caben ${extra.length} ${extra.length === 1 ? 'cajonera' : 'cajoneras'} de ${extra.join(', ')} cm.` : ''}${resto > 0 ? ` Sobran ${resto} cm: van en una regleta o un mueble a medida.` : ''}`; }
     }
     $('#calc-muebles').addEventListener('input', muebles); muebles();
 
@@ -453,7 +460,8 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
       const sobre = Math.max(3, Math.min(6, Math.round((enc - 50) / 80)));
       const l = [[`${sobre} sobre la encimera`, 'a unos 110 cm del suelo, cada 60–80 cm y a 50 cm del fregadero y de la placa']];
       if (el.has('columna')) l.push(['2 en la columna de horno y micro', 'a unos 155 cm (o la del horno, de 16 A con tierra, a 20–30 cm si va bajo encimera)']);
-      if (el.has('induccion')) l.push(['1 línea para la placa de inducción', 'de 25 A según su potencia']);
+      if ($('input[name=en-placa]:checked').value === 'gas') l.push(['1 toma para la placa de gas', 'sencilla, para la chispa del encendido; el gas, siempre con instalador autorizado']);
+      else l.push(['1 línea para la placa', 'de 25 A con cable más grueso (6 mm²), según la potencia de la placa']);
       if (el.has('lava')) l.push(['1 para el lavavajillas', 'de 16 A con tierra, a 40–50 cm, en el mueble de al lado']);
       if (el.has('lavadora')) l.push(['1 para la lavadora', 'de 16 A con tierra, a 40–50 cm']);
       if (el.has('frigo')) l.push(['1 para el frigorífico', 'a 40–50 cm, lo más cerca posible del aparato']);
@@ -462,7 +470,7 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
       const total = l.reduce((a, [t]) => a + parseInt(t), 0);
       $('#en-total').textContent = Math.max(6, total);
       $('#en-lista').innerHTML = l.map(([t, d]) => `<li><b>${t}</b> ${d}</li>`).join('');
-      $('#en-det').textContent = `${alt > 0 ? `Tira LED bajo los muebles altos: unos ${(alt / 100).toFixed(1).replace('.', ',')} m. ` : ''}Deja alguna toma libre: siempre se acaba necesitando. Las placas de gas, siempre con instalador autorizado.`;
+      $('#en-det').textContent = `${alt > 0 ? `Tira LED bajo los muebles altos: unos ${(alt / 100).toFixed(1).replace('.', ',')} m. ` : ''}Deja alguna toma libre: siempre se acaba necesitando.`;
     }
     $('#calc-enchufes').addEventListener('input', enchufes); enchufes();
 

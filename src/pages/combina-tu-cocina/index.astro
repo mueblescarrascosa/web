@@ -3,7 +3,7 @@
 // (de día o de noche) y le decimos si combina y por qué. Puede guardar 3 favoritas, descargar la imagen y mandarla al taller.
 import Base from '../../layouts/Base.astro';
 import { r, EMPRESA } from '../../lib/sitio.js';
-import { LISTAS, INICIAL, puntuar, estiloVars } from '../../datos/combina.js';
+import { LISTAS, INICIAL, puntuar, estiloVars, GAMAS } from '../../datos/combina.js';
 import { svgCocina, VISTA } from '../../scripts/cocina-dibujo.js';
 
 const L = LISTAS();
@@ -86,6 +86,15 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
           </div>
         </fieldset>
       ))}
+      <section class="precio-orientativo" aria-labelledby="titulo-precio">
+        <h3 id="titulo-precio">¿Cuánto costaría?</h3>
+        <label class="medida-precio">Metros de cocina <output id="pr-m-v">4 m</output><input id="pr-m" type="range" min="2" max="9" value="4" step="0.5" /></label>
+        <fieldset class="chips gamas"><legend>Gama de puertas</legend>
+          {GAMAS.map((g, i) => <label><input type="radio" name="pr-gama" value={g.clave} checked={i === 1} /><span><b>{g.nombre}</b>{' · '}{g.texto}</span></label>)}
+        </fieldset>
+        <p class="precio-cifra"><span>Entre</span> <b id="pr-desde">3.600</b> <span>y</span> <b id="pr-hasta">4.000 €</b></p>
+        <p class="precio-nota"><strong>IVA incluido.</strong> Muebles y montaje; la encimera y los electrodomésticos, aparte. Es una orientación a partir de una cocina tipo: el precio exacto te lo damos en tu presupuesto, sin compromiso.</p>
+      </section>
       <div class="botones combina-botones">
         <button class="boton contorno" type="button" data-accion="inspirame">✦ Inspírame</button>
         <button class="boton contorno" type="button" data-accion="guardar">♡ Guardar</button>
@@ -130,7 +139,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   </section>
 
   <script>
-    import { LISTAS, INICIAL, PROPUESTAS, puntuar, variables, estiloVars } from '../../datos/combina.js';
+    import { LISTAS, INICIAL, PROPUESTAS, puntuar, variables, estiloVars, precioOrientativo } from '../../datos/combina.js';
     import { svgCocina, VISTA } from '../../scripts/cocina-dibujo.js';
     import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
     const listas = LISTAS();
@@ -241,6 +250,14 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     // En el móvil el dibujo se recorta un poco por los lados para que la cocina se vea más grande
     const encuadre = () => svg.setAttribute('viewBox', mq.matches ? '60 120 880 490' : VISTA);
     mq.addEventListener('change', () => { colocar(); encuadre(); }); colocar(); encuadre();
+
+    // Precio orientativo con IVA
+    const eur = (v) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '.');   // 3.600 (es-ES no separa los miles de 4 cifras)
+    function precio() {
+      const m = +$('#pr-m').value, g = $('input[name=pr-gama]:checked').value, r = precioOrientativo(m, g);
+      $('#pr-m-v').textContent = String(m).replace('.', ',') + ' m'; $('#pr-desde').textContent = eur(r.desde); $('#pr-hasta').textContent = eur(r.hasta) + ' €';
+    }
+    $('.precio-orientativo').addEventListener('input', precio); precio();
 
     deEnlace(); pintar(false); favoritas();
   </script>
