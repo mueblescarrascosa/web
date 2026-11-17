@@ -72,6 +72,84 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
     </article>
   </section>
 
+
+  <section class="ancho calculadoras mas-calc" aria-label="Más calculadoras">
+    <article class="calc" id="calc-horno">
+      <span class="etiqueta">Calculadora</span>
+      <h2>Horno y microondas a tu altura</h2>
+      <div class="calc-in">
+        <div class="calc-mandos">
+          <label>Estatura de quien más cocina <output id="hm-valor">170 cm</output><input id="hm-est" type="range" min="145" max="200" value="170" step="1" /></label>
+          <p class="dato-grande"><b id="hm-horno">80</b><span>cm del suelo a la base del horno</span></p>
+          <p class="dato-grande"><b id="hm-micro">130</b><span>cm a la base del microondas</span></p>
+          <p class="suave" id="hm-detalle"></p>
+        </div>
+        <svg class="calc-dibujo" viewBox="0 0 220 240" aria-hidden="true">
+          <line x1="0" y1="226" x2="220" y2="226" stroke="var(--linea)" stroke-width="2" />
+          <g id="hm-persona" fill="#5c5954"><circle cx="50" r="11" /><rect x="35" width="30" rx="12" /><rect x="39" width="9" rx="4" /><rect x="52" width="9" rx="4" /></g>
+          <rect x="110" y="20" width="80" height="206" fill="#f1f0ec" />
+          <rect id="hm-dib-horno" x="116" width="68" height="55" rx="3" fill="#1b1c1e" />
+          <rect id="hm-dib-micro" x="116" width="68" height="35" rx="3" fill="#2a2c30" />
+          <line id="hm-codo" x1="0" x2="220" stroke="var(--azul-vivo)" stroke-dasharray="4 4" />
+          <text id="hm-codo-t" x="2" fill="var(--azul-claro)" font-size="10" font-family="Inter, sans-serif">codo</text>
+        </svg>
+      </div>
+    </article>
+
+    <article class="calc" id="calc-lavavajillas">
+      <span class="etiqueta">Calculadora</span>
+      <h2>¿Cabe el lavavajillas?</h2>
+      <div class="calc-mandos">
+        <fieldset class="chips"><legend>Zócalo</legend>
+          <label><input type="radio" name="lv-z" value="10" /><span>10 cm</span></label><label><input type="radio" name="lv-z" value="15" checked /><span>15 cm</span></label>
+        </fieldset>
+        <fieldset class="chips"><legend>Mueble bajo</legend>
+          <label><input type="radio" name="lv-m" value="70" checked /><span>70 cm</span></label><label><input type="radio" name="lv-m" value="80" /><span>80 cm</span></label>
+        </fieldset>
+        <label class="interruptor"><input id="lv-gola" type="checkbox" /><span></span>Con gola (sin tiradores)</label>
+        <p class="dato-grande"><b id="lv-hueco">85</b><span>cm de hueco libre bajo la encimera</span></p>
+        <p class="veredicto-isla" id="lv-ver"></p>
+        <p class="suave" id="lv-det"></p>
+      </div>
+    </article>
+
+    <article class="calc" id="calc-frigo">
+      <span class="etiqueta">Calculadora</span>
+      <h2>¿Qué frigorífico integrable cabe?</h2>
+      <div class="calc-mandos">
+        <label>Alto de la columna, sin el zócalo <output id="fr-valor">206 cm</output><input id="fr-col" type="range" min="140" max="250" value="206" step="1" /></label>
+        <p class="dato-grande"><b id="fr-hueco">178</b><span>cm: el hueco de frigorífico que cabe</span></p>
+        <div class="escala-frigo" id="fr-escala"></div>
+        <p class="suave" id="fr-det"></p>
+      </div>
+    </article>
+
+    <article class="calc" id="calc-campana">
+      <span class="etiqueta">Calculadora</span>
+      <h2>Altura y ancho de la campana</h2>
+      <div class="calc-mandos">
+        <fieldset class="chips"><legend>Placa</legend>
+          <label><input type="radio" name="cp-tipo" value="induccion" checked /><span>Inducción o vitro</span></label><label><input type="radio" name="cp-tipo" value="gas" /><span>Gas</span></label>
+        </fieldset>
+        <fieldset class="chips"><legend>Ancho de la placa</legend>
+          {[60, 70, 80, 90].map((a, i) => <label><input type="radio" name="cp-ancho" value={a} checked={i === 0} /><span>{a} cm</span></label>)}
+        </fieldset>
+        <label class="interruptor"><input id="cp-isla" type="checkbox" /><span></span>La placa está en una isla</label>
+        <p class="dato-grande"><b id="cp-alto">65</b><span>cm sobre la placa</span></p>
+        <p class="suave" id="cp-det"></p>
+      </div>
+    </article>
+
+    <article class="calc" id="calc-vestidor">
+      <span class="etiqueta">Calculadora</span>
+      <h2>¿Qué vestidor cabe en tu cuarto?</h2>
+      <div class="calc-mandos">
+        <label>Ancho del cuarto, de pared a pared <output id="vs-valor">260 cm</output><input id="vs-ancho" type="range" min="120" max="500" value="260" step="5" /></label>
+        <ul class="formas-vestidor" id="vs-formas"></ul>
+        <p class="suave">Fondo de los muebles: 60 cm. Pasos de la guía del taller: con muebles a un lado, 70 mínimo y 90 cómodo; a los dos lados, 80 y 100; con isla de 50, 90 a cada lado. <a class="enlace" href={r('/disena-tu-armario/')}>Diséñalo en el juego</a></p>
+      </div>
+    </article>
+  </section>
   <section class="ancho todas" id="todas">
     <h2>Todas las preguntas</h2>
     <nav class="etiquetas" aria-label="Temas">{TEMAS.map(([k, t]) => <a href={`#tema-${k}`}>{t}</a>)}</nav>
@@ -187,6 +265,69 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
     }
     $('#calc-isla').addEventListener('input', isla); isla();
 
+
+    // ── Horno y microondas (misma regla que la Libreta: codo ≈ 63 % de la estatura) ──
+    const redondo = (v) => Math.round(v / 1) * 1;
+    function hornoMicro() {
+      const e = +$('#hm-est').value, codo = e * 0.63, ojos = e - 12;
+      const horno = Math.max(70, Math.min(100, Math.round((codo - 25) / 1)));
+      const micro = Math.max(110, Math.min(150, Math.round(codo + 20), Math.round(ojos - 25)));
+      const juntos = horno + 60;
+      $('#hm-valor').textContent = e + ' cm'; $('#hm-horno').textContent = horno; $('#hm-micro').textContent = micro;
+      $('#hm-detalle').textContent = `El codo te queda a unos ${Math.round(codo)} cm. El horno, unos 25 cm por debajo del codo: la bandeja sale a la altura de las manos, sin agacharte. El microondas, por encima del codo y por debajo de los ojos, para ver dentro. ${juntos > micro + 15 ? `Si van juntos en la misma columna, el micro quedaría a ${juntos} cm: algo alto, mejor en otra columna o en un mueble alto.` : `Pueden ir juntos en la misma columna, con el micro encima (a ${juntos} cm).`}`;
+      const S = 0.92, SU = 226, al = e * S, y0 = SU - al, g = $('#hm-persona'), [cab, cu, p1, p2] = g.children;
+      cab.setAttribute('cy', y0 + 11); cu.setAttribute('y', y0 + 24); cu.setAttribute('height', al * 0.42);
+      [p1, p2].forEach((x) => { x.setAttribute('y', y0 + 24 + al * 0.38); x.setAttribute('height', SU - (y0 + 24 + al * 0.38)); });
+      $('#hm-dib-horno').setAttribute('y', SU - (horno + 60) * S); $('#hm-dib-micro').setAttribute('y', SU - (micro + 38) * S);
+      $('#hm-codo').setAttribute('y1', SU - codo * S); $('#hm-codo').setAttribute('y2', SU - codo * S); $('#hm-codo-t').setAttribute('y', SU - codo * S - 4);
+    }
+    $('#hm-est').addEventListener('input', hornoMicro); hornoMicro();
+
+    // ── Hueco del lavavajillas: zócalo + mueble − gola (5,6); mínimo 85 libres, más de 92 sobra ──
+    function lavavajillas() {
+      const z = +$('input[name=lv-z]:checked').value, m = +$('input[name=lv-m]:checked').value, gola = $('#lv-gola').checked;
+      const h = Math.round((z + m - (gola ? 5.6 : 0)) * 10) / 10, v = $('#lv-ver'), d = $('#lv-det');
+      $('#lv-hueco').textContent = String(h).replace('.', ',');
+      if (h < 85) { v.textContent = 'No cabe un lavavajillas integrable'; v.dataset.v = 'no'; d.textContent = `Faltan ${String(Math.round((85 - h) * 10) / 10).replace('.', ',')} cm: necesita 85 libres. No hace falta subir toda la cocina: en ese frente se pone tirador o uñero en vez de gola, o mueble de 80 solo en esa zona.`; }
+      else if (h > 92) { v.textContent = 'Cabe, y sobra hueco'; v.dataset.v = 'justa'; d.textContent = `Sobran ${String(Math.round((h - 85) * 10) / 10).replace('.', ',')} cm: se tapan con una pieza del mismo color que las puertas.`; }
+      else { v.textContent = 'Cabe sin problema'; v.dataset.v = 'si'; d.textContent = 'Entre 85 y 92 cm libres, lo justo para los lavavajillas y lavadoras integrables de serie.'; }
+    }
+    $('#calc-lavavajillas').addEventListener('change', lavavajillas); lavavajillas();
+
+    // ── Frigorífico integrable: el hueco europeo más alto que cabe, dejando 20 cm o más para un alto encima ──
+    const HUECOS = [194, 178, 158, 140, 122];
+    function frigo() {
+      const col = +$('#fr-col').value, h = HUECOS.find((x) => x <= col - 20);
+      $('#fr-valor').textContent = col + ' cm'; $('#fr-hueco').textContent = h || '—';
+      $('#fr-escala').innerHTML = HUECOS.slice().reverse().map((x) => `<span class="${x === h ? 'si' : x > col - 20 ? 'no' : ''}" style="height:${x / 2.2}px"><b>${x}</b></span>`).join('');
+      $('#fr-det').textContent = h ? `Cabe el de ${h} cm de hueco${h === 178 ? ', el más vendido' : ''}, y quedan ${col - h} cm encima para un mueble alto. Ancho de hueco: 56–57 cm (columna de 60).` : 'La columna es baja para un frigorífico integrable de serie: mejor uno bajo encimera (82 cm) o de libre instalación.';
+    }
+    $('#fr-col').addEventListener('input', frigo); frigo();
+
+    // ── Campana: 65 cm sobre inducción o vitro, 75 sobre gas (nunca menos de 65); igual o más ancha que la placa ──
+    function campana() {
+      const gas = $('input[name=cp-tipo]:checked').value === 'gas', a = +$('input[name=cp-ancho]:checked').value, isla = $('#cp-isla').checked;
+      const ancho = isla ? Math.max(90, a + 30) : a <= 60 ? 60 : 90;
+      $('#cp-alto').textContent = gas ? 75 : 65;
+      $('#cp-det').textContent = `Campana de ${ancho} cm${isla ? ' o más (en isla el humo se escapa por los lados: mejor 90–120)' : ''}: igual o más ancha que la placa, no que el mueble. ${gas ? 'Con gas, nunca a menos de 65 cm y siempre con instalador autorizado.' : 'Manda el manual de la campana.'} Su enchufe, a unos 185 cm del suelo y desplazado 7 cm del centro.`;
+    }
+    $('#calc-campana').addEventListener('change', campana); campana();
+
+    // ── Vestidor: qué formas caben con su paso ──
+    function vestidorCalc() {
+      const w = +$('#vs-ancho').value, F = 60;
+      const formas = [
+        ['Lineal', w - F, 70, 90, 'muebles en una pared'],
+        ['En paralelo o en C', w - 2 * F, 80, 100, 'muebles en las dos paredes'],
+        ['Con isla (50 cm)', Math.floor((w - 2 * F - 50) / 2), 80, 90, 'paso a cada lado de la isla'],
+      ];
+      $('#vs-valor').textContent = w + ' cm';
+      $('#vs-formas').innerHTML = formas.map(([n, paso, min, bien, t]) => {
+        const v = paso >= bien ? 'si' : paso >= min ? 'justa' : 'no';
+        return `<li data-v="${v}"><b>${n}</b><span>${paso > 0 ? paso + ' cm de paso' : 'no cabe'} · ${t}</span><em>${v === 'si' ? 'Cómodo' : v === 'justa' ? 'Justo' : 'No cabe'}</em></li>`;
+      }).join('');
+    }
+    $('#vs-ancho').addEventListener('input', vestidorCalc); vestidorCalc();
     // Si llegan con una pregunta en el enlace (#p-…), se abre
     const abierta = location.hash && $(location.hash); if (abierta?.tagName === 'DETAILS') abierta.open = true;
   </script>

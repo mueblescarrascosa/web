@@ -132,6 +132,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   <script>
     import { LISTAS, INICIAL, PROPUESTAS, puntuar, variables, estiloVars } from '../../datos/combina.js';
     import { svgCocina, VISTA } from '../../scripts/cocina-dibujo.js';
+    import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
     const listas = LISTAS();
     const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
     const svg = $('svg.cocina'), raiz = $('#combina');
@@ -223,41 +224,13 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       if (quitar) { l.splice(+quitar.dataset.quitar, 1); escribir(l); favoritas(); }
     });
 
-    // ── Descargar la imagen (en el móvil se comparte directamente) ──
-    async function imagen() {
-      // Si algún color aún está en pleno fundido, se termina antes de copiar
-      try { svg.getAnimations({ subtree: true }).forEach((an) => an.finish()); } catch (er) {}
-      const copia = svg.cloneNode(true), a = [svg, ...svg.querySelectorAll('*')], b = [copia, ...copia.querySelectorAll('*')];
-      a.forEach((el, i) => {
-        const cs = getComputedStyle(el), d = b[i];
-        ['display', 'opacity', 'mix-blend-mode'].forEach((p) => d.style.setProperty(p, cs.getPropertyValue(p)));
-        ['fill', 'stroke'].forEach((p) => { const v = cs.getPropertyValue(p); if (v && !v.startsWith('url(')) { if (el.style.getPropertyValue(p)) d.style.setProperty(p, v); } });
-        d.style.removeProperty('transition'); d.style.removeProperty('animation');
-      });
-      const AN = 2000, AL = 1020, PIE = 245;
-      copia.setAttribute('viewBox', VISTA); copia.setAttribute('xmlns', 'http://www.w3.org/2000/svg'); copia.setAttribute('width', AN); copia.setAttribute('height', AL);
-      const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(copia)], { type: 'image/svg+xml' }));
-      const img = new Image(); img.src = url; await img.decode(); URL.revokeObjectURL(url);
-      const c = document.createElement('canvas'); c.width = AN; c.height = AL + PIE; const x = c.getContext('2d');
-      x.drawImage(img, 0, 0, AN, AL);
-      x.fillStyle = '#0d0d0e'; x.fillRect(0, AL, AN, PIE);
-      const e = elegidos(), n = puntuar(e);
-      try { await document.fonts.load('650 52px "Bricolage Grotesque Variable"'); await document.fonts.load('400 26px "Inter Variable"'); } catch (er) {}
-      x.fillStyle = '#ffffff'; x.font = '650 52px "Bricolage Grotesque Variable", sans-serif'; x.fillText(`Mi cocina · ${n.puntos}/100 · estilo ${n.estilo}`, 60, AL + 78);
-      x.fillStyle = '#a8a39b'; x.font = '400 25px "Inter Variable", sans-serif';
-      // El resumen, en dos líneas como mucho
-      const lineas = [''];
-      resumen(e).split(' · ').forEach((t) => { const l = lineas.length - 1, prueba = lineas[l] ? lineas[l] + ' · ' + t : t; if (x.measureText(prueba).width > AN - 120 && lineas[l]) lineas.push(t); else lineas[l] = prueba; });
-      lineas.slice(0, 2).forEach((t, i) => x.fillText(t, 60, AL + 122 + i * 36));
-      x.fillStyle = '#c9a27a'; x.fillText('Combina la tuya en mueblescarrascosa.com · Muebles Carrascosa, Villanueva del Arzobispo (Jaén)', 60, AL + 210);
-      return new Promise((res) => c.toBlob(res, 'image/png'));
-    }
+    // ── Descargar la imagen con la marca de la casa (en el móvil se comparte directamente) ──
     $('[data-accion="descargar"]').addEventListener('click', async (ev) => {
       const b = ev.currentTarget; b.textContent = 'Preparando…';
       try {
-        const blob = await imagen(), archivo = new File([blob], 'mi-cocina-carrascosa.png', { type: 'image/png' });
-        if (matchMedia('(pointer: coarse)').matches && navigator.canShare?.({ files: [archivo] })) await navigator.share({ files: [archivo], title: 'Mi cocina' });
-        else { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = archivo.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+        const e = elegidos(), n = puntuar(e);
+        const blob = await imagenConMarca(svg, { titulo: `Mi cocina · ${n.puntos}/100 · estilo ${n.estilo}`, lineas: resumen(e).split(' · '), vista: VISTA });
+        await descargarOCompartir(blob, 'mi-cocina-carrascosa.png', 'Mi cocina');
         avisar(b, 'Imagen lista ✓', 'Descargar imagen');
       } catch (er) { avisar(b, 'No se pudo crear la imagen', 'Descargar imagen'); }
     });

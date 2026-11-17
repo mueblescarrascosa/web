@@ -57,8 +57,8 @@ const columna = (a0, a1) => [{ a0, a1, b0: 10, b1: 80, k: 'puerta', abre: 'der' 
 
 // Cada distribución: módulos de la pared del fondo, altos, hueco de campana, ventana y lo demás
 const PLANOS = {
-  lineal: { cx: 200, col: [0, 60], bajos: [['cajones3', 60, 120], ['placa', 120, 210], ['lava', 210, 270], ['fregadero', 270, 350], ['puerta', 350, 400]], altos: [[60, 120], [210, 270], [350, 400]], campana: [120, 210], ventana: [270, 350] },
-  isla: { cx: 200, col: [0, 60], bajos: [['cajones3', 60, 120], ['placa', 120, 210], ['lava', 210, 270], ['fregadero', 270, 350], ['puerta', 350, 400]], altos: [[60, 120], [210, 270], [350, 400]], campana: [120, 210], ventana: [270, 350], isla: true },
+  lineal: { cx: 200, col: [0, 60], frigo: [60, 122], bajos: [['placa', 122, 212], ['lava', 212, 272], ['fregadero', 272, 352], ['cajones2', 352, 400]], altos: [[212, 272], [352, 400]], campana: [122, 212], ventana: [272, 352] },
+  isla: { cx: 200, col: [0, 60], frigo: [60, 122], bajos: [['placa', 122, 212], ['lava', 212, 272], ['fregadero', 272, 352], ['cajones2', 352, 400]], altos: [[212, 272], [352, 400]], campana: [122, 212], ventana: [272, 352], isla: true },
   peninsula: { cx: 215, col: [0, 60], frigo: [60, 122], bajos: [['placa', 122, 212], ['lava', 212, 272], ['fregadero', 272, 352], ['puerta', 352, 400]], altos: [[212, 272]], campana: [122, 212], ventana: [272, 352], peninsula: true, abierto: true },
   L: { cx: 250, bajos: [['rincon', 0, 100], ['placa', 100, 190], ['lava', 190, 250], ['fregadero', 250, 330], ['cajones2', 330, 400]], altos: [[0, 100], [190, 250], [330, 400]], campana: [100, 190], ventana: [250, 330], izquierda: true },
 };
