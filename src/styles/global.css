@@ -648,3 +648,22 @@ label.interruptor { display: flex; align-items: center; gap: .75rem; cursor: poi
 body.menu-abierto .cabecera { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--fondo); }
 .lista-muestras label.no-disponible { opacity: .38; cursor: not-allowed; }
 .lista-muestras label.no-disponible .texto-muestra::after { content: ' (no cabe)'; }
+
+/* Calculadoras de muebles, enchufes, armario y buhardilla */
+.tiras-muebles { height: 58px; margin-top: .4rem; }
+.tiras-muebles .col { background: #6f6f76; } .tiras-muebles .caj { background: #6f5a45; } .tiras-muebles .placa { background: #2a2a2e; }
+.tiras-muebles .freg { background: #4b6a7d; } .tiras-muebles .lava { background: #59626b; } .tiras-muebles .reg { background: #3a2622; }
+.tiras-muebles .largo { background: var(--azul); } .tiras-muebles .doble { background: #4b6a7d; } .tiras-muebles .zap { background: #8a5a44; }
+.lista-tomas { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; font-size: .95rem; color: var(--suave); }
+.lista-tomas li { padding-left: 1.2rem; position: relative; } .lista-tomas li::before { content: ''; position: absolute; left: 0; top: .5em; width: 7px; height: 7px; border-radius: 50%; background: var(--madera); }
+.lista-tomas b { color: #fff; font-weight: 600; }
+.dibujo-buhardilla { width: 100%; height: auto; }
+.dibujo-buhardilla .bu-largo, .leyenda-buhardilla [data-t="largo"]::before { fill: var(--azul); background: var(--azul); }
+.dibujo-buhardilla .bu-doble, .leyenda-buhardilla [data-t="doble"]::before { fill: #3d55ff; background: #3d55ff; }
+.dibujo-buhardilla .bu-corto, .leyenda-buhardilla [data-t="corto"]::before { fill: #4b6a7d; background: #4b6a7d; }
+.dibujo-buhardilla .bu-baldas, .leyenda-buhardilla [data-t="baldas"]::before { fill: #6f5a45; background: #6f5a45; }
+.dibujo-buhardilla .bu-bajo, .leyenda-buhardilla [data-t="bajo"]::before { fill: #3a2622; background: #3a2622; }
+.leyenda-buhardilla { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem 1rem; font-size: .82rem; color: var(--suave); }
+.leyenda-buhardilla li { display: flex; align-items: center; gap: .4rem; } .leyenda-buhardilla li::before { content: ''; width: 12px; height: 12px; border-radius: 3px; }
+.chips input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; }
+.chips input[type="checkbox"]:checked + span { background: var(--azul); border-color: var(--azul); color: #fff; }

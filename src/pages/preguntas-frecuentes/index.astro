@@ -76,12 +76,12 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
   <section class="ancho calculadoras mas-calc" aria-label="Más calculadoras">
     <article class="calc" id="calc-horno">
       <span class="etiqueta">Calculadora</span>
-      <h2>Horno y microondas a tu altura</h2>
+      <h2>Horno y microondas en la columna</h2>
       <div class="calc-in">
         <div class="calc-mandos">
           <label>Estatura de quien más cocina <output id="hm-valor">170 cm</output><input id="hm-est" type="range" min="145" max="200" value="170" step="1" /></label>
           <p class="dato-grande"><b id="hm-horno">80</b><span>cm del suelo a la base del horno</span></p>
-          <p class="dato-grande"><b id="hm-micro">130</b><span>cm a la base del microondas</span></p>
+          <p class="dato-grande"><b id="hm-micro">130</b><span>cm a la base del microondas, encima</span></p>
           <p class="suave" id="hm-detalle"></p>
         </div>
         <svg class="calc-dibujo" viewBox="0 0 220 240" aria-hidden="true">
@@ -104,18 +104,6 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
         <p class="dato-grande"><b id="fr-hueco">178</b><span>cm: el hueco de frigorífico que cabe</span></p>
         <div class="escala-frigo" id="fr-escala"></div>
         <p class="suave" id="fr-det"></p>
-      </div>
-    </article>
-
-    <article class="calc" id="calc-campana">
-      <span class="etiqueta">Calculadora</span>
-      <h2>¿A qué altura va la campana?</h2>
-      <div class="calc-mandos">
-        <fieldset class="chips"><legend>Placa</legend>
-          <label><input type="radio" name="cp-tipo" value="induccion" checked /><span>Inducción o vitro</span></label><label><input type="radio" name="cp-tipo" value="gas" /><span>Gas</span></label>
-        </fieldset>
-        <p class="dato-grande"><b id="cp-alto">65</b><span>cm sobre la placa</span></p>
-        <p class="suave" id="cp-det"></p>
       </div>
     </article>
 
@@ -151,6 +139,88 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
         <label>Ancho del cuarto, de pared a pared <output id="vs-valor">260 cm</output><input id="vs-ancho" type="range" min="120" max="500" value="260" step="5" /></label>
         <ul class="formas-vestidor" id="vs-formas"></ul>
         <p class="suave">Fondo de los muebles: 60 cm. Pasos de la guía del taller: con muebles a un lado, 70 mínimo y 90 cómodo; a los dos lados, 80 y 100; con isla de 50, 90 a cada lado. <a class="enlace" href={r('/disena-tu-armario/')}>Diséñalo en el juego</a></p>
+      </div>
+    </article>
+
+    <article class="calc" id="calc-muebles">
+      <span class="etiqueta">Calculadora</span>
+      <h2>¿Cuántos muebles caben en tu pared?</h2>
+      <div class="calc-mandos">
+        <label>Largo de la pared <output id="mc-valor">420 cm</output><input id="mc-largo" type="range" min="150" max="600" value="420" step="5" /></label>
+        <fieldset class="chips"><legend>En esta pared van…</legend>
+          <label><input type="checkbox" id="mc-frigo" checked /><span>Frigorífico integrable</span></label>
+          <label><input type="checkbox" id="mc-horno" checked /><span>Columna de horno</span></label>
+          <label><input type="checkbox" id="mc-lava" checked /><span>Lavavajillas</span></label>
+        </fieldset>
+        <div class="tiras tiras-muebles" id="mc-tiras"></div>
+        <p class="veredicto-isla" id="mc-ver"></p>
+        <p class="suave" id="mc-det"></p>
+      </div>
+    </article>
+
+    <article class="calc" id="calc-triangulo">
+      <span class="etiqueta">Calculadora</span>
+      <h2>El triángulo de trabajo</h2>
+      <div class="calc-in">
+        <div class="calc-mandos">
+          <label>Frigorífico → fregadero <output id="tr-a-v">180 cm</output><input id="tr-a" type="range" min="40" max="500" value="180" step="10" /></label>
+          <label>Fregadero → placa <output id="tr-b-v">120 cm</output><input id="tr-b" type="range" min="40" max="500" value="120" step="10" /></label>
+          <label>Placa → frigorífico <output id="tr-c-v">240 cm</output><input id="tr-c" type="range" min="40" max="500" value="240" step="10" /></label>
+          <p class="veredicto-isla" id="tr-ver"></p>
+          <p class="suave" id="tr-det"></p>
+        </div>
+        <svg class="calc-dibujo" viewBox="0 0 220 200" aria-hidden="true" id="tr-dib"></svg>
+      </div>
+    </article>
+
+    <article class="calc" id="calc-enchufes">
+      <span class="etiqueta">Calculadora</span>
+      <h2>Enchufes y luz de tu cocina</h2>
+      <div class="calc-mandos">
+        <label>Largo de la encimera <output id="en-enc-v">300 cm</output><input id="en-enc" type="range" min="120" max="700" value="300" step="10" /></label>
+        <label>Largo de los muebles altos <output id="en-alt-v">240 cm</output><input id="en-alt" type="range" min="0" max="600" value="240" step="10" /></label>
+        <fieldset class="chips"><legend>Electrodomésticos</legend>
+          <label><input type="checkbox" class="en-el" value="columna" checked /><span>Horno y micro en columna</span></label>
+          <label><input type="checkbox" class="en-el" value="induccion" checked /><span>Placa de inducción</span></label>
+          <label><input type="checkbox" class="en-el" value="lava" checked /><span>Lavavajillas</span></label>
+          <label><input type="checkbox" class="en-el" value="lavadora" /><span>Lavadora</span></label>
+          <label><input type="checkbox" class="en-el" value="frigo" checked /><span>Frigorífico</span></label>
+          <label><input type="checkbox" class="en-el" value="campana" checked /><span>Campana</span></label>
+        </fieldset>
+        <p class="dato-grande"><b id="en-total">9</b><span>tomas en total</span></p>
+        <ul class="lista-tomas" id="en-lista"></ul>
+        <p class="suave" id="en-det"></p>
+      </div>
+    </article>
+
+    <article class="calc" id="calc-cuanto">
+      <span class="etiqueta">Calculadora</span>
+      <h2>¿Cuánto armario necesitas?</h2>
+      <div class="calc-mandos">
+        <fieldset class="chips"><legend>Personas</legend>
+          {[1, 2, 3, 4].map((n, i) => <label><input type="radio" name="ca-per" value={n} checked={i === 1} /><span>{n}</span></label>)}
+        </fieldset>
+        <fieldset class="chips"><legend>Ropa larga (abrigos, vestidos)</legend>
+          <label><input type="radio" name="ca-larga" value="0" /><span>Poca</span></label><label><input type="radio" name="ca-larga" value="1" checked /><span>Normal</span></label><label><input type="radio" name="ca-larga" value="2" /><span>Mucha</span></label>
+        </fieldset>
+        <label>Pares de zapatos dentro del armario <output id="ca-zap-v">12</output><input id="ca-zap" type="range" min="0" max="60" value="12" step="2" /></label>
+        <p class="dato-grande"><b id="ca-total">2,4</b><span>metros de armario</span></p>
+        <div class="tiras tiras-muebles" id="ca-tiras"></div>
+        <p class="suave" id="ca-det"></p>
+        <p><a class="boton contorno" id="ca-juego" href={r('/disena-tu-armario/')}>Ábrelo en el juego</a></p>
+      </div>
+    </article>
+
+    <article class="calc" id="calc-buhardilla">
+      <span class="etiqueta">Calculadora</span>
+      <h2>Armario en buhardilla o bajo escalera</h2>
+      <div class="calc-mandos">
+        <label>Altura en la parte alta <output id="bu-alta-v">240 cm</output><input id="bu-alta" type="range" min="120" max="300" value="240" step="5" /></label>
+        <label>Altura en la parte baja <output id="bu-baja-v">90 cm</output><input id="bu-baja" type="range" min="30" max="240" value="90" step="5" /></label>
+        <label>Largo del hueco <output id="bu-largo-v">300 cm</output><input id="bu-largo" type="range" min="100" max="600" value="300" step="10" /></label>
+        <svg class="dibujo-buhardilla" id="bu-dib" viewBox="0 0 320 170" aria-hidden="true"></svg>
+        <ul class="leyenda-buhardilla"><li data-t="largo">Colgar largo</li><li data-t="doble">Dos barras</li><li data-t="corto">Colgar corto</li><li data-t="baldas">Baldas o cajones</li><li data-t="bajo">Cajones bajos</li></ul>
+        <p class="suave" id="bu-det"></p>
       </div>
     </article>
   </section>
@@ -270,19 +340,20 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
     $('#calc-isla').addEventListener('input', isla); isla();
 
 
-    // ── Horno y microondas (misma regla que la Libreta: codo ≈ 63 % de la estatura) ──
-    const redondo = (v) => Math.round(v / 1) * 1;
+    // ── Horno y microondas en la misma columna (regla de la Libreta: codo ≈ 63 % de la estatura) ──
+    // Lo ideal: horno 25 cm por debajo del codo; micro por encima del codo y 25 por debajo de los ojos.
+    // Como suelen ir juntos (micro justo encima del horno, hueco de 60), si el micro quedaría alto se baja el horno hasta 15 cm.
     function hornoMicro() {
       const e = +$('#hm-est').value, codo = e * 0.63, ojos = e - 12;
-      const horno = Math.max(70, Math.min(100, Math.round((codo - 25) / 1)));
-      const micro = Math.max(110, Math.min(150, Math.round(codo + 20), Math.round(ojos - 25)));
-      const juntos = horno + 60;
+      const ideal = Math.max(70, Math.min(100, Math.round(codo - 25)));
+      const microIdeal = Math.max(110, Math.min(150, Math.round(codo + 20), Math.round(ojos - 25)));
+      const horno = Math.max(70, Math.min(ideal, microIdeal + 5 - 60, ideal), ideal - 15), micro = horno + 60, bajado = ideal - horno, alto = micro - (microIdeal + 5);
       $('#hm-valor').textContent = e + ' cm'; $('#hm-horno').textContent = horno; $('#hm-micro').textContent = micro;
-      $('#hm-detalle').textContent = `El codo te queda a unos ${Math.round(codo)} cm. El horno, unos 25 cm por debajo del codo: la bandeja sale a la altura de las manos, sin agacharte. El microondas, por encima del codo y por debajo de los ojos, para ver dentro. ${juntos > micro + 15 ? `Si van juntos en la misma columna, el micro quedaría a ${juntos} cm: algo alto, mejor en otra columna o en un mueble alto.` : `Pueden ir juntos en la misma columna, con el micro encima (a ${juntos} cm).`}`;
+      $('#hm-detalle').textContent = `El codo te queda a unos ${Math.round(codo)} cm. ${bajado > 0 ? `Para ti el horno iría a ${ideal} cm, pero en la misma columna el micro quedaría alto; bajando el horno ${bajado} cm, el micro queda a ${micro}, a una altura cómoda para ver dentro.` : `Horno y micro juntos en la misma columna quedan a buena altura: la bandeja sale a la altura de las manos y el micro, por debajo de los ojos.`}${alto > 0 ? ` Aun así el micro queda ${alto} cm alto para ti: mejor el micro en un mueble alto aparte o el horno bajo la encimera.` : ''}`;
       const S = 0.92, SU = 226, al = e * S, y0 = SU - al, g = $('#hm-persona'), [cab, cu, p1, p2] = g.children;
       cab.setAttribute('cy', y0 + 11); cu.setAttribute('y', y0 + 24); cu.setAttribute('height', al * 0.42);
       [p1, p2].forEach((x) => { x.setAttribute('y', y0 + 24 + al * 0.38); x.setAttribute('height', SU - (y0 + 24 + al * 0.38)); });
-      $('#hm-dib-horno').setAttribute('y', SU - (horno + 60) * S); $('#hm-dib-micro').setAttribute('y', SU - (micro + 38) * S);
+      $('#hm-dib-horno').setAttribute('y', SU - (horno + 58) * S); $('#hm-dib-micro').setAttribute('y', SU - (micro + 38) * S);
       $('#hm-codo').setAttribute('y1', SU - codo * S); $('#hm-codo').setAttribute('y2', SU - codo * S); $('#hm-codo-t').setAttribute('y', SU - codo * S - 4);
     }
     $('#hm-est').addEventListener('input', hornoMicro); hornoMicro();
@@ -296,14 +367,6 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
       $('#fr-det').textContent = h ? `Cabe el de ${h} cm de hueco${h === 178 ? ', el más vendido' : ''}, y quedan ${col - h} cm encima para un mueble alto. Ancho de hueco: 56–57 cm (columna de 60).` : 'La columna es baja para un frigorífico integrable de serie: mejor uno bajo encimera (82 cm) o de libre instalación.';
     }
     $('#fr-col').addEventListener('input', frigo); frigo();
-
-    // ── Campana: 65 cm sobre inducción o vitro, 75 sobre gas (nunca menos de 65) ──
-    function campana() {
-      const gas = $('input[name=cp-tipo]:checked').value === 'gas';
-      $('#cp-alto').textContent = gas ? 75 : 65;
-      $('#cp-det').textContent = gas ? 'Con gas, unos 75 cm y nunca menos de 65; siempre con instalador autorizado.' : 'Con inducción o vitrocerámica, unos 65 cm. En cualquier caso, manda el manual de la campana.';
-    }
-    $('#calc-campana').addEventListener('change', campana); campana();
 
     // ── Barras del armario: alcance cómodo ≈ 1,2 veces la estatura; barra larga a 170–180; por encima de 200, elevador ──
     function barras() {
@@ -340,6 +403,106 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
       }).join('');
     }
     $('#vs-ancho').addEventListener('input', vestidorCalc); vestidorCalc();
+
+    // ── ¿Cuántos muebles caben? Columnas al final del tramo; placa 90, fregadero 80, lavavajillas 60 pegado al fregadero;
+    //    entre fregadero y placa, 60 mínimo y 90 cómodo para preparar; el resto en cajoneras de 30 a 60; lo que sobre, regleta ──
+    function muebles() {
+      const L = +$('#mc-largo').value, frigo = $('#mc-frigo').checked, horno = $('#mc-horno').checked, lava = $('#mc-lava').checked;
+      $('#mc-valor').textContent = L + ' cm';
+      const cols = [...(frigo ? [['Frigo', 60, 'col']] : []), ...(horno ? [['Horno', 60, 'col']] : [])];
+      const fijos = cols.reduce((a, c) => a + c[1], 0) + 90 + 80 + (lava ? 60 : 0);
+      let resto = L - fijos; const prep = resto >= 90 ? 90 : resto >= 60 ? 60 : resto >= 40 ? resto : 0; resto -= prep;
+      const extra = []; [60, 50, 45, 40, 30].forEach((m) => { while (resto >= m && extra.length < 6) { extra.push(m); resto -= m; } });
+      const tramo = [...cols, ...extra.slice(0, Math.ceil(extra.length / 2)).map((m) => ['Cajones', m, 'caj']), ['Placa', 90, 'placa'], ...(prep ? [['Preparar', prep, 'caj']] : []), ['Fregadero', 80, 'freg'], ...(lava ? [['Lavav.', 60, 'lava']] : []), ...extra.slice(Math.ceil(extra.length / 2)).map((m) => ['Cajones', m, 'caj']), ...(resto > 0 && L - fijos >= 0 ? [['Regleta', resto, 'reg']] : [])];
+      const total = Math.max(L, tramo.reduce((a, c) => a + c[1], 0));
+      $('#mc-tiras').innerHTML = tramo.map(([n, w, c]) => `<span class="${c}" style="flex-basis:${(100 * w) / total}%"><b>${w}</b>${n}</span>`).join('');
+      const v = $('#mc-ver'), d = $('#mc-det'), encimera = L - cols.reduce((a, c) => a + c[1], 0);
+      if (L < fijos) { v.textContent = 'No cabe todo en esta pared'; v.dataset.v = 'no'; d.textContent = `Faltan ${fijos - L} cm. Prueba a llevar el frigorífico o la columna a otra pared, o un lavavajillas de 45.`; }
+      else if (prep < 40) { v.textContent = 'Cabe, pero sin sitio para preparar'; v.dataset.v = 'no'; d.textContent = `Entre el fregadero y la placa no queda encimera para preparar (hacen falta 60, mejor 90). Lleva una columna a otra pared o pon un lavavajillas de 45.`; }
+      else if (prep < 60) { v.textContent = 'Cabe, pero muy justa'; v.dataset.v = 'justa'; d.textContent = `Entre el fregadero y la placa quedan solo ${prep} cm para preparar; lo mínimo son 60 y lo cómodo 90.`; }
+      else { v.textContent = prep >= 90 ? 'Cabe con holgura' : 'Cabe bien'; v.dataset.v = prep >= 90 ? 'si' : 'justa'; d.textContent = `Te quedan ${encimera} cm de encimera y ${prep} cm para preparar entre fregadero y placa${prep < 90 ? ' (lo cómodo son 90)' : ''}. Las columnas, juntas al final del tramo para no partir la encimera.${extra.length ? ` Además caben ${extra.length} ${extra.length === 1 ? 'cajonera' : 'cajoneras'} de ${extra.join(', ')} cm.` : ''}${resto > 0 ? ` Sobran ${resto} cm: van en una regleta o un mueble a medida.` : ''}`; }
+    }
+    $('#calc-muebles').addEventListener('input', muebles); muebles();
+
+    // ── Triángulo de trabajo: cada lado entre 120 y 270 cm y el total entre 400 y 790 ──
+    function triangulo() {
+      const [a, b, c] = ['a', 'b', 'c'].map((k) => { const v = +$('#tr-' + k).value; $('#tr-' + k + '-v').textContent = v + ' cm'; return v; });
+      const suma = a + b + c, lados = [['frigorífico y fregadero', a], ['fregadero y placa', b], ['placa y frigorífico', c]];
+      const cortos = lados.filter(([, v]) => v < 120), largos = lados.filter(([, v]) => v > 270), imposible = a + b <= c || a + c <= b || b + c <= a;
+      const v = $('#tr-ver'), d = $('#tr-det');
+      if (imposible) { v.textContent = 'Esas medidas no forman un triángulo'; v.dataset.v = 'justa'; d.textContent = 'Un lado no puede ser más largo que los otros dos juntos: revisa las distancias (se miden de centro a centro).'; }
+      else if (!cortos.length && !largos.length && suma >= 400 && suma <= 790) { v.textContent = 'Triángulo cómodo'; v.dataset.v = 'si'; d.textContent = `En total ${suma} cm: te mueves poco y no os estorbáis. Lo ideal es que cada lado esté entre 120 y 270 cm y el total entre 400 y 790.`; }
+      else { v.textContent = 'Se puede mejorar'; v.dataset.v = suma > 790 || largos.length ? 'no' : 'justa'; d.textContent = [cortos.length ? `Muy cerca: ${cortos.map(([n]) => n).join(' y ')} (menos de 120 cm, os chocaréis y falta encimera).` : '', largos.length ? `Muy lejos: ${largos.map(([n]) => n).join(' y ')} (más de 270 cm, demasiado paseo).` : '', suma > 790 ? `El total, ${suma} cm, pasa de 790: cocinar cansa.` : '', suma < 400 && !cortos.length ? `El total, ${suma} cm, es muy corto.` : ''].filter(Boolean).join(' ') + ' Entre el fregadero y la placa, al menos 60 cm de encimera; entre frigorífico y placa, al menos 30 o un panel.'; }
+      // Dibujo del triángulo a escala
+      if (!imposible) {
+        const x = (c * c + a * a - b * b) / (2 * c), y = Math.sqrt(Math.max(0, a * a - x * x)), k = 160 / Math.max(c, x, c - x, 1, y * 1.3);
+        const P = [[30, 170], [30 + c * k, 170], [30 + x * k, 170 - y * k]];
+        const col = (v) => (v < 120 ? '#c9a27a' : v > 270 ? '#e07a62' : '#8796ff'), med = (p, q) => [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+        const seg = (p, q, v) => `<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${col(v)}" stroke-width="3"/><text x="${med(p, q)[0]}" y="${med(p, q)[1] - 5}" fill="#fff" font-size="10" text-anchor="middle" font-family="Inter, sans-serif">${v}</text>`;
+        const pt = (p, t) => `<circle cx="${p[0]}" cy="${p[1]}" r="11" fill="#1d1d20" stroke="#55555c"/><text x="${p[0]}" y="${p[1] + 3.5}" fill="#c9a27a" font-size="9" text-anchor="middle" font-family="Inter, sans-serif">${t}</text>`;
+        $('#tr-dib').innerHTML = seg(P[0], P[1], c) + seg(P[0], P[2], a) + seg(P[2], P[1], b) + pt(P[0], 'Fri') + pt(P[1], 'Pla') + pt(P[2], 'Fre');
+      } else $('#tr-dib').innerHTML = '';
+    }
+    $('#calc-triangulo').addEventListener('input', triangulo); triangulo();
+
+    // ── Enchufes y luz (guía de instalaciones): 3–4 sobre la encimera cada 60–80 cm a ~110, a 50 cm del fregadero y la placa,
+    //    cada electrodoméstico con su toma, al menos 6 en total; LED bajo los altos en todo su largo ──
+    function enchufes() {
+      const enc = +$('#en-enc').value, alt = +$('#en-alt').value, el = new Set($$('.en-el:checked').map((i) => i.value));
+      $('#en-enc-v').textContent = enc + ' cm'; $('#en-alt-v').textContent = alt + ' cm';
+      const sobre = Math.max(3, Math.min(6, Math.round((enc - 50) / 80)));
+      const l = [[`${sobre} sobre la encimera`, 'a unos 110 cm del suelo, cada 60–80 cm y a 50 cm del fregadero y de la placa']];
+      if (el.has('columna')) l.push(['2 en la columna de horno y micro', 'a unos 155 cm (o la del horno, de 16 A con tierra, a 20–30 cm si va bajo encimera)']);
+      if (el.has('induccion')) l.push(['1 línea para la placa de inducción', 'de 25 A según su potencia']);
+      if (el.has('lava')) l.push(['1 para el lavavajillas', 'de 16 A con tierra, a 40–50 cm, en el mueble de al lado']);
+      if (el.has('lavadora')) l.push(['1 para la lavadora', 'de 16 A con tierra, a 40–50 cm']);
+      if (el.has('frigo')) l.push(['1 para el frigorífico', 'a 40–50 cm, lo más cerca posible del aparato']);
+      if (el.has('campana')) l.push(['1 para la campana', 'a unos 185 cm y desplazada 7 cm del centro, para que la tape el embellecedor']);
+      if (alt > 0) l.push(['1 para las tiras LED', 'dentro o encima de un mueble alto, para el transformador']);
+      const total = l.reduce((a, [t]) => a + parseInt(t), 0);
+      $('#en-total').textContent = Math.max(6, total);
+      $('#en-lista').innerHTML = l.map(([t, d]) => `<li><b>${t}</b> ${d}</li>`).join('');
+      $('#en-det').textContent = `${alt > 0 ? `Tira LED bajo los muebles altos: unos ${(alt / 100).toFixed(1).replace('.', ',')} m. ` : ''}Deja alguna toma libre: siempre se acaba necesitando. Las placas de gas, siempre con instalador autorizado.`;
+    }
+    $('#calc-enchufes').addEventListener('input', enchufes); enchufes();
+
+    // ── ¿Cuánto armario? 100 cm por persona (guía), más si hay mucha ropa larga; zapatero de 60 = unos 12 pares ──
+    function cuanto() {
+      const per = +$('input[name=ca-per]:checked').value, larga = +$('input[name=ca-larga]:checked').value, zap = +$('#ca-zap').value;
+      $('#ca-zap-v').textContent = zap;
+      const largo = per * [30, 45, 70][larga], doble = per * 45, doblado = per * 30, zapatero = zap ? Math.ceil(zap / 12) * 60 : 0;
+      let total = largo + doble + doblado + zapatero; total = Math.max(per * 100, Math.ceil(total / 10) * 10);
+      const huecos = [['Colgar largo', largo, 'largo'], ['Dos barras', doble, 'doble'], ['Baldas y cajones', doblado, 'caj'], ...(zapatero ? [['Zapatero', zapatero, 'zap']] : [])];
+      const suma = huecos.reduce((a, h) => a + h[1], 0), k = total / suma;
+      $('#ca-total').textContent = (total / 100).toFixed(1).replace('.', ',');
+      $('#ca-tiras').innerHTML = huecos.map(([n, w, c]) => `<span class="${c}" style="flex-basis:${(100 * w) / suma}%"><b>${Math.round(w * k)}</b>${n}</span>`).join('');
+      $('#ca-det').textContent = `Unos ${total} cm de armario: ${per === 1 ? 'para una persona se cuentan unos 100 cm' : `se cuentan unos 100 cm por persona`}, más si hay mucha ropa larga o muchos zapatos. Con 60 cm de fondo (65 si son correderas).`;
+      // Lo abre en el juego con un reparto de huecos parecido
+      const mods = [], n = Math.max(1, Math.ceil(total / 100));
+      const reparto = [['largo', largo], ['doble', doble], ['cajones', doblado], ...(zapatero ? [['zapatero', zapatero]] : [])];
+      for (let i = 0; i < n; i++) mods.push(reparto[i % reparto.length][0]);
+      $('#ca-juego').href = `${base}/disena-tu-armario/#ancho=${Math.min(450, total)}&alto=250&puertas=${total >= 140 ? 'correderas' : 'abatibles'}&mods=${mods.join(',')}`;
+    }
+    $('#calc-cuanto').addEventListener('input', cuanto); cuanto();
+
+    // ── Buhardilla: qué cabe en cada tramo según la altura (colgar largo ≥ 175, dos barras ≥ 205, colgar corto ≥ 110, baldas ≥ 60) ──
+    function buhardilla() {
+      const alta = +$('#bu-alta').value, baja = Math.min(+$('#bu-baja').value, alta), largo = +$('#bu-largo').value;
+      $('#bu-alta-v').textContent = alta + ' cm'; $('#bu-baja-v').textContent = baja + ' cm'; $('#bu-largo-v').textContent = largo + ' cm';
+      const tramos = Math.max(2, Math.round(largo / 60)), w = largo / tramos, tipo = (h) => (h >= 205 ? 'doble' : h >= 175 ? 'largo' : h >= 110 ? 'corto' : h >= 60 ? 'baldas' : 'bajo');
+      const kx = 300 / largo, ky = 150 / Math.max(alta, 1), X = (x) => 10 + x * kx, Yy = (h) => 160 - h * ky;
+      let svg = `<polygon points="${X(0)},160 ${X(largo)},160 ${X(largo)},${Yy(baja)} ${X(0)},${Yy(alta)}" fill="#1d1d20" stroke="#55555c"/>`;
+      const cuenta = {};
+      for (let i = 0; i < tramos; i++) {
+        const x0 = i * w, x1 = (i + 1) * w, h0 = alta - (alta - baja) * (x0 / largo), h1 = alta - (alta - baja) * (x1 / largo), t = tipo(Math.min(h0, h1));
+        cuenta[t] = (cuenta[t] || 0) + w;
+        svg += `<polygon points="${X(x0) + 1},159 ${X(x1) - 1},159 ${X(x1) - 1},${Yy(h1) + 2} ${X(x0) + 1},${Yy(h0) + 2}" class="bu-${t}"/>`;
+      }
+      $('#bu-dib').innerHTML = svg;
+      const nombres = { doble: 'dos barras', largo: 'colgar largo', corto: 'colgar corto', baldas: 'baldas o cajones', bajo: 'cajones bajos o un arcón' };
+      $('#bu-det').textContent = `Por tramos de unos ${Math.round(w)} cm: ${Object.entries(cuenta).map(([t, cm]) => `${Math.round(cm)} cm de ${nombres[t]}`).join(', ')}. El armario sigue la pendiente para no perder ni un hueco; las puertas se hacen a la medida de cada tramo.`;
+    }
+    $('#calc-buhardilla').addEventListener('input', buhardilla); buhardilla();
     // Si llegan con una pregunta en el enlace (#p-…), se abre
     const abierta = location.hash && $(location.hash); if (abierta?.tagName === 'DETAILS') abierta.open = true;
   </script>
