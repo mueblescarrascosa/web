@@ -11,6 +11,7 @@ export const TIPOS = {
 export const MODELOS = { lisa: 'Lisa', japonesa3: 'Japonesa 3 paneles', japonesa: 'Japonesa 4 paneles', rayas: 'Cuatro paneles', moldura: 'Con moldura', cristal: 'Cristal', cruz: 'Cristal con cruz' };
 export const CRISTALES = { claro: { nombre: 'Transparente', hex: '#cfe0e6', op: 0.2 }, mate: { nombre: 'Mate', hex: '#f3f3f1', op: 0.82 }, ahumado: { nombre: 'Ahumado', hex: '#2c3035', op: 0.6 } };
 const ROPA = ['#3b4a5e', '#a9b4c2', '#e7e2d6', '#7a5c48', '#c6a77d', '#2f2f33', '#8e9c86', '#b46a55', '#d9d4ca', '#556b7a', '#efe9dc', '#6b5a7a'];
+const PANT = ['#2f3b52', '#4a5a72', '#c9b79a', '#3a3a3a', '#6b6f73', '#8a7356', '#1f2a3a', '#7d8a9a'];
 const ZAP = ['#2b2b2b', '#7a5c48', '#e7e2d6', '#a33b2f', '#3b4a5e'];
 const f = (n) => +n.toFixed(1);
 export const modulosPara = (ancho) => Math.max(1, Math.ceil(ancho / 100));
@@ -35,13 +36,11 @@ export function interior(tipo, a0, a1, techoUtil, altillo, alto, sem) {
   if (tipo === 'cajones') { cajonera([[10, 30], [30, 50], [50, 70], [70, 90]]); balda(92); barra(techoUtil - 8, 80); c.corto++; c.doblado++; }
   if (tipo === 'zapatero') { [10, 28, 46, 64].forEach((b) => { if (b > 10) balda(b); zapatos(b); }); balda(82); for (let b = 82; b + 35 < techoUtil - 5; b += 35) { montones(b + 1, 33); if (b + 35 < techoUtil - 20) balda(b + 35); } c.zapatos++; c.doblado++; }
   if (tipo === 'pantalonero') {
-    // Pantalonero extraíble: varillas con pantalones doblados por la mitad
-    for (let b = 92, i = 0; b >= 30; b -= 15, i++) {
-      p.push({ k: 'varilla', a0: a0 + 3, a1: a1 - 3, b });
-      for (let a = a0 + 5, j = 0; a + 4 < a1 - 4; a += 6.5, j++) { p.push({ k: 'pantalon', a, b, w: 5, l: 11, c: ROPA[(sem + i * 4 + j * 3) % ROPA.length] }); n.pantalones++; }
-    }
-    p.push({ k: 'marco', a0: a0 + 1, a1: a1 - 1, b0: 22, b1: 100 });
-    zapatos(10); balda(104); barra(techoUtil - 8, 70); c.corto++; c.zapatos++;
+    // Pantalonero de colgar: barra a unos 92 cm con los pantalones doblados por la mitad (~70 cm de caída) y camisas arriba
+    const bp = 92;
+    p.push({ k: 'barra', a0, a1, b: bp });
+    for (let a = a0 + 3, j = 0; a + 5 < a1 - 2; a += 5.6, j++) { p.push({ k: 'pantalon', a, b: bp, w: 4.8, l: 70 - ((sem + j * 7) % 3) * 3, c: PANT[(sem + j * 3) % PANT.length] }); n.pantalones++; }
+    barra(techoUtil - 8, Math.min(80, techoUtil - 8 - bp - 12)); zapatos(10); c.corto++; c.zapatos++;
   }
   if (tipo === 'accesorios') {
     // Bandejas bajas con relojes, cinturones y gafas; baldas altas para bolsos
@@ -72,7 +71,11 @@ function deFrente(piezas, alto) {
       return `<path d="M${f(q.a + q.w / 2)} ${f(y0 - 0.8)}q.9 0 .9.9-.9.9-.9 1.6" stroke="#8a8f94" stroke-width=".35" fill="none"/>`
         + `<path d="M${f(q.a + 0.4)} ${f(y0 + 3.4)}q${f(q.w / 2 - 0.4)} -1.8 ${f(q.w - 0.8)} 0l.4 ${f(q.l - 3)}q0 1-1 1h${f(-(q.w - 1.2))}q-1 0-1-1z" fill="${q.c}"/>`
         + `<path d="M${f(q.a + 0.9)} ${f(y0 + 3.6)}v${f(q.l - 4)}" stroke="#fff" stroke-opacity=".14" stroke-width=".7"/>`; }
-    if (q.k === 'pantalon') return R(q.a, Y(q.b) - 0.4, q.w, q.l, `rx=".8" fill="${q.c}"`) + R(q.a, Y(q.b) - 0.4, q.w, 1.2, 'fill="#000" opacity=".18"');
+    if (q.k === 'pantalon') { const y0 = Y(q.b);
+      return `<path d="M${f(q.a + q.w / 2)} ${f(y0 - 0.8)}q.9 0 .9.9-.9.9-.9 1.6" stroke="#8a8f94" stroke-width=".35" fill="none"/>`
+        + R(q.a, y0 + 1.4, q.w, q.l, `rx=".9" fill="${q.c}"`) + R(q.a, y0 + 1.4, q.w, 3.2, 'fill="#000" opacity=".22"')
+        + `<path d="M${f(q.a + q.w / 2)} ${f(y0 + 1.4 + q.l * 0.42)}V${f(y0 + 1.4 + q.l)}" stroke="#000" stroke-opacity=".28" stroke-width=".45"/>`
+        + `<path d="M${f(q.a + 0.8)} ${f(y0 + 4.6)}v${f(q.l - 6)}" stroke="#fff" stroke-opacity=".12" stroke-width=".6"/>`; }
     if (q.k === 'monton') return R(q.a, Y(q.b) - q.h, q.w, q.h, `rx="1.2" fill="${q.c}"`);
     if (q.k === 'zapato') return `<path d="M${f(q.a)} ${f(Y(q.b) - 1)}h8.5v-3.2c0-1.4-2-2-3.6-2.6s-2.4-1.6-4-1.6c-.6 0-.9.5-.9 1.2z" fill="${q.c}"/>`;
     if (q.k === 'cajon' || q.k === 'bandeja') return R(q.a0, Y(q.b1) + 0.4, q.a1 - q.a0, q.b1 - q.b0 - 0.8, 'style="fill:var(--int)" class="pieza" stroke="#000" stroke-opacity=".2" stroke-width=".3"') + R((q.a0 + q.a1) / 2 - 7, Y(q.b1) + 3, 14, 1.2, 'rx=".6" fill="#000" opacity=".35"');
@@ -204,9 +207,8 @@ export function vestidor({ ancho = 300, alto = 250, forma = 'lineal', lado = 180
         if (q.k === 'barra') g += ln(Q(q.a0, q.b, 30), Q(q.a1, q.b, 30), 'stroke="#9aa0a6" stroke-width="2.2" stroke-linecap="round"');
         if (q.k === 'varilla') g += ln(Q(q.a0, q.b, 52), Q(q.a1, q.b, 52), 'stroke="#b5b9bd" stroke-width="1.1"');
         if (q.k === 'marco') g += poli(lateral(q.a0, q.b0, q.b1, 4, 56), 'fill="#9aa0a6" opacity=".5"');
-        if (q.k === 'prenda' && clave !== 'f') { const b0 = q.b - 3, b1 = q.b - q.l; g += poli(cuad(q.a, b1, q.a + q.w * 0.8, b0, 30), `fill="${q.c}"`) + poli(cuad(q.a, b1, q.a + q.w * 0.25, b0, 30.5), 'fill="#fff" opacity=".12"'); }
-        else if (q.k === 'prenda') { const b0 = q.b - 3, b1 = q.b - q.l; g += poli([Q(q.a, b0, 10), Q(q.a, b0, 50), Q(q.a + 0.4, b1, 53), Q(q.a + 0.4, b1, 7)], `fill="${q.c}"`) + poli([Q(q.a, b0, 50), Q(q.a + q.w * 0.6, b0, 50), Q(q.a + q.w * 0.6, b1, 53), Q(q.a + 0.4, b1, 53)], `fill="${q.c}"`) + poli([Q(q.a, b0, 50), Q(q.a + q.w * 0.6, b0, 50), Q(q.a + q.w * 0.6, b1, 53), Q(q.a + 0.4, b1, 53)], 'fill="#000" opacity=".12"'); }
-        if (q.k === 'pantalon') g += poli(cuad(q.a, q.b - q.l, q.a + q.w, q.b, 52), `fill="${q.c}"`);
+        if ((q.k === 'prenda' || q.k === 'pantalon') && clave !== 'f') { const b0 = q.b - 3, b1 = q.b - q.l; g += poli(cuad(q.a, b1, q.a + q.w * 0.8, b0, 30), `fill="${q.c}"`) + poli(cuad(q.a, b1, q.a + q.w * 0.25, b0, 30.5), 'fill="#fff" opacity=".12"'); }
+        else if (q.k === 'prenda' || q.k === 'pantalon') { const b0 = q.b - 3, b1 = q.b - q.l; g += poli([Q(q.a, b0, 10), Q(q.a, b0, 50), Q(q.a + 0.4, b1, 53), Q(q.a + 0.4, b1, 7)], `fill="${q.c}"`) + poli([Q(q.a, b0, 50), Q(q.a + q.w * 0.6, b0, 50), Q(q.a + q.w * 0.6, b1, 53), Q(q.a + 0.4, b1, 53)], `fill="${q.c}"`) + poli([Q(q.a, b0, 50), Q(q.a + q.w * 0.6, b0, 50), Q(q.a + q.w * 0.6, b1, 53), Q(q.a + 0.4, b1, 53)], 'fill="#000" opacity=".12"'); }
         if (q.k === 'monton') g += poli(cuad(q.a, q.b, q.a + q.w, q.b + q.h, 46), `fill="${q.c}"`) + (q.b + q.h < CY ? poli(plano(q.a, q.a + q.w, q.b + q.h, 16, 46), `fill="${q.c}"`) + poli(plano(q.a, q.a + q.w, q.b + q.h, 16, 46), 'fill="#fff" opacity=".18"') : '');
         if (q.k === 'zapato' && clave !== 'f') g += poli(cuad(q.a, q.b, q.a + 8.5, q.b + 4.5, 40), `fill="${q.c}"`) + poli(cuad(q.a, q.b + 4.5, q.a + 3.5, q.b + 7, 40), `fill="${q.c}"`);
         else if (q.k === 'zapato') g += poli([Q(q.a, q.b, 44), Q(q.a + 8.5, q.b, 44), Q(q.a + 8.5, q.b + 4.5, 40), Q(q.a + 2, q.b + 7, 34), Q(q.a, q.b + 7, 34)], `fill="${q.c}"`);

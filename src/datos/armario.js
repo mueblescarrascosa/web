@@ -55,7 +55,7 @@ export function consejos(e, datos) {
   if (c.corto) bien.push('Camisas y chaquetas en dos alturas: el doble de ropa en el mismo hueco.');
   if (!c.doblado) ojo.push('Faltan baldas o cajones para la ropa doblada: jerséis, camisetas y ropa interior.');
   if (!c.zapatos) ojo.push('¿Y los zapatos? Un zapatero abajo los deja a la vista y ordenados.');
-  if (datos.pantalones) bien.push(`El pantalonero guarda ${datos.pantalones} pantalones sin arrugas y se saca como un cajón.`);
+  if (datos.pantalones) bien.push(`El pantalonero cuelga ${datos.pantalones} pantalones doblados por la mitad, sin arrugas, en unos 75 cm de alto.`);
   if (datos.cajones) bien.push('La cajonera queda por debajo de 100 cm: ves lo que hay dentro sin agacharte demasiado.');
   if (datos.altillo) bien.push('El altillo guarda maletas y la ropa de otra temporada.');
   else ojo.push('Con menos de 220 cm de alto no queda altillo: las maletas tendrán que ir en otro sitio.');
