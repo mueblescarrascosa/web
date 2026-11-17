@@ -424,12 +424,20 @@ html.revela .destapa.visto:hover img { transform: scale(1.03); }
 .combina { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; padding-bottom: clamp(3rem, 7vw, 5rem); }
 .combina-vista { position: sticky; top: 96px; }
 .cocina { display: block; width: 100%; height: auto; border-radius: var(--radio); background: var(--fondo-3); box-shadow: 0 40px 80px -40px rgb(0 0 0 / .8); }
-.cocina .pared { fill: var(--pared); } .cocina .suelo { fill: var(--suelo); }
-.cocina .altos rect, .cocina .col-zocalo { fill: var(--altos); } .cocina .bajos rect:not(.col-zocalo) { fill: var(--bajos); }
-.cocina .encimera { fill: var(--enc); } .cocina .tirador { fill: var(--tir); }
-.cocina .juntas rect { fill: none; stroke: #000; stroke-opacity: .22; stroke-width: 1.5; }
-.cocina .t-unero rect { fill: #000; opacity: .38; }
-.cocina :is(.pared, .suelo, .altos rect, .bajos rect, .encimera, .tirador), .cocina .dibujo, .cocina .dibujo * { transition: fill .7s var(--t), opacity .7s var(--t); }
+.cocina .pieza, .cocina .dibujo, .cocina polyline { transition: fill .7s var(--t), opacity .7s var(--t), stroke .7s var(--t); }
+/* Noche: la habitación se oscurece y se encienden las luces */
+.cocina .noche { opacity: 0; transition: opacity 1.1s var(--t); pointer-events: none; }
+.cocina .luz-noche, .cocina .cristal-noche { opacity: 0; transition: opacity 1.1s .15s var(--t); pointer-events: none; }
+.cocina[data-luz="noche"] .noche { opacity: .74; }
+.cocina[data-luz="noche"] .luz-noche, .cocina[data-luz="noche"] .cristal-noche { opacity: 1; }
+.cocina.redibujo { animation: redibujo .6s var(--t); }
+@keyframes redibujo { from { opacity: .25; transform: scale(.985); } }
+.lienzo { position: relative; }
+.boton-luz { position: absolute; top: .8rem; right: .8rem; display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: .5rem 1rem .5rem .75rem; border-radius: 99px;
+  border: 1px solid rgb(255 255 255 / .25); background: rgb(13 13 14 / .55); color: #fff; font: 600 .92rem/1 var(--sans); cursor: pointer; backdrop-filter: blur(8px); transition: background .25s, transform .25s var(--t); }
+.boton-luz:hover { background: var(--azul); transform: translateY(-1px); }
+.boton-luz .sol { display: none; } .boton-luz[aria-pressed="true"] .sol { display: block; color: #ffd27a; } .boton-luz[aria-pressed="true"] .luna { display: none; }
+.boton-luz .luna { color: #c7cdfa; }
 .cocina .t-barra, .cocina .t-gola, .cocina .t-unero { display: none; }
 .cocina[data-tirador="barra"] .t-barra, .cocina[data-tirador="gola"] .t-gola, .cocina[data-tirador="unero"] .t-unero { display: inline; }
 .combina.cambio .cocina { animation: latir .6s var(--t); }
@@ -556,3 +564,26 @@ html.revela .destapa.visto:hover img { transform: scale(1.03); }
 .duda-r { padding: 0 0 1.2rem; color: #d8d4cd; animation: entrar .4s var(--t) both; }
 .duda-r p { margin: 0 0 .6rem; }
 @media (max-width: 600px) { .calc-in { grid-template-columns: 1fr 120px; gap: 1rem; } .tiras { height: 58px; } .tiras span { font-size: .62rem; } .tiras b { font-size: .85rem; } }
+
+/* Iconos de distribución y puerta, y muestras de la pared entre muebles */
+.lista-muestras.con-iconos { gap: .6rem; }
+.lista-muestras.con-iconos label { display: grid; justify-items: center; gap: .35rem; width: 76px; }
+.muestra.icono { width: 56px; height: 56px; display: grid; place-items: center; background: #e8e5df; color: #2b2b2b; }
+.muestra.icono svg { width: 36px; height: 36px; fill: currentColor; }
+.texto-muestra { font-size: .8rem; color: var(--suave); text-align: center; line-height: 1.2; }
+.lista-muestras input:checked ~ .texto-muestra { color: #fff; }
+.muestra.tr-pared { background: linear-gradient(135deg, #f2f0ea 50%, #e3dfd6 50%); }
+.muestra.tr-azulejo { background: linear-gradient(90deg, transparent 47%, rgb(0 0 0 / .2) 47% 53%, transparent 53%) 0 0 / 22px 22px, linear-gradient(transparent 47%, rgb(0 0 0 / .2) 47% 53%, transparent 53%) 0 0 / 22px 11px, var(--c); }
+.muestra.tr-encimera { background: linear-gradient(125deg, transparent 40%, rgb(120 120 120 / .4) 42%, transparent 44%), linear-gradient(#ecebe8, #d9d2c5); }
+/* Favoritas */
+.favoritas { padding-bottom: clamp(3rem, 7vw, 5rem); }
+.favoritas-cabeza { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1.5rem; margin-bottom: 1.5rem; }
+.favoritas-cabeza h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); margin: 0; } .favoritas-cabeza p { margin: 0; }
+.favoritas-lista { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); }
+.favorita { background: var(--fondo-2); border: 1px solid var(--linea); border-radius: var(--radio); overflow: hidden; display: grid; }
+.cocina.mini { border-radius: 0; box-shadow: none; }
+.favorita-datos { display: flex; gap: 1rem; align-items: center; padding: 1rem 1.2rem .4rem; }
+.favorita-datos b { font: 700 2.4rem/1 var(--display); letter-spacing: -.04em; color: #fff; }
+.favorita-datos p { margin: 0; font-size: .9rem; } .veredicto-mini { color: #fff; font-weight: 600; font-size: 1rem !important; }
+.favorita-botones { display: flex; gap: .5rem; padding: .6rem 1.2rem 1.2rem; } .favorita-botones .boton { min-height: 44px; padding: .5rem 1.1rem; flex: 1; }
+@media (max-width: 900px) { .boton-luz { top: .5rem; right: .5rem; min-height: 40px; padding: .4rem .8rem .4rem .6rem; font-size: .85rem; } .lista-muestras.con-iconos label { width: 68px; } }

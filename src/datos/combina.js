@@ -64,22 +64,56 @@ export const PAREDES = a([
   ['gris', 'Gris suave', '#d4d4d0', 'gris_claro', 1, 'f'],
 ]);
 
-export const INICIAL = { bajos: 'roble', altos: 'blanco', encimera: 'piedra', tirador: 'negro', suelo: 'porcelanico', pared: 'blanca' };
+// Distribución y modelo de puerta (cambian el dibujo), electrodomésticos y pared entre muebles
+export const DISTRIBUCIONES = [
+  { clave: 'lineal', nombre: 'Lineal' }, { clave: 'L', nombre: 'En L' }, { clave: 'isla', nombre: 'Con isla' }, { clave: 'peninsula', nombre: 'Con península' },
+];
+export const PUERTAS = [
+  { clave: 'lisa', nombre: 'Lisa' }, { clave: 'moldura', nombre: 'Con moldura' }, { clave: 'ranurada', nombre: 'Ranurada' },
+];
+export const ELECTROS = [
+  { clave: 'inox', nombre: 'Inox', hex: '#b9bcbf' }, { clave: 'negro', nombre: 'Negro', hex: '#1e1f21' }, { clave: 'blanco', nombre: 'Blanco', hex: '#ecebe7' },
+];
+// tipo: pared (como la pared), azulejo (con juntas) o encimera (la misma piedra subida a la pared)
+export const TRASERAS = [
+  { clave: 'pared', nombre: 'Como la pared', tipo: 'pared' },
+  { clave: 'azulejo-blanco', nombre: 'Azulejo blanco', hex: '#f1efe9', tipo: 'azulejo' },
+  { clave: 'azulejo-verde', nombre: 'Azulejo verde', hex: '#6f8f7e', tipo: 'azulejo' },
+  { clave: 'azulejo-terracota', nombre: 'Azulejo terracota', hex: '#b9765a', tipo: 'azulejo' },
+  { clave: 'encimera', nombre: 'Como la encimera', tipo: 'encimera' },
+];
+
+export const INICIAL = { dist: 'lineal', bajos: 'roble', altos: 'blanco', puerta: 'lisa', encimera: 'piedra', tirador: 'negro', electro: 'inox', trasera: 'azulejo-blanco', suelo: 'porcelanico', pared: 'blanca' };
+export const LISTAS = () => ({ dist: DISTRIBUCIONES, bajos: FRENTES, altos: FRENTES, puerta: PUERTAS, encimera: ENCIMERAS, tirador: TIRADORES, electro: ELECTROS, trasera: TRASERAS, suelo: SUELOS, pared: PAREDES });
+
+// Variables CSS del dibujo para lo elegido (la página y las miniaturas usan lo mismo)
+export function variables(e) {
+  const v = (x, d) => (x.dibujo === d ? 1 : 0);
+  const tr = e.trasera.tipo === 'encimera' ? e.encimera : e.trasera.tipo === 'azulejo' ? e.trasera : e.pared;
+  return {
+    '--bajos': e.bajos.hex, '--altos': e.altos.hex, '--enc': e.encimera.hex, '--tir': e.tirador.hex, '--electro': e.electro.hex,
+    '--suelo': e.suelo.hex, '--pared': e.pared.hex, '--trasera': tr.hex,
+    '--v-bajos': v(e.bajos, 'veta'), '--v-altos': v(e.altos, 'veta'), '--v-enc': v(e.encimera, 'veta'), '--m-enc': v(e.encimera, 'marmol'), '--mn-enc': v(e.encimera, 'marmolN'),
+    '--v-azulejo': e.trasera.tipo === 'azulejo' ? 1 : 0, '--m-tras': e.trasera.tipo === 'encimera' ? v(e.encimera, 'marmol') : 0, '--mn-tras': e.trasera.tipo === 'encimera' ? v(e.encimera, 'marmolN') : 0,
+    '--v-tablas': v(e.suelo, 'tablas'), '--v-baldosa': v(e.suelo, 'baldosa'),
+  };
+}
+export const estiloVars = (e) => Object.entries(variables(e)).map(([k, v]) => `${k}:${v}`).join(';');
 
 // «Inspírame»: propuestas sacadas de las recetas por estilo de la guía de colores
 export const PROPUESTAS = [
-  { nombre: 'Blanco y roble', bajos: 'roble', altos: 'blanco', encimera: 'piedra', tirador: 'negro', suelo: 'porcelanico', pared: 'blanca' },
-  { nombre: 'Nórdica', bajos: 'blanco', altos: 'blanco', encimera: 'roble-macizo', tirador: 'madera', suelo: 'roble-claro', pared: 'blanca' },
-  { nombre: 'Japandi', bajos: 'roble-claro', altos: 'cachemir', encimera: 'negra', tirador: 'unero', suelo: 'porcelanico', pared: 'calida' },
-  { nombre: 'Negro y madera', bajos: 'negro', altos: 'roble-claro', encimera: 'marmol', tirador: 'gola', suelo: 'roble-claro', pared: 'blanca' },
-  { nombre: 'Verde salvia y oro', bajos: 'salvia', altos: 'blanco-roto', encimera: 'calacatta', tirador: 'oro', suelo: 'roble', pared: 'calida' },
-  { nombre: 'Azul marino clásica', bajos: 'marino', altos: 'blanco', encimera: 'marmol', tirador: 'oro', suelo: 'roble', pared: 'blanca' },
-  { nombre: 'Industrial', bajos: 'antracita', altos: 'roble', encimera: 'negra-veteada', tirador: 'negro', suelo: 'cemento', pared: 'gris' },
-  { nombre: 'Greige', bajos: 'vison', altos: 'vison', encimera: 'blanca', tirador: 'inox', suelo: 'porcelanico', pared: 'calida' },
-  { nombre: 'Rústica cálida', bajos: 'nogal', altos: 'hueso', encimera: 'piedra', tirador: 'bronce', suelo: 'barro', pared: 'calida' },
-  { nombre: 'Blanca total', bajos: 'blanco', altos: 'blanco', encimera: 'negra-veteada', tirador: 'gola', suelo: 'roble', pared: 'blanca' },
-  { nombre: 'Mediterránea', bajos: 'terracota', altos: 'blanco-roto', encimera: 'blanca', tirador: 'madera', suelo: 'porcelanico', pared: 'blanca' },
-  { nombre: 'Gris y madera', bajos: 'plomo', altos: 'gris-perla', encimera: 'roble-macizo', tirador: 'gola', suelo: 'porcelanico', pared: 'gris' },
+  { nombre: 'Blanco y roble', dist: 'lineal', puerta: 'lisa', electro: 'inox', trasera: 'azulejo-blanco', bajos: 'roble', altos: 'blanco', encimera: 'piedra', tirador: 'negro', suelo: 'porcelanico', pared: 'blanca' },
+  { nombre: 'Nórdica', dist: 'isla', puerta: 'lisa', electro: 'blanco', trasera: 'azulejo-blanco', bajos: 'blanco', altos: 'blanco', encimera: 'roble-macizo', tirador: 'madera', suelo: 'roble-claro', pared: 'blanca' },
+  { nombre: 'Japandi', dist: 'lineal', puerta: 'ranurada', electro: 'negro', trasera: 'encimera', bajos: 'roble-claro', altos: 'cachemir', encimera: 'negra', tirador: 'unero', suelo: 'porcelanico', pared: 'calida' },
+  { nombre: 'Negro y madera', dist: 'isla', puerta: 'lisa', electro: 'negro', trasera: 'encimera', bajos: 'negro', altos: 'roble-claro', encimera: 'marmol', tirador: 'gola', suelo: 'roble-claro', pared: 'blanca' },
+  { nombre: 'Verde salvia y oro', dist: 'L', puerta: 'moldura', electro: 'inox', trasera: 'azulejo-blanco', bajos: 'salvia', altos: 'blanco-roto', encimera: 'calacatta', tirador: 'oro', suelo: 'roble', pared: 'calida' },
+  { nombre: 'Azul marino clásica', dist: 'peninsula', puerta: 'moldura', electro: 'inox', trasera: 'encimera', bajos: 'marino', altos: 'blanco', encimera: 'marmol', tirador: 'oro', suelo: 'roble', pared: 'blanca' },
+  { nombre: 'Industrial', dist: 'L', puerta: 'lisa', electro: 'negro', trasera: 'pared', bajos: 'antracita', altos: 'roble', encimera: 'negra-veteada', tirador: 'negro', suelo: 'cemento', pared: 'gris' },
+  { nombre: 'Greige', dist: 'peninsula', puerta: 'lisa', electro: 'inox', trasera: 'pared', bajos: 'vison', altos: 'vison', encimera: 'blanca', tirador: 'inox', suelo: 'porcelanico', pared: 'calida' },
+  { nombre: 'Rústica cálida', dist: 'L', puerta: 'moldura', electro: 'negro', trasera: 'azulejo-terracota', bajos: 'nogal', altos: 'hueso', encimera: 'piedra', tirador: 'bronce', suelo: 'barro', pared: 'calida' },
+  { nombre: 'Blanca total', dist: 'isla', puerta: 'lisa', electro: 'negro', trasera: 'encimera', bajos: 'blanco', altos: 'blanco', encimera: 'negra-veteada', tirador: 'gola', suelo: 'roble', pared: 'blanca' },
+  { nombre: 'Mediterránea', dist: 'lineal', puerta: 'ranurada', electro: 'blanco', trasera: 'azulejo-verde', bajos: 'terracota', altos: 'blanco-roto', encimera: 'blanca', tirador: 'madera', suelo: 'porcelanico', pared: 'blanca' },
+  { nombre: 'Gris y madera', dist: 'peninsula', puerta: 'lisa', electro: 'inox', trasera: 'pared', bajos: 'plomo', altos: 'gris-perla', encimera: 'roble-macizo', tirador: 'gola', suelo: 'porcelanico', pared: 'gris' },
 ];
 
 // ── Puntuación ──
@@ -88,7 +122,7 @@ const madera = (f) => /^madera/.test(f);
 const fuerte = (f) => ['verde', 'azul', 'terracota'].includes(f);
 const oscuro = (x) => x.tono === 3;
 
-export function puntuar({ bajos: b, altos: al, encimera: e, tirador: t, suelo: s }) {
+export function puntuar({ bajos: b, altos: al, encimera: e, tirador: t, suelo: s, puerta: pu, electro: el, trasera: tr, dist: di }) {
   let p = 62; const bien = [], ojo = [];
   const lb = luz(b.hex), la = luz(al.hex), le = luz(e.hex), ls = luz(s.hex);
   const mismoFrente = b.clave === al.clave;
@@ -135,18 +169,39 @@ export function puntuar({ bajos: b, altos: al, encimera: e, tirador: t, suelo: s
   if (t.clave === 'inox' && madera(b.fam) && b.tono === 3) { p -= 3; ojo.push('El inox se ve frío sobre madera oscura; prueba negro o bronce.'); }
   if (t.clave === 'madera' && madera(b.fam)) { p -= 4; ojo.push('Tirador de madera sobre frente de madera: se pierde.'); }
 
+  // Modelo de puerta
+  if (pu?.clave === 'moldura') {
+    if (t.tipo !== 'barra') { p -= 6; ojo.push('Las puertas con moldura piden tirador; la gola y el uñero son para puertas lisas.'); }
+    else if (['oro', 'bronce'].includes(t.fam) && [b, al].some((x) => ['blanco', 'crema', 'verde', 'azul'].includes(x.fam))) { p += 5; bien.push('Moldura y tirador dorado: un clásico que no falla.'); }
+    if ([b, al].every((x) => madera(x.fam) || x.fam === 'negro')) { p -= 3; ojo.push('La moldura luce más lacada en color que en madera o negro.'); }
+  }
+  if (pu?.clave === 'ranurada' && [b, al].some((x) => madera(x.fam) || x.fam === 'crema' || x.fam === 'verde')) { p += 4; bien.push('Las ranuras verticales con madera, crema o verde dan un aire japandi muy actual.'); }
+  // Electrodomésticos (van en la columna, que es del color de los altos)
+  if (el?.clave === 'negro' && oscuro(al)) { p += 4; bien.push('Electrodomésticos negros en una columna oscura: quedan integrados.'); }
+  else if (el?.clave === 'blanco' && al.tono === 1 && !madera(al.fam)) { p += 3; bien.push('Electrodomésticos blancos en una columna clara: casi desaparecen.'); }
+  else if (el?.clave === 'blanco' && oscuro(al)) { p -= 4; ojo.push('Electrodomésticos blancos en una columna oscura: llaman mucho la atención.'); }
+  // Pared entre muebles
+  if (tr?.tipo === 'encimera' && !madera(e.fam)) { p += 4; bien.push('La encimera subida a la pared da continuidad y se limpia de una pasada.'); }
+  if (tr?.tipo === 'azulejo' && tr.clave !== 'azulejo-blanco') {
+    if (colores.size) { p -= 6; ojo.push('Azulejo de color con muebles de color: demasiado. Uno de los dos, neutro.'); }
+    else { p += 4; bien.push(`El ${tr.nombre.toLowerCase()} da personalidad a una cocina de colores neutros.`); }
+  }
+  if (di?.clave === 'isla') bien.push('Con isla ganas encimera y sitio para comer; pide al menos 90 cm de paso alrededor.');
+
   // Demasiado oscuro
   if ([b, al, e].filter(oscuro).length === 3) { p -= 12; ojo.push('Muebles y encimera oscuros: queda muy cerrada salvo en cocinas grandes y con mucha luz.'); }
 
   p = Math.max(38, Math.min(99, Math.round(p)));
   const veredicto = p >= 90 ? '¡De revista!' : p >= 78 ? 'Combina muy bien' : p >= 64 ? 'Funciona, con matices' : 'Arriesgada';
-  return { puntos: p, veredicto, bien, ojo, estilo: estilo({ b, al, e, t, s }) };
+  return { puntos: p, veredicto, bien, ojo, estilo: estilo({ b, al, e, t, s, pu }) };
 }
 const claro = (x) => x.tono === 1 && !fuerte(x.fam);
 
-function estilo({ b, al, e, t, s }) {
+function estilo({ b, al, e, t, s, pu }) {
   const fams = [b.fam, al.fam];
   const hay = (f) => fams.includes(f);
+  if (pu?.clave === 'ranurada' && [b, al].some((x) => madera(x.fam))) return 'japandi';
+  if (pu?.clave === 'moldura' && (hay('crema') || hay('blanco') || hay('verde') || hay('azul'))) return 'clásico';
   if (fams.some((f) => f === 'madera_clara') && t.tipo === 'unero') return 'japandi';
   if ((hay('oscuro') || hay('negro')) && [b, al, e].some((x) => madera(x.fam)) && t.tipo === 'barra') return 'industrial';
   if (['oro', 'bronce'].includes(t.fam) && (hay('verde') || hay('azul') || hay('crema'))) return 'clásico';

@@ -1,124 +1,58 @@
 ---
-// Juego «Combina tu cocina»: el visitante elige colores, ve su cocina y le decimos si combinan y por qué.
+// Juego «Combina tu cocina»: el visitante elige distribución, colores y acabados, ve su cocina en perspectiva
+// (de día o de noche) y le decimos si combina y por qué. Puede guardar 3 favoritas, descargar la imagen y mandarla al taller.
 import Base from '../../layouts/Base.astro';
 import { r, EMPRESA } from '../../lib/sitio.js';
-import { FRENTES, ENCIMERAS, TIRADORES, SUELOS, PAREDES, INICIAL, puntuar } from '../../datos/combina.js';
+import { LISTAS, INICIAL, puntuar, estiloVars } from '../../datos/combina.js';
+import { svgCocina, VISTA } from '../../scripts/cocina-dibujo.js';
 
-const buscar = (l, k) => l.find((x) => x.clave === k);
-const ini = { bajos: buscar(FRENTES, INICIAL.bajos), altos: buscar(FRENTES, INICIAL.altos), encimera: buscar(ENCIMERAS, INICIAL.encimera), tirador: buscar(TIRADORES, INICIAL.tirador), suelo: buscar(SUELOS, INICIAL.suelo), pared: buscar(PAREDES, INICIAL.pared) };
+const L = LISTAS();
+const ini = Object.fromEntries(Object.entries(INICIAL).map(([k, v]) => [k, L[k].find((x) => x.clave === v)]));
 const nota = puntuar(ini);
-const v = (x, dib) => (x.dibujo === dib ? 1 : 0);
-const estiloSvg = `--bajos:${ini.bajos.hex};--altos:${ini.altos.hex};--enc:${ini.encimera.hex};--tir:${ini.tirador.hex};--suelo:${ini.suelo.hex};--pared:${ini.pared.hex};--v-bajos:${v(ini.bajos, 'veta')};--v-altos:${v(ini.altos, 'veta')};--v-enc:${v(ini.encimera, 'veta')};--m-enc:${v(ini.encimera, 'marmol')};--mn-enc:${v(ini.encimera, 'marmolN')};--v-tablas:${v(ini.suelo, 'tablas')};--v-baldosa:${v(ini.suelo, 'baldosa')}`;
 
-// Dibujo (alzado de 1000 × 620). h: dónde va el tirador · hz arriba en horizontal · vr/vl vertical arriba a la derecha/izquierda · vrb/vlb vertical abajo
-const altos = [[230, 95, 145, 150, 'vrb'], [375, 95, 145, 150, 'vlb'], [660, 95, 135, 150, 'vrb'], [795, 95, 135, 150, 'vlb']];
-const columna = [[70, 95, 160, 150, 'vrb'], [70, 245, 160, 155, ''], [70, 400, 160, 66, 'vr']];
-const bajos = [[230, 378, 150, 26, 'hz'], [230, 404, 150, 31, 'hz'], [230, 435, 150, 31, 'hz'], [380, 378, 70, 88, 'vr'], [450, 378, 70, 88, 'vl'],
-  [520, 378, 140, 36, 'hz'], [520, 414, 140, 52, 'hz'], [660, 378, 70, 88, 'vr'], [730, 378, 70, 88, 'vl'], [800, 378, 130, 44, 'hz'], [800, 422, 130, 44, 'hz']];
-const tirador = ([x, y, w, h, t]) => {
-  if (t === 'hz') { const a = Math.min(64, w * 0.42); return { x: x + (w - a) / 2, y: y + 8, w: a, h: 4.5 }; }
-  if (t === 'vr') return { x: x + w - 11, y: y + 9, w: 4.5, h: 34 };
-  if (t === 'vl') return { x: x + 6.5, y: y + 9, w: 4.5, h: 34 };
-  if (t === 'vrb') return { x: x + w - 11, y: y + h - 46, w: 4.5, h: 36 };
-  if (t === 'vlb') return { x: x + 6.5, y: y + h - 46, w: 4.5, h: 36 };
-  return null;
+// Iconos para lo que no es un color
+const ICONOS = {
+  lineal: '<rect x="5" y="8" width="30" height="8" rx="1"/>',
+  L: '<rect x="5" y="8" width="30" height="8" rx="1"/><rect x="5" y="8" width="8" height="25" rx="1"/>',
+  isla: '<rect x="5" y="8" width="30" height="8" rx="1"/><rect x="11" y="24" width="18" height="8" rx="1"/>',
+  peninsula: '<rect x="5" y="8" width="30" height="8" rx="1"/><rect x="27" y="8" width="8" height="25" rx="1"/>',
+  lisa: '<rect x="11" y="5" width="18" height="30" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="24" y="9" width="2" height="8"/>',
+  moldura: '<rect x="11" y="5" width="18" height="30" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="15" y="9" width="10" height="22" fill="none" stroke="currentColor" stroke-width="1.4"/>',
+  ranurada: '<rect x="11" y="5" width="18" height="30" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 7v26M19 7v26M23 7v26" stroke="currentColor" stroke-width="1.2"/>',
 };
 const grupos = [
-  { id: 'bajos', titulo: 'Muebles bajos', lista: FRENTES },
-  { id: 'altos', titulo: 'Muebles altos y columna', lista: FRENTES },
-  { id: 'encimera', titulo: 'Encimera', lista: ENCIMERAS },
-  { id: 'tirador', titulo: 'Tiradores', lista: TIRADORES },
-  { id: 'suelo', titulo: 'Suelo', lista: SUELOS },
-  { id: 'pared', titulo: 'Pared', lista: PAREDES },
+  { id: 'dist', titulo: 'Distribución', icono: true },
+  { id: 'bajos', titulo: 'Muebles bajos' },
+  { id: 'altos', titulo: 'Muebles altos y columna' },
+  { id: 'puerta', titulo: 'Modelo de puerta', icono: true },
+  { id: 'encimera', titulo: 'Encimera' },
+  { id: 'tirador', titulo: 'Tiradores' },
+  { id: 'trasera', titulo: 'Pared entre muebles' },
+  { id: 'electro', titulo: 'Electrodomésticos' },
+  { id: 'suelo', titulo: 'Suelo' },
+  { id: 'pared', titulo: 'Pared' },
 ];
+const claseMuestra = (g, x) => [g.icono ? 'icono' : '', x.dibujo || '', x.tipo && g.id === 'tirador' ? 't-' + x.tipo : '', g.id === 'trasera' ? 'tr-' + x.tipo : ''].filter(Boolean).join(' ');
 const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Combina tu cocina', applicationCategory: 'DesignApplication', operatingSystem: 'Navegador web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' }, provider: { '@type': 'Organization', name: EMPRESA.nombre } };
 ---
-<Base titulo="Combina los colores de tu cocina" descripcion="Juega a combinar los colores de tu cocina: muebles, encimera, tiradores y suelo. Te decimos al momento si combinan y por qué. Por Muebles Carrascosa, cocinas a medida en Jaén." schema={schema}>
+<Base titulo="Combina los colores de tu cocina" descripcion="Juega a combinar tu cocina: distribución, muebles, puertas, encimera, tiradores y suelo, de día y de noche. Te decimos al momento si combina y por qué. Por Muebles Carrascosa, cocinas a medida en Jaén." schema={schema}>
   <header class="cabeza-pagina ancho" data-entra>
     <span class="etiqueta">Juego · Combina tu cocina</span>
     <h1>¿Combinan tus colores?</h1>
-    <p class="entradilla">Elige los muebles, la encimera, los tiradores y el suelo. Verás tu cocina al momento y te diremos si combina y por qué, como lo haríamos en el taller.</p>
+    <p class="entradilla">Elige la forma de tu cocina, los muebles, las puertas, la encimera y el suelo. La verás al momento, de día y de noche, y te diremos si combina y por qué, como lo haríamos en el taller.</p>
   </header>
 
   <section class="ancho combina" id="combina">
     <div class="combina-vista">
-      <svg class="cocina" viewBox="0 0 1000 620" role="img" aria-label="Dibujo de la cocina con los colores elegidos" style={estiloSvg} data-tirador={ini.tirador.tipo}>
-        <defs>
-          <pattern id="veta" width="46" height="180" patternUnits="userSpaceOnUse">
-            <path d="M6 0c3 40-3 80 1 120s-2 50 0 60M18 0c-2 30 4 70 0 100s3 60 1 80M31 0c3 50-4 90 0 130s-1 40 1 50M41 0c-1 45 3 75-1 110s2 55 0 70" fill="none" stroke="#3b2414" stroke-opacity=".22" stroke-width="1.1" />
-            <ellipse cx="25" cy="95" rx="2.5" ry="9" fill="#3b2414" fill-opacity=".16" />
-          </pattern>
-          <pattern id="vetaH" width="220" height="18" patternUnits="userSpaceOnUse">
-            <path d="M0 4c50 3 110-2 220 1M0 10c70-3 140 3 220-1M0 15c60 2 120-2 220 1" fill="none" stroke="#3b2414" stroke-opacity=".25" stroke-width="1" />
-          </pattern>
-          <pattern id="marmol" width="260" height="18" patternUnits="userSpaceOnUse">
-            <path d="M0 12c30-6 50 4 80-3s60-8 90 2 60 0 90-5M40 0c10 8 30 10 45 18M170 18c15-6 40-14 60-18" fill="none" stroke="#8a8a8a" stroke-opacity=".45" stroke-width=".9" />
-          </pattern>
-          <pattern id="marmolN" width="260" height="18" patternUnits="userSpaceOnUse">
-            <path d="M0 12c30-6 50 4 80-3s60-8 90 2 60 0 90-5M40 0c10 8 30 10 45 18M170 18c15-6 40-14 60-18" fill="none" stroke="#d9c7a3" stroke-opacity=".55" stroke-width=".9" />
-          </pattern>
-          <pattern id="tablas" width="240" height="140" patternUnits="userSpaceOnUse">
-            <path d="M0 35h240M0 70h240M0 105h240M60 0v35M180 0v35M120 35v35M20 70v35M150 70v35M90 105v35M210 105v35" stroke="#2a1a0e" stroke-opacity=".28" stroke-width="1.2" />
-          </pattern>
-          <pattern id="baldosa" width="120" height="70" patternUnits="userSpaceOnUse">
-            <path d="M0 0h120M0 0v70" stroke="#000" stroke-opacity=".16" stroke-width="1.5" />
-          </pattern>
-          <linearGradient id="luzLed" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3d6" stop-opacity=".75" /><stop offset="1" stop-color="#fff3d6" stop-opacity="0" /></linearGradient>
-          <linearGradient id="sombraSuelo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".35" /><stop offset=".25" stop-color="#000" stop-opacity=".05" /><stop offset="1" stop-color="#000" stop-opacity=".3" /></linearGradient>
-          <radialGradient id="ambiente" cx=".45" cy=".35" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".12" /><stop offset=".6" stop-color="#000" stop-opacity="0" /><stop offset="1" stop-color="#000" stop-opacity=".3" /></radialGradient>
-          <linearGradient id="brillo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16" /><stop offset=".5" stop-color="#fff" stop-opacity="0" /><stop offset="1" stop-color="#000" stop-opacity=".1" /></linearGradient>
-          <linearGradient id="cristal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a3d42" /><stop offset=".5" stop-color="#121315" /><stop offset="1" stop-color="#26282c" /></linearGradient>
-        </defs>
-
-        <rect class="pared" width="1000" height="480" />
-        <rect class="suelo" y="480" width="1000" height="140" />
-        <rect y="480" width="1000" height="140" fill="url(#tablas)" class="dibujo" style="opacity:var(--v-tablas)" />
-        <rect y="480" width="1000" height="140" fill="url(#baldosa)" class="dibujo" style="opacity:var(--v-baldosa)" />
-        <rect y="480" width="1000" height="140" fill="url(#sombraSuelo)" />
-        <ellipse cx="500" cy="482" rx="470" ry="8" fill="#000" opacity=".35" />
-
-        <!-- Campana -->
-        <rect x="574" y="0" width="52" height="172" fill="#b9bcbf" /><rect x="574" y="0" width="14" height="172" fill="#fff" opacity=".18" />
-        <path d="M528 216h144l-28-46h-88z" fill="#c4c7ca" /><path d="M528 216h144v6H528z" fill="#8d9195" />
-        <!-- Luz bajo los muebles altos -->
-        <rect x="230" y="245" width="700" height="60" fill="url(#luzLed)" />
-
-        <!-- Muebles altos y columna -->
-        <g class="altos">{[...altos, ...columna].map(([x, y, w, h]) => <rect x={x} y={y} width={w} height={h} />)}</g>
-        <g class="dibujo" style="opacity:var(--v-altos)">{[...altos, ...columna].map(([x, y, w, h]) => <rect x={x} y={y} width={w} height={h} fill="url(#veta)" />)}</g>
-        <g class="juntas">{[...altos, ...columna].map(([x, y, w, h]) => <rect x={x} y={y} width={w} height={h} />)}</g>
-        <!-- Microondas y horno -->
-        <rect x="84" y="254" width="132" height="50" rx="3" fill="url(#cristal)" /><rect x="184" y="262" width="24" height="34" rx="2" fill="#2e3034" /><rect x="88" y="258" width="88" height="42" rx="2" fill="#000" opacity=".5" />
-        <rect x="84" y="312" width="132" height="80" rx="3" fill="url(#cristal)" /><rect x="84" y="312" width="132" height="14" fill="#2e3034" /><rect x="98" y="333" width="104" height="50" rx="3" fill="#000" opacity=".55" /><rect x="110" y="318" width="80" height="3" rx="1.5" fill="#9aa0a6" />
-
-        <!-- Encimera -->
-        <rect class="encimera" x="222" y="360" width="716" height="18" />
-        <rect x="222" y="360" width="716" height="18" fill="url(#vetaH)" class="dibujo" style="opacity:var(--v-enc)" />
-        <rect x="222" y="360" width="716" height="18" fill="url(#marmol)" class="dibujo" style="opacity:var(--m-enc)" />
-        <rect x="222" y="360" width="716" height="18" fill="url(#marmolN)" class="dibujo" style="opacity:var(--mn-enc)" />
-        <rect x="222" y="360" width="716" height="3" fill="#fff" opacity=".18" />
-        <!-- Placa, fregadero y grifo -->
-        <rect x="548" y="356" width="104" height="4" rx="1" fill="#0d0d0e" />
-        <rect x="702" y="357" width="78" height="3" rx="1" fill="#6d7175" />
-        <path d="M762 358V322q0-12-12-12h-12" fill="none" stroke="#a3a8ad" stroke-width="5" stroke-linecap="round" />
-        <!-- Planta -->
-        <g><path d="M893 334c-14-20-30-22-36-34 16 2 30 14 36 28 2-18 10-34 24-40-4 16-10 30-16 42 10-10 24-14 34-12-12 6-24 12-36 18z" fill="#5d7a4f" /><rect x="880" y="332" width="28" height="28" rx="4" fill="#ddd7cc" /></g>
-
-        <!-- Muebles bajos -->
-        <g class="bajos">{bajos.map(([x, y, w, h]) => <rect x={x} y={y} width={w} height={h} />)}<rect x="230" y="466" width="700" height="14" /><rect x="70" y="466" width="160" height="14" class="col-zocalo" /></g>
-        <g class="dibujo" style="opacity:var(--v-bajos)">{bajos.map(([x, y, w, h]) => <rect x={x} y={y} width={w} height={h} fill="url(#veta)" />)}</g>
-        <g class="juntas">{bajos.map(([x, y, w, h]) => <rect x={x} y={y} width={w} height={h} />)}</g>
-        <rect x="70" y="466" width="860" height="14" fill="#000" opacity=".42" />
-
-        <!-- Tiradores: a la vista, gola o uñero -->
-        <g class="t-barra">{[...altos, ...columna, ...bajos].map((p) => tirador(p)).filter(Boolean).map((t) => <rect class="tirador" x={t.x} y={t.y} width={t.w} height={t.h} rx="2" />)}</g>
-        <g class="t-gola"><rect class="tirador" x="230" y="378" width="700" height="8" /><rect x="230" y="378" width="700" height="3" fill="#000" opacity=".35" /><rect class="tirador" x="70" y="398" width="160" height="7" /><rect class="tirador" x="230" y="404" width="150" height="5" /><rect class="tirador" x="230" y="435" width="150" height="5" /><rect class="tirador" x="520" y="414" width="140" height="6" /><rect class="tirador" x="800" y="422" width="130" height="6" /></g>
-        <g class="t-unero">{[...bajos, [70, 400, 160, 66]].map(([x, y, w]) => <rect x={x + 2} y={y} width={w - 4} height="5" />)}{[...altos, [70, 95, 160, 150]].map(([x, y, w, h]) => <rect x={x + 2} y={y + h - 5} width={w - 4} height="5" />)}</g>
-
-        <rect width="1000" height="620" fill="url(#ambiente)" pointer-events="none" />
-        <rect x="70" y="95" width="860" height="385" fill="url(#brillo)" pointer-events="none" />
-      </svg>
+      <div class="lienzo">
+        <svg class="cocina" viewBox={VISTA} role="img" aria-label="Dibujo de la cocina con lo elegido" style={estiloVars(ini)} data-tirador={ini.tirador.tipo} data-luz="dia" data-dibujo={`${INICIAL.dist}|${INICIAL.puerta}`} set:html={svgCocina({ dist: INICIAL.dist, puerta: INICIAL.puerta })} />
+        <button class="boton-luz" type="button" aria-pressed="false" aria-label="Ver la cocina de noche, con las luces encendidas">
+          <svg class="sol" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+          <svg class="luna" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="currentColor" /></svg>
+          <span>Noche</span>
+        </button>
+      </div>
 
       <div class="nota" aria-live="polite">
         <div class="anillo">
@@ -139,12 +73,14 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       {grupos.map((g) => (
         <fieldset class="muestras" data-grupo={g.id}>
           <legend>{g.titulo} <span class="elegido">{ini[g.id].nombre}</span></legend>
-          <div class="lista-muestras">
-            {g.lista.map((x) => (
+          <div class={`lista-muestras${g.icono ? ' con-iconos' : ''}`}>
+            {L[g.id].map((x) => (
               <label title={x.nombre}>
                 <input type="radio" name={g.id} value={x.clave} checked={ini[g.id].clave === x.clave} />
-                <span class={`muestra ${x.dibujo || ''} ${x.tipo ? 't-' + x.tipo : ''}`} style={`--c:${x.hex}`}></span>
-                <span class="nombre-muestra">{x.nombre}</span>
+                {g.icono
+                  ? <span class={`muestra ${claseMuestra(g, x)}`}><svg viewBox="0 0 40 40" aria-hidden="true" set:html={ICONOS[x.clave]} /></span>
+                  : <span class={`muestra ${claseMuestra(g, x)}`} style={x.hex ? `--c:${x.hex}` : undefined}></span>}
+                <span class={g.icono ? 'texto-muestra' : 'nombre-muestra'}>{x.nombre}</span>
               </label>
             ))}
           </div>
@@ -152,11 +88,21 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       ))}
       <div class="botones combina-botones">
         <button class="boton contorno" type="button" data-accion="inspirame">✦ Inspírame</button>
+        <button class="boton contorno" type="button" data-accion="guardar">♡ Guardar</button>
+        <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
         <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
         <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándasela al taller</a>
       </div>
       <p class="aviso-colores">Los colores son orientativos: la pantalla no reproduce bien la madera ni las texturas. En el taller te enseñamos las muestras reales.</p>
     </div>
+  </section>
+
+  <section class="ancho favoritas" id="favoritas" hidden>
+    <div class="favoritas-cabeza">
+      <h2>Tus cocinas</h2>
+      <p class="suave">Guarda hasta 3 y compáralas. Se quedan en este navegador.</p>
+    </div>
+    <div class="favoritas-lista"></div>
   </section>
 
   <article class="contenido consejos-color">
@@ -165,14 +111,14 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     <h3>1. Claro arriba, más oscuro abajo</h3>
     <p>Los muebles altos claros y los bajos más oscuros hacen que la cocina parezca más alta y más amplia. Al revés, los altos oscuros «se te echan encima», sobre todo en cocinas pequeñas.</p>
     <h3>2. La encimera tiene que contrastar</h3>
-    <p>Si la encimera es del mismo tono que los muebles bajos, la cocina se ve plana. Una encimera clara con bajos oscuros (o al revés) marca la zona de trabajo y da profundidad.</p>
+    <p>Si la encimera es del mismo tono que los muebles bajos, la cocina se ve plana. Una encimera clara con bajos oscuros (o al revés) marca la zona de trabajo y da profundidad. Y si la subes a la pared entre los muebles, la cocina gana continuidad y se limpia mejor.</p>
     <h3>3. Una sola madera</h3>
     <p>Dos maderas parecidas pero distintas compiten entre sí. Elige una y repítela, o combina dos muy diferentes, como roble claro con nogal. Ojo también con el suelo: unos bajos del mismo tono que la tarima se pierden.</p>
     <h3>4. Un solo color con carácter</h3>
-    <p>Verde salvia, azul marino o terracota lucen mucho si van solos y acompañados de blanco, crema o madera. Dos colores fuertes a la vez cansan pronto.</p>
-    <h3>5. Los tiradores también cuentan</h3>
-    <p>El negro va con todo. El oro y el bronce lucen sobre verdes, azules, cremas y negro, pero quedan raros con grises fríos. Y la gola o el uñero, sin tiradores a la vista, dan líneas limpias.</p>
-    <p>¿Quieres verlo con tus medidas? <a href={r('/disenos-3d/')}>Te diseñamos la cocina en 3D</a> con los colores que elijas antes de fabricarla, y puedes ver <a href={r('/cocinas/')}>cocinas que ya hemos hecho</a>.</p>
+    <p>Verde salvia, azul marino o terracota lucen mucho si van solos y acompañados de blanco, crema o madera. Dos colores fuertes a la vez cansan pronto; tampoco conviene juntar muebles de color con un azulejo de color.</p>
+    <h3>5. Puertas y tiradores van de la mano</h3>
+    <p>El negro va con todo. El oro y el bronce lucen sobre verdes, azules, cremas y negro, sobre todo con puertas de moldura, que piden tirador. La gola o el uñero, sin tiradores a la vista, son para puertas lisas. Y las puertas ranuradas en madera dan un aire japandi muy actual.</p>
+    <p>¿Quieres verlo con tus medidas? <a href={r('/disenos-3d/')}>Te diseñamos la cocina en 3D</a> con los colores que elijas antes de fabricarla, y puedes ver <a href={r('/cocinas/')}>cocinas que ya hemos hecho</a>. ¿Dudas con las medidas? <a href={r('/preguntas-frecuentes/')}>Pregúntanos</a>.</p>
   </article>
 
   <section class="seccion claro cierre">
@@ -184,17 +130,19 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   </section>
 
   <script>
-    import { FRENTES, ENCIMERAS, TIRADORES, SUELOS, PAREDES, INICIAL, PROPUESTAS, puntuar } from '../../datos/combina.js';
-    const listas = { bajos: FRENTES, altos: FRENTES, encimera: ENCIMERAS, tirador: TIRADORES, suelo: SUELOS, pared: PAREDES };
+    import { LISTAS, INICIAL, PROPUESTAS, puntuar, variables, estiloVars } from '../../datos/combina.js';
+    import { svgCocina, VISTA } from '../../scripts/cocina-dibujo.js';
+    const listas = LISTAS();
     const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
     const svg = $('svg.cocina'), raiz = $('#combina');
     const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let estado = { ...INICIAL }, mostrado = null;
+    const CLAVE = 'combina_favoritas_v1';
+    let estado = { ...INICIAL }, mostrado = null, noche = false;
 
-    // Lo elegido viaja en el enlace (#bajos=…&altos=…) para poder compartirlo
-    const deEnlace = () => { const p = new URLSearchParams(location.hash.slice(1)); Object.keys(listas).forEach((k) => { if (listas[k].some((x) => x.clave === p.get(k))) estado[k] = p.get(k); }); };
-    const aEnlace = () => history.replaceState(null, '', '#' + new URLSearchParams(estado).toString());
-    const elegidos = () => Object.fromEntries(Object.entries(estado).map(([k, v]) => [k, listas[k].find((x) => x.clave === v)]));
+    const deEnlace = () => { const p = new URLSearchParams(location.hash.slice(1)); Object.keys(listas).forEach((k) => { if (listas[k].some((x) => x.clave === p.get(k))) estado[k] = p.get(k); }); if (p.get('luz') === 'noche') noche = true; };
+    const aEnlace = () => history.replaceState(null, '', '#' + new URLSearchParams({ ...estado, ...(noche ? { luz: 'noche' } : {}) }).toString());
+    const elegidos = (e = estado) => Object.fromEntries(Object.entries(e).filter(([k]) => listas[k]).map(([k, v]) => [k, listas[k].find((x) => x.clave === v) || listas[k].find((x) => x.clave === INICIAL[k])]));
+    const resumen = (e) => `${e.dist.nombre} · Bajos: ${e.bajos.nombre} · Altos: ${e.altos.nombre} · Puertas: ${e.puerta.nombre.toLowerCase()} · Encimera: ${e.encimera.nombre} · Tiradores: ${e.tirador.nombre} · Pared: ${e.trasera.nombre.toLowerCase()} · Electrodomésticos: ${e.electro.nombre.toLowerCase()} · Suelo: ${e.suelo.nombre}`;
 
     const contar = (el, de, a) => {
       if (quieto || de == null) { el.textContent = a; return; }
@@ -204,13 +152,16 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     };
 
     function pintar(animar = true) {
-      const e = elegidos(), v = (x, d) => (x.dibujo === d ? 1 : 0), s = svg.style;
-      s.setProperty('--bajos', e.bajos.hex); s.setProperty('--altos', e.altos.hex); s.setProperty('--enc', e.encimera.hex); s.setProperty('--tir', e.tirador.hex);
-      s.setProperty('--suelo', e.suelo.hex); s.setProperty('--pared', e.pared.hex);
-      s.setProperty('--v-bajos', v(e.bajos, 'veta')); s.setProperty('--v-altos', v(e.altos, 'veta')); s.setProperty('--v-enc', v(e.encimera, 'veta'));
-      s.setProperty('--m-enc', v(e.encimera, 'marmol')); s.setProperty('--mn-enc', v(e.encimera, 'marmolN'));
-      s.setProperty('--v-tablas', v(e.suelo, 'tablas')); s.setProperty('--v-baldosa', v(e.suelo, 'baldosa'));
-      svg.dataset.tirador = e.tirador.tipo;
+      const e = elegidos();
+      // La forma solo se vuelve a dibujar si cambia la distribución o la puerta; los colores cambian con fundido
+      const clave = `${estado.dist}|${estado.puerta}`;
+      if (svg.dataset.dibujo !== clave) {
+        svg.innerHTML = svgCocina({ dist: estado.dist, puerta: estado.puerta }); svg.dataset.dibujo = clave;
+        if (!quieto) { svg.classList.remove('redibujo'); void svg.getBoundingClientRect(); svg.classList.add('redibujo'); }
+      }
+      Object.entries(variables(e)).forEach(([k, v]) => svg.style.setProperty(k, v));
+      svg.dataset.tirador = e.tirador.tipo; svg.dataset.luz = noche ? 'noche' : 'dia';
+      const bl = $('.boton-luz'); bl.setAttribute('aria-pressed', String(noche)); $('span', bl).textContent = noche ? 'Día' : 'Noche';
       $$('fieldset[data-grupo]').forEach((f) => { const k = f.dataset.grupo; $('.elegido', f).textContent = e[k].nombre; const i = $(`input[value="${estado[k]}"]`, f); if (i) i.checked = true; });
 
       const n = puntuar(e);
@@ -220,34 +171,104 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       $('.veredicto').textContent = n.veredicto; $('.estilo span').textContent = n.estilo;
       $('.motivos').innerHTML = [...n.bien.map((t) => `<li class="bien">${t}</li>`), ...n.ojo.map((t) => `<li class="ojo">${t}</li>`)].join('');
       if (animar && !quieto) { raiz.classList.remove('cambio'); void raiz.offsetWidth; raiz.classList.add('cambio'); }
-
-      const resumen = `Bajos: ${e.bajos.nombre} · Altos: ${e.altos.nombre} · Encimera: ${e.encimera.nombre} · Tiradores: ${e.tirador.nombre} · Suelo: ${e.suelo.nombre}`;
-      $('[data-accion="whatsapp"]').href = 'https://wa.me/34653451270?text=' + encodeURIComponent(`Hola, he combinado mi cocina en vuestra web y me gusta así:\n${resumen}\n(${n.puntos}/100, estilo ${n.estilo})\n${location.href}`);
+      $('[data-accion="whatsapp"]').href = 'https://wa.me/34653451270?text=' + encodeURIComponent(`Hola, he combinado mi cocina en vuestra web y me gusta así:\n${resumen(e)}\n(${n.puntos}/100, estilo ${n.estilo})\n${location.href}`);
+      return n;
     }
 
-    raiz.addEventListener('change', (ev) => { const i = ev.target; if (i.type !== 'radio') return; estado[i.name] = i.value; aEnlace(); pintar(); });
+    raiz.addEventListener('change', (ev) => { const i = ev.target; if (i.type !== 'radio' || !listas[i.name]) return; estado[i.name] = i.value; aEnlace(); pintar(); });
+    $('.boton-luz').addEventListener('click', () => { noche = !noche; aEnlace(); pintar(false); });
 
+    // Inspírame: la cocina se monta pieza a pieza
     let ultima = -1;
     $('[data-accion="inspirame"]').addEventListener('click', () => {
       let n; do { n = Math.floor(Math.random() * PROPUESTAS.length); } while (n === ultima && PROPUESTAS.length > 1); ultima = n;
       const { nombre, ...destino } = PROPUESTAS[n];
-      // Los colores van cambiando uno detrás de otro, como si se montara la cocina
-      const orden = ['pared', 'suelo', 'bajos', 'encimera', 'altos', 'tirador'];
+      const orden = ['dist', 'pared', 'suelo', 'bajos', 'puerta', 'encimera', 'trasera', 'altos', 'electro', 'tirador'];
       if (quieto) { estado = { ...estado, ...destino }; aEnlace(); pintar(); return; }
-      orden.forEach((k, i) => setTimeout(() => { estado[k] = destino[k]; const fin = i === orden.length - 1; if (fin) aEnlace(); pintar(fin); }, i * 160));
-      const b = $('[data-accion="inspirame"]'); b.textContent = '✦ ' + nombre; setTimeout(() => (b.textContent = '✦ Inspírame'), 2200);
+      orden.forEach((k, i) => setTimeout(() => { estado[k] = destino[k]; const fin = i === orden.length - 1; if (fin) aEnlace(); pintar(fin); }, i * 140));
+      const b = $('[data-accion="inspirame"]'); b.textContent = '✦ ' + nombre; setTimeout(() => (b.textContent = '✦ Inspírame'), 2400);
     });
 
+    // Compartir el enlace
     $('[data-accion="compartir"]').addEventListener('click', async (ev) => {
       const b = ev.currentTarget, url = location.href;
-      try { if (navigator.share) await navigator.share({ title: 'Mi cocina', text: 'Mira cómo he combinado mi cocina', url }); else { await navigator.clipboard.writeText(url); b.textContent = 'Enlace copiado ✓'; setTimeout(() => (b.textContent = 'Compartir enlace'), 2000); } } catch (e) {}
+      try { if (navigator.share) await navigator.share({ title: 'Mi cocina', text: 'Mira cómo he combinado mi cocina', url }); else { await navigator.clipboard.writeText(url); avisar(b, 'Enlace copiado ✓', 'Compartir enlace'); } } catch (e) {}
+    });
+    const avisar = (b, t, original) => { b.textContent = t; setTimeout(() => (b.textContent = original), 2000); };
+
+    // ── Favoritas: hasta 3, en este navegador ──
+    const leer = () => { try { return JSON.parse(localStorage.getItem(CLAVE) || '[]'); } catch (e) { return []; } };
+    const escribir = (l) => { try { localStorage.setItem(CLAVE, JSON.stringify(l)); } catch (e) {} };
+    function favoritas() {
+      const l = leer(), caja = $('#favoritas');
+      caja.hidden = !l.length;
+      $('.favoritas-lista', caja).innerHTML = l.map((f, i) => {
+        const e = elegidos(f.estado), n = puntuar(e);
+        return `<article class="favorita">
+          <svg class="cocina mini" viewBox="${VISTA}" style="${estiloVars(e)}" data-tirador="${e.tirador.tipo}" data-luz="${f.noche ? 'noche' : 'dia'}" aria-hidden="true">${svgCocina({ dist: f.estado.dist, puerta: f.estado.puerta })}</svg>
+          <div class="favorita-datos"><b>${n.puntos}</b><div><p class="veredicto-mini">${n.veredicto}</p><p class="suave">${e.dist.nombre} · ${e.bajos.nombre} y ${e.altos.nombre.toLowerCase()} · ${e.encimera.nombre}</p></div></div>
+          <div class="favorita-botones"><button class="boton contorno" type="button" data-ver="${i}">Ver</button><button class="boton contorno" type="button" data-quitar="${i}" aria-label="Quitar esta cocina">Quitar</button></div>
+        </article>`;
+      }).join('');
+    }
+    $('[data-accion="guardar"]').addEventListener('click', (ev) => {
+      const l = leer().filter((f) => JSON.stringify(f.estado) !== JSON.stringify(estado));
+      l.unshift({ estado: { ...estado }, noche }); escribir(l.slice(0, 3)); favoritas();
+      avisar(ev.currentTarget, l.length > 3 ? 'Guardada ✓ (quité la más antigua)' : 'Guardada ✓', '♡ Guardar');
+      const primera = $('.favorita'); if (primera && !quieto) primera.animate([{ transform: 'scale(.94)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 500, easing: 'cubic-bezier(.2,.75,.2,1)' });
+    });
+    $('#favoritas').addEventListener('click', (ev) => {
+      const ver = ev.target.closest('[data-ver]'), quitar = ev.target.closest('[data-quitar]'), l = leer();
+      if (ver) { const f = l[+ver.dataset.ver]; estado = { ...INICIAL, ...f.estado }; noche = !!f.noche; aEnlace(); pintar(); raiz.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'start' }); }
+      if (quitar) { l.splice(+quitar.dataset.quitar, 1); escribir(l); favoritas(); }
+    });
+
+    // ── Descargar la imagen (en el móvil se comparte directamente) ──
+    async function imagen() {
+      // Si algún color aún está en pleno fundido, se termina antes de copiar
+      try { svg.getAnimations({ subtree: true }).forEach((an) => an.finish()); } catch (er) {}
+      const copia = svg.cloneNode(true), a = [svg, ...svg.querySelectorAll('*')], b = [copia, ...copia.querySelectorAll('*')];
+      a.forEach((el, i) => {
+        const cs = getComputedStyle(el), d = b[i];
+        ['display', 'opacity', 'mix-blend-mode'].forEach((p) => d.style.setProperty(p, cs.getPropertyValue(p)));
+        ['fill', 'stroke'].forEach((p) => { const v = cs.getPropertyValue(p); if (v && !v.startsWith('url(')) { if (el.style.getPropertyValue(p)) d.style.setProperty(p, v); } });
+        d.style.removeProperty('transition'); d.style.removeProperty('animation');
+      });
+      const AN = 2000, AL = 1020, PIE = 245;
+      copia.setAttribute('viewBox', VISTA); copia.setAttribute('xmlns', 'http://www.w3.org/2000/svg'); copia.setAttribute('width', AN); copia.setAttribute('height', AL);
+      const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(copia)], { type: 'image/svg+xml' }));
+      const img = new Image(); img.src = url; await img.decode(); URL.revokeObjectURL(url);
+      const c = document.createElement('canvas'); c.width = AN; c.height = AL + PIE; const x = c.getContext('2d');
+      x.drawImage(img, 0, 0, AN, AL);
+      x.fillStyle = '#0d0d0e'; x.fillRect(0, AL, AN, PIE);
+      const e = elegidos(), n = puntuar(e);
+      try { await document.fonts.load('650 52px "Bricolage Grotesque Variable"'); await document.fonts.load('400 26px "Inter Variable"'); } catch (er) {}
+      x.fillStyle = '#ffffff'; x.font = '650 52px "Bricolage Grotesque Variable", sans-serif'; x.fillText(`Mi cocina · ${n.puntos}/100 · estilo ${n.estilo}`, 60, AL + 78);
+      x.fillStyle = '#a8a39b'; x.font = '400 25px "Inter Variable", sans-serif';
+      // El resumen, en dos líneas como mucho
+      const lineas = [''];
+      resumen(e).split(' · ').forEach((t) => { const l = lineas.length - 1, prueba = lineas[l] ? lineas[l] + ' · ' + t : t; if (x.measureText(prueba).width > AN - 120 && lineas[l]) lineas.push(t); else lineas[l] = prueba; });
+      lineas.slice(0, 2).forEach((t, i) => x.fillText(t, 60, AL + 122 + i * 36));
+      x.fillStyle = '#c9a27a'; x.fillText('Combina la tuya en mueblescarrascosa.com · Muebles Carrascosa, Villanueva del Arzobispo (Jaén)', 60, AL + 210);
+      return new Promise((res) => c.toBlob(res, 'image/png'));
+    }
+    $('[data-accion="descargar"]').addEventListener('click', async (ev) => {
+      const b = ev.currentTarget; b.textContent = 'Preparando…';
+      try {
+        const blob = await imagen(), archivo = new File([blob], 'mi-cocina-carrascosa.png', { type: 'image/png' });
+        if (matchMedia('(pointer: coarse)').matches && navigator.canShare?.({ files: [archivo] })) await navigator.share({ files: [archivo], title: 'Mi cocina' });
+        else { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = archivo.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+        avisar(b, 'Imagen lista ✓', 'Descargar imagen');
+      } catch (er) { avisar(b, 'No se pudo crear la imagen', 'Descargar imagen'); }
     });
 
     // En el móvil, el dibujo y la nota se quedan fijos arriba y los motivos bajan junto a los botones
     const mq = matchMedia('(max-width: 900px)'), motivos = $('.motivos');
     const colocar = () => (mq.matches ? $('.combina-botones').before(motivos) : $('.combina-vista').append(motivos));
-    mq.addEventListener('change', colocar); colocar();
+    // En el móvil el dibujo se recorta un poco por los lados para que la cocina se vea más grande
+    const encuadre = () => svg.setAttribute('viewBox', mq.matches ? '60 120 880 490' : VISTA);
+    mq.addEventListener('change', () => { colocar(); encuadre(); }); colocar(); encuadre();
 
-    deEnlace(); pintar(false);
+    deEnlace(); pintar(false); favoritas();
   </script>
 </Base>
