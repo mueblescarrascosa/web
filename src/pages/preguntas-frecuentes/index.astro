@@ -1,0 +1,193 @@
+---
+// Dudas: buscador que responde al escribir, dos calculadoras (altura de encimera e isla) y todas las preguntas a la vista.
+import Base from '../../layouts/Base.astro';
+import { r, EMPRESA } from '../../lib/sitio.js';
+import { TEMAS, DUDAS } from '../../datos/dudas.js';
+
+const schema = { '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: DUDAS.map((d) => ({ '@type': 'Question', name: d.p, acceptedAnswer: { '@type': 'Answer', text: d.r } })) };
+const populares = ['¿A qué altura pongo la encimera?', '¿Me cabe una isla?', '¿Qué encimera es mejor?', '¿Cuánto cuesta una cocina a medida?', '¿Qué fondo necesita un armario?', '¿A qué altura va la campana?'];
+const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+---
+<Base titulo="Preguntas frecuentes: medidas, materiales y montaje de cocinas y armarios" descripcion="Resuelve al momento tus dudas sobre cocinas y armarios a medida: altura de la encimera, campana, pasillos, islas, encimeras, puertas, armarios y qué preparar antes del montaje. Con calculadoras." schema={schema}>
+  <header class="cabeza-pagina ancho dudas-cabeza" data-entra>
+    <span class="etiqueta">Dudas</span>
+    <h1>Pregúntanos.</h1>
+    <p class="entradilla">Medidas, materiales, armarios o qué preparar antes del montaje: escribe tu duda y te respondemos al momento, con las medidas que usamos en el taller.</p>
+    <div class="buscador" role="search">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2" /><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+      <input id="pregunta" type="search" autocomplete="off" placeholder="Por ejemplo: ¿a qué altura va la campana?" aria-label="Escribe tu duda" aria-controls="respuestas" />
+    </div>
+    <div class="populares" aria-label="Preguntas más buscadas">
+      {populares.map((p) => <button type="button" data-p={p}>{p.replace(/^¿|\?$/g, '')}</button>)}
+    </div>
+  </header>
+
+  <section class="ancho respuestas" id="respuestas" aria-live="polite" hidden></section>
+
+  <section class="ancho calculadoras" id="calculadoras">
+    <article class="calc" id="calc-encimera">
+      <span class="etiqueta">Calculadora</span>
+      <h2>¿A qué altura tu encimera?</h2>
+      <div class="calc-in">
+        <div class="calc-mandos">
+          <label>Estatura de quien más cocina <output id="est-valor">170 cm</output>
+            <input id="estatura" type="range" min="145" max="200" value="170" step="1" />
+          </label>
+          <label class="interruptor"><input id="gas" type="checkbox" /><span></span>Placa de gas</label>
+          <p class="resultado"><b id="enc-cm">88</b><span>cm de alto</span></p>
+          <p class="suave" id="enc-detalle"></p>
+        </div>
+        <svg class="calc-dibujo" viewBox="0 0 220 240" aria-hidden="true">
+          <line x1="0" y1="226" x2="220" y2="226" stroke="var(--linea)" stroke-width="2" />
+          <g id="persona"><circle cx="60" r="11" /><rect x="45" width="30" rx="12" /><rect x="49" width="9" rx="4" /><rect x="62" width="9" rx="4" /></g>
+          <rect id="mueble" x="95" width="115" fill="#a7845f" />
+          <rect id="encimera-dib" x="90" width="125" height="5" fill="#ecebe8" />
+          <line id="linea-enc" x1="0" x2="220" stroke="var(--azul-vivo)" stroke-dasharray="4 4" />
+          <text id="txt-enc" x="216" text-anchor="end" fill="var(--azul-claro)" font-size="11" font-family="Inter, sans-serif"></text>
+        </svg>
+      </div>
+    </article>
+
+    <article class="calc" id="calc-isla">
+      <span class="etiqueta">Calculadora</span>
+      <h2>¿Te cabe una isla?</h2>
+      <div class="calc-mandos">
+        <label>Ancho de la cocina, de pared a pared <output id="ancho-valor">400 cm</output>
+          <input id="ancho" type="range" min="240" max="700" value="400" step="5" />
+        </label>
+        <fieldset class="chips"><legend>En la pared de enfrente…</legend>
+          <label><input type="radio" name="enfrente" value="1" checked /><span>Hay muebles</span></label>
+          <label><input type="radio" name="enfrente" value="0" /><span>No hay muebles</span></label>
+        </fieldset>
+        <fieldset class="chips"><legend>La isla lleva…</legend>
+          <label><input type="radio" name="tipo" value="60" /><span>Solo cajones</span></label>
+          <label><input type="radio" name="tipo" value="90" checked /><span>Placa o fregadero</span></label>
+          <label><input type="radio" name="tipo" value="120" /><span>Placa y barra para comer</span></label>
+        </fieldset>
+      </div>
+      <div class="plano-isla" aria-hidden="true"><div class="tiras" id="tiras"></div><div class="pared-fin" id="pared-fin"></div></div>
+      <p class="veredicto-isla" id="isla-veredicto"></p>
+      <p class="suave" id="isla-detalle"></p>
+    </article>
+  </section>
+
+  <section class="ancho todas" id="todas">
+    <h2>Todas las preguntas</h2>
+    <nav class="etiquetas" aria-label="Temas">{TEMAS.map(([k, t]) => <a href={`#tema-${k}`}>{t}</a>)}</nav>
+    {TEMAS.map(([k, t]) => (
+      <div class="tema" id={`tema-${k}`}>
+        <h3>{t}</h3>
+        {DUDAS.filter((d) => d.tema === k).map((d) => (
+          <details class="duda" id={id(d.p)}>
+            <summary>{d.p}</summary>
+            <div class="duda-r">
+              <p>{d.r}</p>
+              {(d.ir || d.calc) && <p class="duda-ir">{d.calc && <a class="enlace" href={`#calc-${d.calc}`}>Usar la calculadora</a>}{d.ir && d.calc && ' · '}{d.ir && <a class="enlace" href={r(d.ir[0])}>{d.ir[1]}</a>}</p>}
+            </div>
+          </details>
+        ))}
+      </div>
+    ))}
+  </section>
+
+  <section class="seccion claro cierre">
+    <div class="ancho">
+      <span class="etiqueta">¿No está tu duda?</span><br />
+      <a class="frase" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Pregúntanos <span aria-hidden="true">→</span></a>
+      <div class="botones"><a class="boton" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Escríbenos por WhatsApp</a><a class="boton contorno" href={`tel:${EMPRESA.tel}`}>Llamar al {EMPRESA.telefono}</a></div>
+    </div>
+  </section>
+
+  <script>
+    import { DUDAS } from '../../datos/dudas.js';
+    const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+    const base = (document.querySelector('link[rel=icon]')?.getAttribute('href') || '/favicon.png').replace(/\/favicon\.png$/, '');
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ── Buscador: sin tildes, con palabras parecidas y con palabras a medio escribir ──
+    const limpia = (t) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9ñ ]+/g, ' ');
+    const VACIAS = new Set('a al algo como con cual cuanto cuantos cuantas de del donde el en es esta este hay la las lo los me mi mis o para pongo por puedo que se si son su sus te tengo tu un una uno y ya hace hacer va van necesito necesita quiero'.split(' '));
+    const raiz = (w) => w.replace(/(es|s)$/, '').replace(/(ción|cion)$/, 'cion');
+    const palabras = (t) => limpia(t).split(/\s+/).filter((w) => w.length > 1 && !VACIAS.has(w)).map(raiz);
+    const indice = DUDAS.map((d) => ({ d, p: palabras(d.p), c: palabras(d.c || ''), r: palabras(d.r) }));
+    function buscar(q) {
+      const qs = palabras(q); if (!qs.length) return [];
+      return indice.map((x) => {
+        let s = 0, tocadas = 0;
+        qs.forEach((w) => {
+          const en = (l) => l.some((v) => v === w || (w.length >= 3 && (v.startsWith(w) || (w.length >= 5 && w.startsWith(v) && v.length >= 4))));
+          const a = en(x.p) ? 4 : 0, b = en(x.c) ? 3 : 0, c = en(x.r) ? 1 : 0;
+          if (a || b || c) tocadas++; s += a + b + c;
+        });
+        return { d: x.d, s: s * (tocadas / qs.length) ** 2 };
+      }).filter((x) => x.s >= 2).sort((a, b) => b.s - a.s).slice(0, 5);
+    }
+    const caja = $('#respuestas'), entrada = $('#pregunta');
+    const enlace = (ir) => `<a class="enlace" href="${base}${ir[0]}">${ir[1]}</a>`;
+    function mostrar() {
+      const q = entrada.value.trim();
+      if (q.length < 3) { caja.hidden = true; caja.innerHTML = ''; return; }
+      const res = buscar(q); caja.hidden = false;
+      if (!res.length) {
+        caja.innerHTML = `<div class="sin-respuesta"><p><b>Esa no la tenemos escrita todavía.</b> Pregúntanosla y te contestamos nosotros.</p><a class="boton" target="_blank" rel="noopener" href="https://wa.me/34653451270?text=${encodeURIComponent('Hola, tengo una duda: ' + q)}">Pregúntanoslo por WhatsApp</a></div>`;
+        return;
+      }
+      caja.innerHTML = res.map(({ d }, i) => `<article class="respuesta${i === 0 ? ' mejor' : ''}" style="--i:${i}"><h2>${d.p}</h2>${i === 0 ? `<p>${d.r}</p><p class="duda-ir">${d.calc ? `<a class="enlace" href="#calc-${d.calc}">Usar la calculadora</a>` : ''}${d.calc && d.ir ? ' · ' : ''}${d.ir ? enlace(d.ir) : ''}</p>` : `<p class="suave">${d.r.split('. ')[0]}.</p>`}</article>`).join('')
+        + `<p class="otra">¿No era esto? <a class="enlace" target="_blank" rel="noopener" href="https://wa.me/34653451270?text=${encodeURIComponent('Hola, tengo una duda: ' + q)}">Pregúntanoslo por WhatsApp</a></p>`;
+      $$('.respuesta:not(.mejor)', caja).forEach((a, n) => a.addEventListener('click', () => { entrada.value = res[n + 1].d.p; mostrar(); entrada.focus(); }));
+    }
+    let espera; entrada.addEventListener('input', () => { clearTimeout(espera); espera = setTimeout(mostrar, 120); });
+    $$('.populares button').forEach((b) => b.addEventListener('click', () => { entrada.value = b.dataset.p; mostrar(); caja.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'nearest' }); }));
+    // Enlaces a la calculadora: abren y resaltan
+    document.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#calc-"]'); if (!a) return; e.preventDefault(); const c = $(a.getAttribute('href')); c.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'center' }); c.classList.remove('resalta'); void c.offsetWidth; c.classList.add('resalta'); });
+
+    // ── Calculadora de la encimera (la misma regla que en el taller) ──
+    const altura = (e, gas) => { const tope = e > 185 ? 100 : 95; return Math.max(85 - (gas ? 3 : 0), Math.min(tope, Math.round(e / 2 + 3 - (gas ? 3 : 0)))); };
+    function piezas(obj) {
+      const l = [];
+      [6, 10, 15].forEach((z) => [70, 80].forEach((m) => [1.2, 2, 3, 4].forEach((g) => {
+        const alt = z + m + g, dif = alt - obj, est = z === 15 && m === 70 && g === 4, normal = [10, 15].includes(z) && [4, 2].includes(g);
+        l.push({ z, m, g, alt, coste: Math.max(0, Math.abs(dif) - 2) * (dif > 0 ? 2 : 1) + (est ? 0 : normal ? 0.5 : 3) + (z === 6 ? 2 : 0) });
+      })));
+      return l.sort((a, b) => a.coste - b.coste || Math.abs(a.alt - obj) - Math.abs(b.alt - obj) || a.alt - b.alt)[0];
+    }
+    const est = $('#estatura'), gas = $('#gas'), S = 0.92, SUELO = 226;
+    function encimera() {
+      const e = +est.value, a = altura(e, gas.checked), p = piezas(a);
+      $('#est-valor').textContent = e + ' cm'; $('#enc-cm').textContent = a;
+      $('#enc-detalle').textContent = `Por ejemplo: zócalo de ${p.z} + mueble de ${p.m} + encimera de ${String(p.g).replace('.', ',')} cm = ${String(p.alt).replace('.', ',')} cm. Los muebles altos, desde unos ${Math.round(p.alt + 56)} cm del suelo.${gas.checked ? ' Con gas, campana a unos 75 cm sobre la placa.' : ''}`;
+      // Dibujo a escala: la persona y la encimera
+      const alto = e * S, y0 = SUELO - alto, ya = SUELO - a * S;
+      const g = $('#persona'), [cab, cuerpo, p1, p2] = g.children;
+      cab.setAttribute('cy', y0 + 11); cuerpo.setAttribute('y', y0 + 24); cuerpo.setAttribute('height', alto * 0.42);
+      [p1, p2].forEach((x) => { x.setAttribute('y', y0 + 24 + alto * 0.38); x.setAttribute('height', SUELO - (y0 + 24 + alto * 0.38)); });
+      $('#mueble').setAttribute('y', ya + 5); $('#mueble').setAttribute('height', SUELO - ya - 5);
+      $('#encimera-dib').setAttribute('y', ya); $('#linea-enc').setAttribute('y1', ya); $('#linea-enc').setAttribute('y2', ya);
+      $('#txt-enc').setAttribute('y', ya - 6); $('#txt-enc').textContent = a + ' cm';
+    }
+    est.addEventListener('input', encimera); gas.addEventListener('change', encimera); encimera();
+
+    // ── Calculadora de la isla ──
+    const ancho = $('#ancho');
+    function isla() {
+      const w = +ancho.value, enfrente = $('input[name=enfrente]:checked').value === '1', fondo = +$('input[name=tipo]:checked').value;
+      $('#ancho-valor').textContent = w + ' cm';
+      const partes = (paso) => [['Encimera', 62, 'mueble'], ['Paso', paso, 'paso'], ['Isla', fondo, 'isla'], ['Paso', paso, 'paso'], ...(enfrente ? [['Encimera', 62, 'mueble']] : [])];
+      const suma = (l) => l.reduce((s, x) => s + x[1], 0);
+      const minimo = suma(partes(90)), comodo = suma(partes(120));
+      let paso = w >= comodo ? 120 : Math.max(0, (w - 62 - fondo - (enfrente ? 62 : 0)) / 2), l = partes(Math.min(120, Math.max(paso, 0)));
+      const total = Math.max(w, suma(l)), tiras = $('#tiras');
+      tiras.innerHTML = l.map(([t, v, c]) => `<span class="${c}${c === 'paso' && v < 90 ? ' corto' : ''}" style="flex-basis:${(100 * v) / total}%"><b>${Math.round(v)}</b>${t}</span>`).join('');
+      $('#pared-fin').style.left = (100 * w) / total + '%';
+      const ver = $('#isla-veredicto'), det = $('#isla-detalle');
+      if (w >= comodo) { ver.textContent = 'Cabe con holgura'; ver.dataset.v = 'si'; det.textContent = `Quedan 120 cm de paso a cada lado: pueden cocinar dos personas a la vez.${w - comodo >= 30 ? ' Incluso te sobran ' + (w - comodo) + ' cm.' : ''}`; }
+      else if (w >= minimo) { ver.textContent = 'Cabe, aunque justa'; ver.dataset.v = 'justa'; det.textContent = `Quedan unos ${Math.floor(paso)} cm de paso a cada lado. El mínimo es 90; con 120 es más cómoda para dos.`; }
+      else { ver.textContent = 'No cabe una isla'; ver.dataset.v = 'no'; det.textContent = `Faltan ${minimo - w} cm para dejar 90 de paso a cada lado. Mejor una península (pegada a una pared) o una mesa, y si la isla no lleva placa ni fregadero, puede ser más estrecha.`; }
+    }
+    $('#calc-isla').addEventListener('input', isla); isla();
+
+    // Si llegan con una pregunta en el enlace (#p-…), se abre
+    const abierta = location.hash && $(location.hash); if (abierta?.tagName === 'DETAILS') abierta.open = true;
+  </script>
+</Base>

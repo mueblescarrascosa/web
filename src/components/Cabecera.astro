@@ -20,6 +20,7 @@ const activo = (p) => ruta.endsWith(p) ? 'page' : undefined;
           <button type="button" aria-expanded="false">Servicios</button>
           <ul>{servicios.map(([h, t]) => <li><a href={r(h)} aria-current={activo(h)}>{t}</a></li>)}</ul>
         </li>
+        <li><a href={r('/preguntas-frecuentes/')} aria-current={activo('/preguntas-frecuentes/')}>Dudas</a></li>
         <li><a href={r('/entradas-del-blog/')} aria-current={activo('/entradas-del-blog/')}>Blog</a></li>
         <li><a href={r('/donde-trabajamos/')} aria-current={activo('/donde-trabajamos/')}>Zonas</a></li>
         <li><a href={r('/acerca-de/')} aria-current={activo('/acerca-de/')}>Nosotros</a></li>
