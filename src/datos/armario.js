@@ -32,15 +32,15 @@ export const TIRADORES_ARMARIO = [
 export { TIPOS };
 export const ORDEN_TIPOS = Object.keys(TIPOS);
 
-export const INICIAL_A = { ancho: 240, alto: 250, puertas: 'correderas', forma: 'lineal', lado: 180, modelo: 'lisa', cristal: 'mate', franja: 'roble', perfil: 'negro', ext: 'blanco', int: 'roble-claro', tir: 'negro', mods: 'largo,cajones,doble', modsI: 'doble,zapatero', modsD: 'pantalonero,baldas' };
+export const INICIAL_A = { ancho: 240, alto: 250, puertas: 'correderas', forma: 'lineal', lado: 180, modelo: 'lisa', cristal: 'mate', franja: 'roble', perfil: 'negro', led: '0', ext: 'blanco', int: 'roble-claro', tir: 'negro', mods: 'largo,cajones,doble', modsI: 'doble,zapatero', modsD: 'pantalonero,baldas' };
 export const PROPUESTAS_A = [
   { nombre: 'Dormitorio de matrimonio', ancho: 280, alto: 250, puertas: 'correderas', modelo: 'japonesa3', franja: 'roble', perfil: 'madera', ext: 'blanco', int: 'blanco', tir: 'negro', mods: 'largo,cajones,doble' },
-  { nombre: 'Vestidor en L de roble', ancho: 320, alto: 260, puertas: 'vestidor', forma: 'L', lado: 200, ext: 'roble-claro', int: 'roble-claro', tir: 'negro', mods: 'largo,zapatero,cajones,doble', modsI: 'pantalonero,accesorios' },
-  { nombre: 'Vestidor en C con isla', ancho: 360, alto: 260, puertas: 'vestidor', forma: 'isla', lado: 220, ext: 'negro', int: 'nogal', tir: 'negro', mods: 'largo,accesorios,doble,largo', modsI: 'doble,pantalonero,cajones', modsD: 'zapatero,zapatero,baldas' },
+  { nombre: 'Vestidor en L de roble', ancho: 320, alto: 260, puertas: 'vestidor', forma: 'L', lado: 200, ext: 'roble-claro', int: 'roble-claro', tir: 'negro', mods: 'largo,zapatero,cajones,doble', modsI: 'pantExtra,accesorios' },
+  { nombre: 'Vestidor en C con isla', ancho: 360, alto: 260, puertas: 'vestidor', forma: 'isla', led: '1', lado: 220, ext: 'negro', int: 'nogal', tir: 'negro', mods: 'largo,accesorios,doble,largo', modsI: 'doble,pantDoble,cajones', modsD: 'zapatero,zapatero,baldas' },
   { nombre: 'Clásico lacado', ancho: 200, alto: 240, puertas: 'abatibles', modelo: 'moldura', ext: 'blanco-roto', int: 'blanco', tir: 'oro', mods: 'largo,cajones' },
   { nombre: 'Vitrina con cruz', ancho: 240, alto: 250, puertas: 'abatibles', modelo: 'cruz', cristal: 'mate', ext: 'salvia', int: 'blanco', tir: 'oro', mods: 'baldas,doble,accesorios' },
   { nombre: 'Japandi', ancho: 240, alto: 250, puertas: 'correderas', modelo: 'rayas', perfil: 'blanco', ext: 'cachemir', int: 'roble-claro', tir: 'negro', mods: 'doble,baldas,largo' },
-  { nombre: 'Cristal ahumado', ancho: 300, alto: 260, puertas: 'correderas', modelo: 'cristal', cristal: 'ahumado', perfil: 'negro', ext: 'negro', int: 'roble', tir: 'negro', mods: 'largo,cajones,pantalonero' },
+  { nombre: 'Cristal ahumado', ancho: 300, alto: 260, puertas: 'correderas', modelo: 'cristal', cristal: 'ahumado', perfil: 'negro', led: '1', ext: 'negro', int: 'roble', tir: 'negro', mods: 'largo,cajones,pantalonero' },
   { nombre: 'Vestidor en C blanco', ancho: 300, alto: 250, puertas: 'vestidor', forma: 'C', lado: 180, ext: 'blanco', int: 'blanco', tir: 'negro', mods: 'largo,cajones,doble', modsI: 'zapatero,accesorios', modsD: 'pantalonero,doble' },
   { nombre: 'Infantil', ancho: 160, alto: 230, puertas: 'abatibles', modelo: 'lisa', ext: 'salvia', int: 'blanco', tir: 'unero', mods: 'doble,baldas' },
 ];
@@ -55,7 +55,8 @@ export function consejos(e, datos) {
   if (c.corto) bien.push('Camisas y chaquetas en dos alturas: el doble de ropa en el mismo hueco.');
   if (!c.doblado) ojo.push('Faltan baldas o cajones para la ropa doblada: jerséis, camisetas y ropa interior.');
   if (!c.zapatos) ojo.push('¿Y los zapatos? Un zapatero abajo los deja a la vista y ordenados.');
-  if (datos.pantalones) bien.push(`El pantalonero cuelga ${datos.pantalones} pantalones doblados por la mitad, sin arrugas, en unos 75 cm de alto.`);
+  if (datos.pantalones) bien.push(`Caben unos ${datos.pantalones} pantalones colgados sin arrugas${(e.mods || []).concat(e.modsI || [], e.modsD || []).some((x) => x === 'pantExtra' || x === 'pantDoble') ? '; el pantalonero extraíble sale hacia delante y los ves de frente' : ''}.`);
+  if (e.led === '1') bien.push(vest ? 'Con LED en las barras, la ropa se ve bien a cualquier hora y el vestidor luce como una tienda.' : 'Con LED en las barras y a los lados, la ropa se ve al abrir la puerta: se encuentra todo a la primera.');
   if (datos.cajones) bien.push('La cajonera queda por debajo de 100 cm: ves lo que hay dentro sin agacharte demasiado.');
   if (datos.altillo) bien.push('El altillo guarda maletas y la ropa de otra temporada.');
   else ojo.push('Con menos de 220 cm de alto no queda altillo: las maletas tendrán que ir en otro sitio.');

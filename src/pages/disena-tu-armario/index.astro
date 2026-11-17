@@ -43,7 +43,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   <section class="ancho combina armario-juego" id="combina">
     <div class="combina-vista">
       <div class="lienzo">
-        <svg class="armario" viewBox={d0.vista} role="img" aria-label="Dibujo del armario con su interior" style={vars0} data-tirador={tir0.tipo} data-abierto="0" data-modo="frente" set:html={DEFS_ARMARIO + d0.s} />
+        <svg class="armario" viewBox={d0.vista} role="img" aria-label="Dibujo del armario con su interior" style={vars0} data-tirador={tir0.tipo} data-abierto="0" data-modo="frente" data-led={e0.led} set:html={DEFS_ARMARIO + d0.s} />
         <button class="boton-luz boton-abrir" type="button" aria-pressed="false"><span>Abrir puertas</span></button>
       </div>
       <div class="nota" aria-live="polite">
@@ -55,6 +55,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
           <p class="veredicto">{n0.veredicto}</p>
           <p class="estilo">Para unas <span>{n0.personas}</span> personas</p>
         </div>
+        <div class="plano-vestidor" hidden aria-hidden="true"></div>
       </div>
       <ul class="cabe" aria-label="Lo que cabe">
         <li><b data-dato="perchas">{d0.datos.perchas}</b>prendas colgadas</li>
@@ -87,6 +88,10 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       <fieldset class="muestras">
         <legend>Interior de cada hueco <span class="elegido">toca para cambiarlo</span></legend>
         <div class="huecos" id="huecos"></div>
+      </fieldset>
+      <fieldset class="muestras">
+        <legend>Luz <span class="elegido texto-led">{e0.led === '1' ? 'LED encendido' : 'Sin LED'}</span></legend>
+        <label class="interruptor"><input id="led" type="checkbox" checked={e0.led === '1'} /><span></span>Luz LED en las barras y dentro del armario</label>
       </fieldset>
       <fieldset class="muestras" data-grupo="modelo" data-solo="puertas">
         <legend>Modelo de puerta <span class="elegido">{buscar(MODELOS_PUERTA, e0.modelo).nombre}</span></legend>
@@ -151,7 +156,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
 
   <script>
     import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, PERFILES, SOLO_CORREDERAS, TIPOS, ORDEN_TIPOS, INICIAL_A, PROPUESTAS_A, consejos, modulosPara } from '../../datos/armario.js';
-    import { armario, vestidor, DEFS_ARMARIO } from '../../scripts/armario-dibujo.js';
+    import { armario, vestidor, plano, DEFS_ARMARIO } from '../../scripts/armario-dibujo.js';
     import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
     const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
     const svg = $('svg.armario'), quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -163,6 +168,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     const deEnlace = () => {
       const p = new URLSearchParams(location.hash.slice(1));
       Object.keys(listas).forEach((k) => { if (listas[k].some((x) => x.clave === p.get(k))) e[k] = p.get(k); });
+      if (p.get('led') === '1' || p.get('led') === '0') e.led = p.get('led');
       [['ancho', 100, 450], ['alto', 200, 270], ['lado', 100, 260]].forEach(([k, a, b]) => { const v = +p.get(k); if (v >= a && v <= b) e[k] = v; });
       LISTAS_HUECOS.forEach((k) => { if (p.get(k)) e[k] = p.get(k).split(',').filter((t) => TIPOS[t]); });
     };
@@ -193,7 +199,9 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       datosActuales = d.datos;
       const ext = busca('ext'), int = busca('int'), tir = busca('tir'), fr = busca('franja'), cr = busca('cristal'), pe = busca('perfil');
       [['--ext', ext.hex], ['--int', int.hex], ['--tir', tir.hex], ['--franja', fr.hex], ['--cristal', cr.hex], ['--cristal-op', cr.op], ['--v-ext', ext.dibujo === 'veta' ? 1 : 0], ['--v-int', int.dibujo === 'veta' ? 1 : 0], ['--v-franja', fr.dibujo === 'veta' ? 1 : 0], ['--t-int', int.dibujo === 'tela' ? 1 : 0], ['--perfil', pe.hex]].forEach(([k, v]) => svg.style.setProperty(k, v));
-      svg.dataset.tirador = tir.tipo; svg.dataset.abierto = abierto || vest ? '1' : '0';
+      svg.dataset.tirador = tir.tipo; svg.dataset.abierto = abierto || vest ? '1' : '0'; svg.dataset.led = e.led;
+      $('#led').checked = e.led === '1'; $('.texto-led').textContent = e.led === '1' ? 'LED encendido' : 'Sin LED';
+      const pv = $('.plano-vestidor'); pv.hidden = !vest; if (vest) pv.innerHTML = '<span>Visto desde arriba</span>' + plano(e);
       const ba = $('.boton-abrir'); ba.hidden = vest; ba.setAttribute('aria-pressed', String(abierto)); $('span', ba).textContent = abierto ? 'Cerrar puertas' : 'Abrir puertas';
       // Qué grupos se ven según lo elegido
       const cristal = e.modelo === 'cristal' || e.modelo === 'cruz';
@@ -224,6 +232,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       if (e.puertas === 'correderas') l.push(`Herraje ${busca('perfil').nombre.toLowerCase()}`);
       l.push(`Exterior ${busca('ext').nombre.toLowerCase()}`, `Interior ${busca('int').nombre.toLowerCase()}`);
       if (e.puertas === 'abatibles') l.push(`Tiradores ${busca('tir').nombre.toLowerCase()}`);
+      if (e.led === '1') l.push('Luz LED en barras e interior');
       (datosActuales?.huecos || []).forEach(([p, n]) => l.push(`${vest ? NOMBRE_PARED[p] : 'Huecos'}: ${e[PARED[p]].slice(0, n).map((t) => TIPOS[t].toLowerCase()).join(' / ')}`));
       return l;
     }
@@ -239,6 +248,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     });
     svg.addEventListener('keydown', (ev) => { const m = ev.target.closest('.modulo'); if (m && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); cambiar(m.dataset.k); } });
     $('.boton-abrir').addEventListener('click', () => { abierto = !abierto; pintar(); });
+    $('#led').addEventListener('change', (ev) => { e.led = ev.target.checked ? '1' : '0'; if (ev.target.checked && !esVest()) abierto = true; aEnlace(); pintar(); });
     let ultima = -1;
     $('[data-accion="inspirame"]').addEventListener('click', (ev) => {
       let n; do { n = Math.floor(Math.random() * PROPUESTAS_A.length); } while (n === ultima); ultima = n;

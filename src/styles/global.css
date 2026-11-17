@@ -633,3 +633,12 @@ html.revela .destapa.visto:hover img { transform: scale(1.03); }
 .formas-vestidor li[data-v="justa"] em { background: rgb(201 162 122 / .2); color: var(--madera); }
 .formas-vestidor li[data-v="no"] em { background: rgb(224 122 98 / .18); color: #e07a62; }
 .muestra.tela { background: repeating-linear-gradient(0deg, rgb(90 74 54 / .16) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgb(255 255 255 / .28) 0 1px, transparent 1px 3px), var(--c); }
+.armario .led-barra { opacity: 0; transition: opacity .9s var(--t); pointer-events: none; }
+.armario .penumbra { opacity: 0; transition: opacity .9s var(--t); pointer-events: none; }
+.armario[data-led="1"] .led-barra { opacity: 1; }
+.armario[data-led="1"] .penumbra { opacity: .26; }
+.armario[data-led="1"] .led { opacity: .95; }
+.plano-vestidor { margin-left: auto; padding: .5rem .6rem .3rem; border-radius: 12px; background: rgb(13 13 14 / .72); backdrop-filter: blur(8px); border: 1px solid rgb(255 255 255 / .12); pointer-events: none; }
+.plano-vestidor span { display: block; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--madera); margin-bottom: .3rem; }
+.plano-vestidor svg { display: block; width: auto; max-width: 150px; height: auto; max-height: 130px; }
+@media (max-width: 900px) { .plano-vestidor { padding: .3rem .4rem .2rem; } .plano-vestidor svg { max-width: 90px; max-height: 80px; } .plano-vestidor span { font-size: .55rem; } }

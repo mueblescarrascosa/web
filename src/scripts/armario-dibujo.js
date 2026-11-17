@@ -6,7 +6,7 @@
 
 export const TIPOS = {
   largo: 'Colgar largo', doble: 'Dos barras', baldas: 'Baldas', cajones: 'Cajones y barra', zapatero: 'Zapatero y baldas',
-  pantalonero: 'Pantalonero y barra', accesorios: 'Bandejas y baldas',
+  pantalonero: 'Pantalonero de colgar', pantExtra: 'Pantalonero extraíble', pantDoble: 'Pantalonero extraíble doble', accesorios: 'Bandejas y baldas',
 };
 export const MODELOS = { lisa: 'Lisa', japonesa3: 'Japonesa 3 paneles', japonesa: 'Japonesa 4 paneles', rayas: 'Cuatro paneles', moldura: 'Con moldura', cristal: 'Cristal', cruz: 'Cristal con cruz' };
 export const CRISTALES = { claro: { nombre: 'Transparente', hex: '#cfe0e6', op: 0.2 }, mate: { nombre: 'Mate', hex: '#f3f3f1', op: 0.82 }, ahumado: { nombre: 'Ahumado', hex: '#2c3035', op: 0.6 } };
@@ -42,6 +42,18 @@ export function interior(tipo, a0, a1, techoUtil, altillo, alto, sem) {
     for (let a = a0 + 3, j = 0; a + 5 < a1 - 2; a += 5.6, j++) { p.push({ k: 'pantalon', a, b: bp, w: 4.8, l: 70 - ((sem + j * 7) % 3) * 3, c: PANT[(sem + j * 3) % PANT.length] }); n.pantalones++; }
     barra(techoUtil - 8, Math.min(80, techoUtil - 8 - bp - 12)); zapatos(10); c.corto++; c.zapatos++;
   }
+  if (tipo === 'pantExtra' || tipo === 'pantDoble') {
+    // Bastidor extraíble con los pantalones colgados de frente, uno detrás de otro; arriba, barra para camisas
+    const cols = tipo === 'pantDoble' ? 2 : 1, ancho = a1 - a0, bw = Math.min(42, (ancho - 6 - (cols - 1) * 4) / cols), top = 98, l = 66;
+    const x0 = a0 + (ancho - (cols * bw + (cols - 1) * 4)) / 2;
+    for (let k = 0; k < cols; k++) {
+      const bx = x0 + k * (bw + 4);
+      p.push({ k: 'bastidor', a0: bx, a1: bx + bw, b0: top - l - 6, b1: top + 2 });
+      for (let j = 3; j >= 0; j--) p.push({ k: 'pantFrente', a: bx + 3 + j * 1.6, b: top - j * 1.2, w: bw - 6, l: l - j * 1.5, c: PANT[(sem + k * 4 + j * 3) % PANT.length], atras: j });
+      n.pantalones += 8;
+    }
+    barra(techoUtil - 8, Math.min(80, techoUtil - 8 - top - 10)); zapatos(10); c.corto++; c.zapatos++;
+  }
   if (tipo === 'accesorios') {
     // Bandejas bajas con relojes, cinturones y gafas; baldas altas para bolsos
     [[10, 22], [22, 34], [34, 46]].forEach(([b0, b1]) => { p.push({ k: 'bandeja', a0: a0 + 0.5, a1: a1 - 0.5, b0, b1 }); n.cajones++; });
@@ -59,9 +71,17 @@ export function interior(tipo, a0, a1, techoUtil, altillo, alto, sem) {
   return { p, n, c };
 }
 
+// Silueta de un pantalón de frente: cintura arriba y dos perneras que se separan a un tercio
+function pantalonFrente({ a, b, w, l }) {
+  const m = a + w / 2, cr = b - l * 0.34;
+  return [[a, b], [a + w, b], [a + w - 0.6, b - l], [m + 1.2, b - l], [m, cr], [m - 1.2, b - l], [a + 0.6, b - l]];
+}
+
 // ── Pintado de frente (armario con puertas) ──
 function deFrente(piezas, alto) {
   const Y = (b) => alto - b, R = (x, y, w, h, a = '') => `<rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}" ${a}/>`;
+  // Luz LED (opción): bajo cada barra, una tira cálida que ilumina la ropa
+  const luz = piezas.filter((q) => q.k === 'barra').map((q) => R(q.a0 + 1, Y(q.b) + 0.6, q.a1 - q.a0 - 2, 34, 'fill="url(#ledCono)" class="led-barra"') + `<line x1="${f(q.a0 + 1)}" y1="${f(Y(q.b))}" x2="${f(q.a1 - 1)}" y2="${f(Y(q.b))}" stroke="#ffe7b8" stroke-width="1.4" stroke-linecap="round" class="led-barra"/>`).join('');
   return piezas.map((q) => {
     if (q.k === 'balda') return R(q.a0, Y(q.b) - 1, q.a1 - q.a0, 2, 'style="fill:var(--int)" class="pieza"') + R(q.a0, Y(q.b) + 1, q.a1 - q.a0, 0.6, 'fill="#000" opacity=".22"');
     if (q.k === 'barra') return `<line x1="${f(q.a0 + 1)}" y1="${f(Y(q.b))}" x2="${f(q.a1 - 1)}" y2="${f(Y(q.b))}" stroke="#9aa0a6" stroke-width="1.2" stroke-linecap="round"/>`;
@@ -83,34 +103,48 @@ function deFrente(piezas, alto) {
     if (q.k === 'mini') return R(q.a, Y(q.b) - q.h, q.w, q.h, `rx="1" fill="${q.c}"`);
     if (q.k === 'bolso') return `<path d="M${f(q.a)} ${f(Y(q.b))}l2-${f(q.h - 6)}h${f(q.w - 4)}l2 ${f(q.h - 6)}z" fill="${q.c}"/><path d="M${f(q.a + 5)} ${f(Y(q.b) - q.h + 6)}q${f(q.w / 2 - 5)} -9 ${f(q.w - 10)} 0" fill="none" stroke="${q.c}" stroke-width="1.2"/>`;
     if (q.k === 'caja') return R(q.a, Y(q.b) - q.h, q.w, q.h, `rx="1.5" fill="${q.c}"`);
+    if (q.k === 'bastidor') return R(q.a0, Y(q.b1), 1.2, q.b1 - q.b0, 'fill="#b5b9bd"') + R(q.a1 - 1.2, Y(q.b1), 1.2, q.b1 - q.b0, 'fill="#b5b9bd"') + R(q.a0, Y(q.b1), q.a1 - q.a0, 1.4, 'fill="#9aa0a6"') + R(q.a0, Y(q.b0) - 1.4, q.a1 - q.a0, 1.4, 'fill="#9aa0a6"');
+    if (q.k === 'pantFrente') return `<path d="${pantalonFrente(q).map(([a, b], i) => (i ? 'L' : 'M') + f(a) + ' ' + f(Y(b))).join('')}Z" fill="${q.c}"${q.atras ? ` opacity="${1 - q.atras * 0.12}"` : ''}/>` + (q.atras ? '' : `<path d="M${f(q.a + q.w / 2)} ${f(Y(q.b - q.l * 0.34))}V${f(Y(q.b - q.l))}M${f(q.a + q.w * 0.25)} ${f(Y(q.b - 5))}V${f(Y(q.b - q.l))}M${f(q.a + q.w * 0.75)} ${f(Y(q.b - 5))}V${f(Y(q.b - q.l))}" stroke="#000" stroke-opacity=".22" stroke-width=".4" fill="none"/>` + R(q.a, Y(q.b), q.w, 4, 'fill="#000" opacity=".2"'));
     return '';
-  }).join('');
+  }).join('') + luz;
 }
+
+// ── Cuerpo de un mueble de frente: carcasa, interior de cada hueco, separaciones y luz (sin puertas ni habitación) ──
+function cuerpo(ancho, alto, mods, clave, semBase = 3, nombre = 'Hueco') {
+  const n = modulosPara(ancho), w = ancho / n, Y = (h) => alto - h;
+  const altillo = alto >= 220 ? alto - 45 : null, techoUtil = altillo ?? alto - 2;
+  const tot = { perchas: 0, zapatos: 0, montones: 0, cajones: 0, pantalones: 0 }, cuenta = { largo: 0, corto: 0, doblado: 0, zapatos: 0 };
+  const R = (x, y, an, al, a = '') => `<rect x="${f(x)}" y="${f(y)}" width="${f(an)}" height="${f(al)}" ${a}/>`;
+  let s = '';
+  s += R(0, 0, ancho, alto, 'style="fill:var(--ext)" class="pieza"');
+  s += R(2, 2, ancho - 4, alto - 10, 'style="fill:var(--int)" class="pieza"') + R(2, 2, ancho - 4, alto - 10, 'fill="url(#vetaA)" class="dibujo" style="opacity:var(--v-int)"');
+  s += R(2, 2, ancho - 4, alto - 10, 'fill="url(#telaA)" class="dibujo" style="opacity:var(--t-int)"');
+  s += R(2, 2, ancho - 4, alto - 10, 'fill="url(#fondoSombra)"') + R(2, 2, ancho - 4, alto - 10, 'fill="#14100c" class="penumbra"');
+  s += R(0, alto - 8, ancho, 8, 'style="fill:var(--ext)" class="pieza"') + R(0, alto - 8, ancho, 8, 'fill="#000" opacity=".35"');
+  if (altillo) s += R(2, Y(altillo) - 1, ancho - 4, 2, 'style="fill:var(--int)" class="pieza"') + R(2, Y(altillo) + 1, ancho - 4, 0.6, 'fill="#000" opacity=".25"');
+  for (let i = 0; i < n; i++) {
+    const x0 = i * w + (i ? 1 : 2), x1 = (i + 1) * w - (i < n - 1 ? 1 : 2), tipo = mods[i] || 'largo';
+    const it = interior(tipo, x0, x1, techoUtil, altillo, alto, i * 7 + semBase);
+    Object.keys(tot).forEach((k) => (tot[k] += it.n[k])); Object.keys(it.c).forEach((k) => (cuenta[k] += it.c[k]));
+    const tiras = R(x0, 4, 0.9, alto - 14, 'fill="#ffe7b8" class="led-barra"') + R(x1 - 0.9, 4, 0.9, alto - 14, 'fill="#ffe7b8" class="led-barra"') + R(x0, 4, 8, alto - 14, 'fill="url(#ledLado)" class="led-barra"') + `<rect x="${f(x1 - 8)}" y="4" width="8" height="${f(alto - 14)}" fill="url(#ledLado)" transform="rotate(180 ${f(x1 - 4)} ${f(4 + (alto - 14) / 2)})" class="led-barra"/>`;
+    s += `<g class="modulo" data-k="${clave}-${i}" role="button" tabindex="0" aria-label="${nombre} ${i + 1}: ${TIPOS[tipo]}. Pulsa para cambiarlo">${R(x0, 2, x1 - x0, alto - 10, 'fill="transparent"')}${deFrente(it.p, alto)}${tiras}${R(x0, 2, x1 - x0, alto - 10, 'class="marca" fill="none"')}</g>`;
+    if (i < n - 1) s += R((i + 1) * w - 1, 2, 2, alto - 10, 'style="fill:var(--int)" class="pieza"') + R((i + 1) * w + 1, 2, 0.5, alto - 10, 'fill="#000" opacity=".2"');
+  }
+  s += R(2, 2, ancho - 4, 6, 'fill="url(#luzArriba)" class="led"');
+  return { s, tot, cuenta, n, altillo };
+}
+const sumar = (a, b) => Object.keys(b).forEach((k) => (a[k] = (a[k] || 0) + b[k]));
 
 // ── Armario con puertas, de frente ──
 export function armario({ ancho = 240, alto = 250, puertas = 'correderas', mods = [], modelo = 'lisa' }) {
-  const n = modulosPara(ancho), w = ancho / n, Y = (h) => alto - h;
-  const altillo = alto >= 220 ? alto - 45 : null, techoUtil = altillo ?? alto - 2;
-  const tot = { perchas: 0, zapatos: 0, montones: 0, cajones: 0, pantalones: 0 }, cuenta = { largo: 0, corto: 0, doblado: 0, zapatos: 0, altillo: !!altillo };
+  const n = modulosPara(ancho), w = ancho / n;
   const R = (x, y, an, al, a = '') => `<rect x="${f(x)}" y="${f(y)}" width="${f(an)}" height="${f(al)}" ${a}/>`;
   let s = '';
   s += R(-60, -40, ancho + 120, alto + 40, 'fill="#e9e6df"') + R(-60, alto, ancho + 120, 40, 'fill="#c8ad87"');
   for (let x = -60; x < ancho + 60; x += 14) s += `<line x1="${x}" y1="${alto}" x2="${x - 6}" y2="${alto + 40}" stroke="#7a5c40" stroke-opacity=".25" stroke-width=".3"/>`;
   s += R(-60, alto, ancho + 120, 3, 'fill="#000" opacity=".12"');
-  s += R(0, 0, ancho, alto, 'style="fill:var(--ext)" class="pieza"');
-  s += R(2, 2, ancho - 4, alto - 10, 'style="fill:var(--int)" class="pieza"') + R(2, 2, ancho - 4, alto - 10, 'fill="url(#vetaA)" class="dibujo" style="opacity:var(--v-int)"');
-  s += R(2, 2, ancho - 4, alto - 10, 'fill="url(#telaA)" class="dibujo" style="opacity:var(--t-int)"');
-  s += R(2, 2, ancho - 4, alto - 10, 'fill="url(#fondoSombra)"');
-  s += R(0, alto - 8, ancho, 8, 'style="fill:var(--ext)" class="pieza"') + R(0, alto - 8, ancho, 8, 'fill="#000" opacity=".35"');
-  if (altillo) s += R(2, Y(altillo) - 1, ancho - 4, 2, 'style="fill:var(--int)" class="pieza"') + R(2, Y(altillo) + 1, ancho - 4, 0.6, 'fill="#000" opacity=".25"');
-  for (let i = 0; i < n; i++) {
-    const x0 = i * w + (i ? 1 : 2), x1 = (i + 1) * w - (i < n - 1 ? 1 : 2), tipo = mods[i] || 'largo';
-    const it = interior(tipo, x0, x1, techoUtil, altillo, alto, i * 7 + 3);
-    Object.keys(tot).forEach((k) => (tot[k] += it.n[k])); Object.keys(it.c).forEach((k) => (cuenta[k] += it.c[k]));
-    s += `<g class="modulo" data-k="f-${i}" role="button" tabindex="0" aria-label="Hueco ${i + 1}: ${TIPOS[tipo]}. Pulsa para cambiarlo">${R(x0, 2, x1 - x0, alto - 10, 'fill="transparent"')}${deFrente(it.p, alto)}${R(x0, 2, x1 - x0, alto - 10, 'class="marca" fill="none"')}</g>`;
-    if (i < n - 1) s += R((i + 1) * w - 1, 2, 2, alto - 10, 'style="fill:var(--int)" class="pieza"') + R((i + 1) * w + 1, 2, 0.5, alto - 10, 'fill="#000" opacity=".2"');
-  }
-  s += R(2, 2, ancho - 4, 6, 'fill="url(#luzArriba)" class="led"');
+  const c = cuerpo(ancho, alto, mods, 'f');
+  s += c.s;
 
   // Puertas con su modelo
   const H = alto - 8, cristal = modelo === 'cristal' || modelo === 'cruz';
@@ -155,104 +189,93 @@ export function armario({ ancho = 240, alto = 250, puertas = 'correderas', mods 
       }
     }
   }
-  return { vista: `${-30} ${-25} ${ancho + 60} ${alto + 55}`, s: s + `<g class="puertas">${p}</g>`, datos: { ...tot, perchas: tot.perchas + tot.pantalones, n, altillo: !!altillo, cuenta, huecos: [['f', n]] } };
+  const cuenta = { ...c.cuenta, altillo: !!c.altillo };
+  return { vista: `${-30} ${-25} ${ancho + 60} ${alto + 55}`, s: s + `<g class="puertas">${p}</g>`, datos: { ...c.tot, perchas: c.tot.perchas + c.tot.pantalones, n, altillo: !!c.altillo, cuenta, huecos: [['f', n]] } };
 }
 
-// ── Vestidor en perspectiva: lineal, en L, en C o con isla ──
-const F = 1260, CZ = 900, CY = 150, H0 = 309;
+// ── Vestidor «de maqueta»: el fondo de frente y los laterales abiertos hacia los lados, con el mismo dibujo que de frente ──
+// Cada pared lateral es el mismo cuerpo de frente, inclinado con una transformación afín (x se acorta y baja hacia el espectador).
+const SX = 0.6, SY = 0.3, FONDO = 60;
 export function vestidor({ ancho = 300, alto = 250, forma = 'lineal', lado = 180, mods = [], modsI = [], modsD = [] }) {
-  const W = ancho, CX = W / 2;
-  const P = (x, y, z) => { const sc = F / (CZ - z); return [500 + (x - CX) * sc, H0 - (y - CY) * sc]; };
-  const pts = (l) => l.map((q) => P(...q).map((v) => v.toFixed(1)).join(',')).join(' ');
-  const poli = (l, a = '') => `<polygon points="${pts(l)}" ${a}/>`;
-  const ln = (p1, p2, a = '') => { const [x1, y1] = P(...p1), [x2, y2] = P(...p2); return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" ${a}/>`; };
-  const altillo = alto >= 220 ? alto - 45 : null, techoUtil = altillo ?? alto - 2, FONDO = 60, ZF = 520;
-  const tot = { perchas: 0, zapatos: 0, montones: 0, cajones: 0, pantalones: 0 }, cuenta = { largo: 0, corto: 0, doblado: 0, zapatos: 0, altillo: !!altillo };
-  const conIzq = forma !== 'lineal', conDer = forma === 'C' || forma === 'isla';
-  let s = '';
-  // Habitación
-  s += poli([[0, 0, 0], [W, 0, 0], [W, 0, ZF], [0, 0, ZF]], 'fill="#c8ad87"');
-  for (let x = 16; x < W; x += 16) s += ln([x, 0, 0], [x, 0, ZF], 'stroke="#7a5c40" stroke-opacity=".22" stroke-width="1"');
-  s += poli([[0, 0, 0], [W, 0, 0], [W, 0, ZF], [0, 0, ZF]], 'fill="url(#sueloV)"');
-  s += poli([[0, 0, 0], [W, 0, 0], [W, alto + 20, 0], [0, alto + 20, 0]], 'fill="#e9e6df"');
-  [[0, 0.08], [W, 0.14]].forEach(([x, o]) => { const l = [[x, 0, 0], [x, alto + 20, 0], [x, alto + 20, ZF], [x, 0, ZF]]; s += poli(l, 'fill="#e9e6df"') + poli(l, `fill="#000" opacity="${o}"`); });
-  s += poli([[0, alto + 20, 0], [W, alto + 20, 0], [W, alto + 20, ZF], [0, alto + 20, ZF]], 'fill="#e9e6df"') + poli([[0, alto + 20, 0], [W, alto + 20, 0], [W, alto + 20, ZF], [0, alto + 20, ZF]], 'fill="#000" opacity=".2"');
-
-  // Un tramo de muebles a lo largo de una pared: o (esquina de la pared), u (a lo largo), nrm (hacia la habitación)
-  const tramo = (clave, o, u, nrm, largo, lista, finVisible) => {
-    const n = modulosPara(largo), w = largo / n;
-    const Q = (a, b, d) => [o[0] + u[0] * a + nrm[0] * d, b, o[2] + u[2] * a + nrm[2] * d];
-    const cuad = (a0, b0, a1, b1, d) => [Q(a0, b0, d), Q(a1, b0, d), Q(a1, b1, d), Q(a0, b1, d)];
-    const plano = (a0, a1, b, d0, d1) => [Q(a0, b, d0), Q(a1, b, d0), Q(a1, b, d1), Q(a0, b, d1)];
-    const lateral = (a, b0, b1, d0, d1) => [Q(a, b0, d0), Q(a, b0, d1), Q(a, b1, d1), Q(a, b1, d0)];
-    let t = '';
-    // Fondo, techo del mueble, zócalo y altillo
-    t += poli(cuad(0, 8, largo, alto, 0.5), 'style="fill:var(--int)" class="pieza"') + poli(cuad(0, 8, largo, alto, 0.5), 'fill="url(#vetaA)" class="dibujo" style="opacity:var(--v-int)"') + poli(cuad(0, 8, largo, alto, 0.5), 'fill="url(#telaV)" class="dibujo" style="opacity:var(--t-int)"') + poli(cuad(0, 8, largo, alto, 0.5), 'fill="#000" opacity=".1"');
-    t += poli(plano(0, largo, alto - 2, 0, FONDO), 'style="fill:var(--int)" class="pieza"') + poli(plano(0, largo, alto - 2, 0, FONDO), 'fill="#000" opacity=".22"');
-    t += poli(plano(0, largo, 8, 0, FONDO), 'style="fill:var(--int)" class="pieza"') + poli(plano(0, largo, 8, 0, FONDO), 'fill="#fff" opacity=".06"');
-    t += poli(cuad(0, 0, largo, 8, FONDO), 'style="fill:var(--ext)" class="pieza"') + poli(cuad(0, 0, largo, 8, FONDO), 'fill="#000" opacity=".4"');
-    if (altillo) t += poli(plano(0, largo, altillo, 0, FONDO), 'style="fill:var(--int)" class="pieza"') + poli(plano(0, largo, altillo, 0, FONDO), `fill="#000" opacity="${altillo > CY ? 0.2 : 0}"`);
-    // Separación entre huecos (lateral y canto). En los laterales va antes del hueco más cercano; en el fondo, al final.
-    const separa = (a) => poli(lateral(a, 8, alto - 2, 0, FONDO), 'style="fill:var(--int)" class="pieza"') + poli(lateral(a, 8, alto - 2, 0, FONDO), 'fill="#000" opacity=".16"') + poli(cuad(a - 1, 8, a + 1, alto, FONDO), 'style="fill:var(--ext)" class="pieza"');
-    // Huecos
-    for (let i = 0; i < n; i++) {
-      if (clave !== 'f' && i > 0) t += separa(i * w);
-      const a0 = i * w + 1, a1 = (i + 1) * w - 1, tipo = lista[i] || 'largo';
-      const it = interior(tipo, a0, a1, techoUtil, altillo, alto, i * 7 + clave.length * 5 + 3);
-      Object.keys(tot).forEach((k) => (tot[k] += it.n[k])); Object.keys(it.c).forEach((k) => (cuenta[k] += it.c[k]));
-      let g = poli(cuad(a0, 8, a1, alto - 2, FONDO), 'fill="transparent"');
-      const baldas = [];
-      it.p.forEach((q) => {
-        if (q.k === 'balda') { baldas.push(q); g += poli(plano(q.a0, q.a1, q.b, 0, FONDO - 2), `style="fill:var(--int)" class="pieza"`) + poli(plano(q.a0, q.a1, q.b, 0, FONDO - 2), `fill="${q.b > CY ? '#000' : '#fff'}" opacity="${q.b > CY ? 0.22 : 0.08}"`); }
-        if (q.k === 'barra') g += ln(Q(q.a0, q.b, 30), Q(q.a1, q.b, 30), 'stroke="#9aa0a6" stroke-width="2.2" stroke-linecap="round"');
-        if (q.k === 'varilla') g += ln(Q(q.a0, q.b, 52), Q(q.a1, q.b, 52), 'stroke="#b5b9bd" stroke-width="1.1"');
-        if (q.k === 'marco') g += poli(lateral(q.a0, q.b0, q.b1, 4, 56), 'fill="#9aa0a6" opacity=".5"');
-        if ((q.k === 'prenda' || q.k === 'pantalon') && clave !== 'f') { const b0 = q.b - 3, b1 = q.b - q.l; g += poli(cuad(q.a, b1, q.a + q.w * 0.8, b0, 30), `fill="${q.c}"`) + poli(cuad(q.a, b1, q.a + q.w * 0.25, b0, 30.5), 'fill="#fff" opacity=".12"'); }
-        else if (q.k === 'prenda' || q.k === 'pantalon') { const b0 = q.b - 3, b1 = q.b - q.l; g += poli([Q(q.a, b0, 10), Q(q.a, b0, 50), Q(q.a + 0.4, b1, 53), Q(q.a + 0.4, b1, 7)], `fill="${q.c}"`) + poli([Q(q.a, b0, 50), Q(q.a + q.w * 0.6, b0, 50), Q(q.a + q.w * 0.6, b1, 53), Q(q.a + 0.4, b1, 53)], `fill="${q.c}"`) + poli([Q(q.a, b0, 50), Q(q.a + q.w * 0.6, b0, 50), Q(q.a + q.w * 0.6, b1, 53), Q(q.a + 0.4, b1, 53)], 'fill="#000" opacity=".12"'); }
-        if (q.k === 'monton') g += poli(cuad(q.a, q.b, q.a + q.w, q.b + q.h, 46), `fill="${q.c}"`) + (q.b + q.h < CY ? poli(plano(q.a, q.a + q.w, q.b + q.h, 16, 46), `fill="${q.c}"`) + poli(plano(q.a, q.a + q.w, q.b + q.h, 16, 46), 'fill="#fff" opacity=".18"') : '');
-        if (q.k === 'zapato' && clave !== 'f') g += poli(cuad(q.a, q.b, q.a + 8.5, q.b + 4.5, 40), `fill="${q.c}"`) + poli(cuad(q.a, q.b + 4.5, q.a + 3.5, q.b + 7, 40), `fill="${q.c}"`);
-        else if (q.k === 'zapato') g += poli([Q(q.a, q.b, 44), Q(q.a + 8.5, q.b, 44), Q(q.a + 8.5, q.b + 4.5, 40), Q(q.a + 2, q.b + 7, 34), Q(q.a, q.b + 7, 34)], `fill="${q.c}"`);
-        if (q.k === 'cajon' || q.k === 'bandeja') g += poli(cuad(q.a0, q.b0 + 0.4, q.a1, q.b1 - 0.4, FONDO - 1), 'style="fill:var(--int)" class="pieza" stroke="#000" stroke-opacity=".25" stroke-width=".7"') + poli(cuad((q.a0 + q.a1) / 2 - 7, q.b1 - 4, (q.a0 + q.a1) / 2 + 7, q.b1 - 2.8, FONDO - 0.8), 'fill="#000" opacity=".35"');
-        if (q.k === 'bandejaAbierta') g += poli(plano(q.a0, q.a1, q.b, 10, FONDO - 2), 'fill="#3a2f2a"');
-        if (q.k === 'mini') g += poli(cuad(q.a, q.b, q.a + q.w, q.b + q.h, 40), `fill="${q.c}"`);
-        if (q.k === 'bolso') g += poli([Q(q.a, q.b, 40), Q(q.a + q.w, q.b, 40), Q(q.a + q.w - 2, q.b + q.h - 6, 40), Q(q.a + 2, q.b + q.h - 6, 40)], `fill="${q.c}"`);
-        if (q.k === 'caja') g += poli(cuad(q.a, q.b, q.a + q.w, q.b + q.h, 50), `fill="${q.c}"`) + poli(plano(q.a, q.a + q.w, q.b, 10, 50), 'fill="#000" opacity=".15"');
-      });
-      baldas.forEach((q) => (g += poli(cuad(q.a0, q.b - 1, q.a1, q.b + 1, FONDO - 2), 'style="fill:var(--int)" class="pieza"') + poli(cuad(q.a0, q.b - 1, q.a1, q.b + 1, FONDO - 2), 'fill="#000" opacity=".12"')));
-      g += poli(cuad(a0, 8, a1, alto - 2, FONDO), 'class="marca" fill="none"');
-      t += `<g class="modulo" data-k="${clave}-${i}" role="button" tabindex="0" aria-label="${{ f: 'Fondo', i: 'Izquierda', d: 'Derecha' }[clave]}, hueco ${i + 1}: ${TIPOS[tipo]}. Pulsa para cambiarlo">${g}</g>`;
+  const W = ancho, conIzq = forma !== 'lineal', conDer = forma === 'C' || forma === 'isla';
+  const D = conIzq ? FONDO + lado : 150;                 // profundidad de las paredes laterales
+  const LX = D * SX;                                      // margen a la izquierda para el lateral izquierdo
+  const tot = { perchas: 0, zapatos: 0, montones: 0, cajones: 0, pantalones: 0 }, cuenta = { largo: 0, corto: 0, doblado: 0, zapatos: 0 };
+  const huecos = []; let s = '', altillo = false;
+  const pt = (x, y) => `${f(x)},${f(y)}`;
+  // Suelo: trapecio que se abre hacia el espectador, con tarima que converge al fondo
+  const fondoI = [LX, alto], fondoD = [LX + W, alto], frenteI = [LX - D * SX, alto + D * SY], frenteD = [LX + W + D * SX, alto + D * SY];
+  s += `<polygon points="${[fondoI, fondoD, frenteD, frenteI].map((q) => pt(...q)).join(' ')}" fill="#c8ad87"/>`;
+  for (let k = 1; k < 16; k++) { const t = k / 16; s += `<line x1="${f(fondoI[0] + W * t)}" y1="${alto}" x2="${f(frenteI[0] + (frenteD[0] - frenteI[0]) * t)}" y2="${f(alto + D * SY)}" stroke="#7a5c40" stroke-opacity=".22" stroke-width=".5"/>`; }
+  s += `<polygon points="${[fondoI, fondoD, frenteD, frenteI].map((q) => pt(...q)).join(' ')}" fill="url(#sueloMaqueta)"/>`;
+  // Pared del fondo por encima del mueble
+  s += `<rect x="${f(LX)}" y="-30" width="${f(W)}" height="30" fill="#e9e6df"/>`;
+  // Lateral (izquierdo o derecho): pared lisa en toda la profundidad y, si hay mueble, su cuerpo desde la esquina + 60
+  const lateral = (lado_, clave, lista) => {
+    const izq = lado_ === 'i', esq = izq ? [LX, 0] : [LX + W, 0];
+    // Matriz: x' a lo largo de la pared (0 = esquina … D = delante), y hacia abajo
+    const ux = izq ? -SX : SX, uy = SY;
+    const m = (x0) => `matrix(${ux} ${uy} 0 1 ${f(esq[0] + ux * x0)} ${f(esq[1] + uy * x0)})`;
+    let t = `<g transform="${m(0)}"><rect x="0" y="-30" width="${D}" height="${alto + 30}" fill="#e9e6df"/><rect x="0" y="-30" width="${D}" height="${alto + 30}" fill="#000" opacity="${izq ? 0.06 : 0.1}"/></g>`;
+    if (lista) {
+      const c = cuerpo(lado_ === 'i' ? lado : lado, alto, lista, clave, clave === 'i' ? 11 : 19, izq ? 'Izquierda, hueco' : 'Derecha, hueco');
+      sumar(tot, c.tot); sumar(cuenta, c.cuenta); altillo = altillo || !!c.altillo; huecos.push([clave, c.n]);
+      // El cuerpo se dibuja de frente con x de 0 a lado: en el izquierdo, x=0 queda delante; en el derecho, junto a la esquina
+      const tr = izq ? `matrix(${-ux} ${-uy} 0 1 ${f(esq[0] + ux * D)} ${f(esq[1] + uy * D)})` : m(FONDO);
+      t += `<g transform="${tr}">${c.s}<rect x="0" y="0" width="${lado}" height="${alto}" fill="#000" opacity="${izq ? 0.05 : 0.09}" pointer-events="none"/></g>`;
+      // Canto delantero del lateral (el panel final, de frente)
+      const fx = izq ? esq[0] + ux * D : esq[0] + ux * D, fy = esq[1] + uy * D;
+      t += `<polygon points="${pt(fx, fy)} ${pt(fx + (izq ? 2.5 : -2.5), fy)} ${pt(fx + (izq ? 2.5 : -2.5), fy + alto)} ${pt(fx, fy + alto)}" style="fill:var(--ext)" class="pieza"/>`;
     }
-    // Separaciones entre huecos y cantos delanteros
-    if (clave === 'f') for (let i = 1; i < n; i++) t += separa(i * w);
-    t += poli(cuad(0, alto - 3, largo, alto, FONDO), 'style="fill:var(--ext)" class="pieza"');
-    t += poli(cuad(0, alto - 8, largo, alto - 3, FONDO - 1), 'fill="url(#luzArribaV)" class="led"');
-    // Dibujo «en corte»: del panel final de los laterales solo se ve el canto, para que no tape el interior
-    if (finVisible) t += poli(cuad(largo - 2, 0, largo, alto, FONDO), 'style="fill:var(--ext)" class="pieza"') + poli(lateral(largo, alto - 2, alto, 0, FONDO), 'style="fill:var(--ext)" class="pieza"');
-    return { t, n };
+    return t;
   };
-  const huecos = [];
-  const fondo = tramo('f', [0, 0, 0], [1, 0, 0], [0, 0, 1], W, mods, false); s += fondo.t; huecos.push(['f', fondo.n]);
-  if (conIzq) { const iz = tramo('i', [0, 0, FONDO], [0, 0, 1], [1, 0, 0], lado, modsI, true); s += iz.t; huecos.push(['i', iz.n]); }
-  if (conDer) { const de = tramo('d', [W, 0, FONDO], [0, 0, 1], [-1, 0, 0], lado, modsD, true); s += de.t; huecos.push(['d', de.n]); }
-  // Isla de cajones con tapa de cristal (joyero)
+  s += lateral('i', 'i', conIzq ? modsI : null);
+  s += lateral('d', 'd', conDer ? modsD : null);
+  // Fondo
+  const cf = cuerpo(W, alto, mods, 'f', 3, 'Fondo, hueco');
+  sumar(tot, cf.tot); sumar(cuenta, cf.cuenta); altillo = altillo || !!cf.altillo; huecos.unshift(['f', cf.n]);
+  s += `<g transform="translate(${f(LX)} 0)">${cf.s}</g>`;
+  // Isla (joyero con tapa de cristal), situada en el suelo
   if (forma === 'isla') {
-    const x0 = W / 2 - 25, x1 = W / 2 + 25, z0 = FONDO + 60, z1 = Math.min(FONDO + lado, z0 + 120);
-    s += poli([[x0 - 6, 0.3, z0 - 4], [x1 + 6, 0.3, z0 - 4], [x1 + 6, 0.3, z1 + 6], [x0 - 6, 0.3, z1 + 6]], 'fill="#000" opacity=".15"');
-    s += poli([[x0, 0, z1], [x1, 0, z1], [x1, 88, z1], [x0, 88, z1]], 'style="fill:var(--ext)" class="pieza"') + poli([[x0, 0, z1], [x1, 0, z1], [x1, 88, z1], [x0, 88, z1]], 'fill="url(#vetaA)" class="dibujo" style="opacity:var(--v-ext)"');
-    s += poli([[x0, 0, z1], [x1, 0, z1], [x1, 8, z1], [x0, 8, z1]], 'fill="#000" opacity=".35"');
-    s += poli([[x0, 88, z0], [x1, 88, z0], [x1, 88, z1], [x0, 88, z1]], 'style="fill:var(--ext)" class="pieza"');
-    s += poli([[x0 + 3, 88.3, z0 + 3], [x1 - 3, 88.3, z0 + 3], [x1 - 3, 88.3, z1 - 3], [x0 + 3, 88.3, z1 - 3]], 'fill="#3a2f2a"');
-    for (let z = z0 + 10, i = 0; z < z1 - 12; z += 16, i++) s += poli([[x0 + 10, 88.6, z], [x0 + 18, 88.6, z], [x0 + 18, 88.6, z + 6], [x0 + 10, 88.6, z + 6]], `fill="${['#c9a27a', '#d9d4ca', '#b46a55'][i % 3]}"`) + poli([[x1 - 18, 88.6, z + 3], [x1 - 10, 88.6, z + 3], [x1 - 10, 88.6, z + 9], [x1 - 18, 88.6, z + 9]], `fill="${['#2f2f33', '#c9a27a', '#8e9c86'][i % 3]}"`);
-    s += poli([[x0 + 3, 88.8, z0 + 3], [x1 - 3, 88.8, z0 + 3], [x1 - 3, 88.8, z1 - 3], [x0 + 3, 88.8, z1 - 3]], 'fill="url(#reflejo)" opacity=".8"');
+    const suelo = (X, Z, h = 0) => { const t = Z / D, xb = LX + X, xf = frenteI[0] + (frenteD[0] - frenteI[0]) * (X / W); return [xb + (xf - xb) * t, alto + D * SY * t - h]; };
+    const X0 = W / 2 - 25, X1 = W / 2 + 25, Z0 = FONDO + 50, Z1 = Math.min(D - 15, Z0 + 120), H = 88;
+    const pol = (l, a) => `<polygon points="${l.map((q) => pt(...q)).join(' ')}" ${a}/>`;
+    s += pol([suelo(X0 - 4, Z0 - 4), suelo(X1 + 4, Z0 - 4), suelo(X1 + 4, Z1 + 6), suelo(X0 - 4, Z1 + 6)], 'fill="#000" opacity=".16"');
+    s += pol([suelo(X0, Z0, 0), suelo(X0, Z1, 0), suelo(X0, Z1, H), suelo(X0, Z0, H)], 'style="fill:var(--ext)" class="pieza"') + pol([suelo(X0, Z0, 0), suelo(X0, Z1, 0), suelo(X0, Z1, H), suelo(X0, Z0, H)], 'fill="#000" opacity=".12"');
+    s += pol([suelo(X1, Z0, 0), suelo(X1, Z1, 0), suelo(X1, Z1, H), suelo(X1, Z0, H)], 'style="fill:var(--ext)" class="pieza"') + pol([suelo(X1, Z0, 0), suelo(X1, Z1, 0), suelo(X1, Z1, H), suelo(X1, Z0, H)], 'fill="#000" opacity=".2"');
+    s += pol([suelo(X0, Z1, 0), suelo(X1, Z1, 0), suelo(X1, Z1, H), suelo(X0, Z1, H)], 'style="fill:var(--ext)" class="pieza"') + pol([suelo(X0, Z1, 0), suelo(X1, Z1, 0), suelo(X1, Z1, H), suelo(X0, Z1, H)], 'fill="url(#vetaA)" class="dibujo" style="opacity:var(--v-ext)"');
+    [0.3, 0.6].forEach((v) => (s += pol([suelo(X0 + 2, Z1, 8 + (H - 8) * v), suelo(X1 - 2, Z1, 8 + (H - 8) * v), suelo(X1 - 2, Z1, 8.6 + (H - 8) * v), suelo(X0 + 2, Z1, 8.6 + (H - 8) * v)], 'fill="#000" opacity=".3"')));
+    s += pol([suelo(X0, Z1, 0), suelo(X1, Z1, 0), suelo(X1, Z1, 8), suelo(X0, Z1, 8)], 'fill="#000" opacity=".35"');
+    s += pol([suelo(X0, Z0, H), suelo(X1, Z0, H), suelo(X1, Z1, H), suelo(X0, Z1, H)], 'style="fill:var(--ext)" class="pieza"');
+    s += pol([suelo(X0 + 3, Z0 + 3, H), suelo(X1 - 3, Z0 + 3, H), suelo(X1 - 3, Z1 - 3, H), suelo(X0 + 3, Z1 - 3, H)], 'fill="#3a2f2a"');
+    for (let z = Z0 + 12, i = 0; z < Z1 - 14; z += 17, i++) {
+      s += pol([suelo(X0 + 9, z, H), suelo(X0 + 19, z, H), suelo(X0 + 19, z + 7, H), suelo(X0 + 9, z + 7, H)], `fill="${['#c9a27a', '#d9d4ca', '#b46a55'][i % 3]}"`);
+      s += pol([suelo(X1 - 19, z + 4, H), suelo(X1 - 9, z + 4, H), suelo(X1 - 9, z + 11, H), suelo(X1 - 19, z + 11, H)], `fill="${['#2f2f33', '#c9a27a', '#8e9c86'][i % 3]}"`);
+    }
+    s += pol([suelo(X0 + 3, Z0 + 3, H), suelo(X1 - 3, Z0 + 3, H), suelo(X1 - 3, Z1 - 3, H), suelo(X0 + 3, Z1 - 3, H)], 'fill="url(#reflejo)" opacity=".85"');
     cuenta.isla = true; tot.cajones += 6;
   }
-  // Lámpara de techo
-  const [lx, ly] = P(W / 2, alto + 18, FONDO + lado / 2);
-  s += `<ellipse cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" rx="40" ry="7" fill="#fff" opacity=".85"/><ellipse cx="${lx.toFixed(1)}" cy="${(ly + 30).toFixed(1)}" rx="160" ry="60" fill="url(#haloV)" opacity=".5"/>`;
-  // Encuadre: de la pared del fondo a la parte delantera de los laterales
-  const zv = FONDO + lado + 30, [ax, ay] = P(0, alto + 20, 0), [, by] = P(0, 0, Math.min(zv, 300)), [lx0] = P(conIzq ? 0 : -20, 0, conIzq ? zv : 120), [lx1] = P(conDer ? W : W + 20, 0, conDer ? zv : 120);
-  const x0 = Math.min(ax, lx0) - 10, x1 = Math.max(P(W, 0, 0)[0], lx1) + 10, y0 = ay - 10, y1 = by + 6;
-  return { vista: `${f(x0)} ${f(y0)} ${f(x1 - x0)} ${f(y1 - y0)}`, s, datos: { ...tot, perchas: tot.perchas + tot.pantalones, n: huecos.reduce((a, h) => a + h[1], 0), altillo: !!altillo, cuenta, huecos } };
+  const x0 = -D * SX + LX - 12, x1 = LX + W + D * SX + 12, y0 = -38, y1 = alto + D * SY + 10;
+  return { vista: `${f(x0)} ${f(y0)} ${f(x1 - x0)} ${f(y1 - y0)}`, s, datos: { ...tot, perchas: tot.perchas + tot.pantalones, n: huecos.reduce((a, h) => a + h[1], 0), altillo, cuenta: { ...cuenta, altillo }, huecos } };
+}
+
+// ── Plano visto desde arriba, con los pasos (para la esquina del dibujo del vestidor) ──
+export function plano({ ancho = 300, forma = 'lineal', lado = 180 }) {
+  const W = ancho, conIzq = forma !== 'lineal', conDer = forma === 'C' || forma === 'isla', D = conIzq ? FONDO + lado : 150;
+  const k = 150 / Math.max(W, D), r = (x, y, w, h, a) => `<rect x="${f(x * k)}" y="${f(y * k)}" width="${f(w * k)}" height="${f(h * k)}" ${a}/>`;
+  const t = (x, y, txt) => `<text x="${f(x * k)}" y="${f(y * k)}" text-anchor="middle" font-size="10" font-family="Inter, sans-serif" fill="#fff">${txt}</text>`;
+  let s = r(0, 0, W, D, 'fill="#1d1d20" stroke="#55555c" stroke-width="1"') + r(0, 0, W, FONDO, 'fill="#c9a27a"');
+  if (conIzq) s += r(0, FONDO, FONDO, lado, 'fill="#c9a27a"');
+  if (conDer) s += r(W - FONDO, FONDO, FONDO, lado, 'fill="#c9a27a"');
+  let paso = W - (conIzq ? FONDO : 0) - (conDer ? FONDO : 0);
+  const ix = conIzq ? FONDO : 0;
+  if (forma === 'isla') { s += r(W / 2 - 25, FONDO + 50, 50, Math.min(D - 15, FONDO + 170) - (FONDO + 50), 'fill="#3d55ff"'); paso = Math.floor((W - 2 * FONDO - 50) / 2); }
+  const py = FONDO + (D - FONDO) * 0.82, ok = paso >= (conDer ? (forma === 'isla' ? 90 : 100) : 90) ? '#8796ff' : paso >= (conDer ? 80 : 70) ? '#c9a27a' : '#e07a62';
+  const x1p = forma === 'isla' ? W / 2 - 25 : W - (conDer ? FONDO : 0);
+  s += `<line x1="${f(ix * k + 3)}" y1="${f(py * k)}" x2="${f(x1p * k - 3)}" y2="${f(py * k)}" stroke="${ok}" stroke-width="1.5" marker-start="url(#flecha)" marker-end="url(#flecha)"/>`;
+  s += t((ix + x1p) / 2, py - 4, `${paso} cm`);
+  s += t(W / 2, D + 13, `${W} cm`);
+  return `<svg viewBox="-6 -6 ${f(W * k + 12)} ${f(D * k + 24)}" width="${f(W * k + 12)}" height="${f(D * k + 24)}" aria-hidden="true"><defs><marker id="flecha" viewBox="0 0 6 6" refX="3" refY="3" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 6 3 0 6z" fill="${ok}"/></marker></defs>${s}</svg>`;
 }
 
 export const DEFS_ARMARIO = `<defs>
@@ -265,5 +288,8 @@ export const DEFS_ARMARIO = `<defs>
 <linearGradient id="brilloPuerta" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".12"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".08"/></linearGradient>
 <linearGradient id="reflejo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".35" stop-color="#fff" stop-opacity="0"/><stop offset=".55" stop-color="#fff" stop-opacity=".12"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></linearGradient>
 <linearGradient id="sueloV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".25"/><stop offset=".2" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient>
+<linearGradient id="ledCono" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe2ad" stop-opacity=".62"/><stop offset=".45" stop-color="#ffe2ad" stop-opacity=".2"/><stop offset="1" stop-color="#ffe2ad" stop-opacity="0"/></linearGradient>
+<linearGradient id="ledLado" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffe2ad" stop-opacity=".45"/><stop offset="1" stop-color="#ffe2ad" stop-opacity="0"/></linearGradient>
+<linearGradient id="sueloMaqueta" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".28"/><stop offset=".35" stop-color="#000" stop-opacity=".05"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
 <radialGradient id="haloV"><stop offset="0" stop-color="#fff3d9" stop-opacity=".9"/><stop offset="1" stop-color="#fff3d9" stop-opacity="0"/></radialGradient>
 </defs>`;
