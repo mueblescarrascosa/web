@@ -29,6 +29,16 @@ const schema = tipo === 'entrada' ? { '@context': 'https://schema.org', '@type':
   )}
   {tipo === 'entrada' && item.portada && <figure class="ancho portada-entrada"><img src={r(item.portada.src)} alt={item.portada.alt} /></figure>}
   <article class={`contenido pagina-${item.slug}`} set:html={conBase(item.html)} />
+  {item.slug === 'cocinas' && (
+    <section class="ancho aviso-juego">
+      <div>
+        <span class="etiqueta">Juego</span>
+        <h2>¿No sabes qué colores elegir?</h2>
+        <p class="suave">Combina muebles, encimera, tiradores y suelo, y te decimos al momento si combinan y por qué.</p>
+      </div>
+      <a class="boton" href={r('/combina-tu-cocina/')}>Combina tu cocina <span class="flecha" aria-hidden="true">→</span></a>
+    </section>
+  )}
   {!legal && (
     <section class="seccion claro cierre">
       <div class="ancho">

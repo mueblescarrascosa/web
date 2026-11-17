@@ -3,7 +3,7 @@ import { r } from '../lib/sitio.js';
 const { portada = false } = Astro.props;
 const servicios = [
   ['/cocinas/', 'Cocinas a medida'], ['/armarios/', 'Armarios y vestidores'], ['/muebles-de-bano-a-medida/', 'Muebles de baño'],
-  ['/puertas/', 'Puertas de madera'], ['/disenos-3d/', 'Diseños en 3D'], ['/miscelanea/', 'Otros trabajos'], ['/destacado/', 'Todos los trabajos'],
+  ['/puertas/', 'Puertas de madera'], ['/disenos-3d/', 'Diseños en 3D'], ['/miscelanea/', 'Otros trabajos'], ['/destacado/', 'Todos los trabajos'], ['/combina-tu-cocina/', 'Combina tu cocina (juego)'],
 ];
 const ruta = Astro.url.pathname;
 const activo = (p) => ruta.endsWith(p) ? 'page' : undefined;
