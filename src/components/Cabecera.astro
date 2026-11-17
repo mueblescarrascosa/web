@@ -3,8 +3,9 @@ import { r } from '../lib/sitio.js';
 const { portada = false } = Astro.props;
 const servicios = [
   ['/cocinas/', 'Cocinas a medida'], ['/armarios/', 'Armarios y vestidores'], ['/muebles-de-bano-a-medida/', 'Muebles de baño'],
-  ['/puertas/', 'Puertas de madera'], ['/disenos-3d/', 'Diseños en 3D'], ['/miscelanea/', 'Otros trabajos'], ['/destacado/', 'Todos los trabajos'], ['/combina-tu-cocina/', 'Combina tu cocina (juego)'], ['/disena-tu-armario/', 'Diseña tu armario (juego)'],
+  ['/puertas/', 'Puertas de madera'], ['/disenos-3d/', 'Diseños en 3D'], ['/miscelanea/', 'Otros trabajos'], ['/destacado/', 'Todos los trabajos'],
 ];
+const juegos = [['/combina-tu-cocina/', 'Combina tu cocina'], ['/disena-tu-armario/', 'Diseña tu armario o vestidor']];
 const ruta = Astro.url.pathname;
 const activo = (p) => ruta.endsWith(p) ? 'page' : undefined;
 ---
@@ -19,6 +20,10 @@ const activo = (p) => ruta.endsWith(p) ? 'page' : undefined;
         <li class="desplegable">
           <button type="button" aria-expanded="false">Servicios</button>
           <ul>{servicios.map(([h, t]) => <li><a href={r(h)} aria-current={activo(h)}>{t}</a></li>)}</ul>
+        </li>
+        <li class="desplegable">
+          <button type="button" aria-expanded="false">Juegos</button>
+          <ul>{juegos.map(([h, t]) => <li><a href={r(h)} aria-current={activo(h)}>{t}</a></li>)}</ul>
         </li>
         <li><a href={r('/preguntas-frecuentes/')} aria-current={activo('/preguntas-frecuentes/')}>Dudas</a></li>
         <li><a href={r('/entradas-del-blog/')} aria-current={activo('/entradas-del-blog/')}>Blog</a></li>

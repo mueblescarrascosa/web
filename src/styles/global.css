@@ -613,3 +613,4 @@ html.revela .destapa.visto:hover img { transform: scale(1.03); }
 .armario-juego .calc-mandos { gap: .9rem; }
 @media (max-width: 900px) { .armario { max-height: 46svh; } .cabe { grid-template-columns: repeat(4, 1fr); gap: .35rem; margin-top: .6rem; } .cabe li { padding: .45rem .5rem; font-size: .68rem; } .cabe b { font-size: 1.2rem; } }
 .boton-abrir[hidden] { display: none; }
+@media (min-width: 981px) and (max-width: 1180px) { .menu { gap: 1.25rem; } .menu > ul { gap: 1.15rem; } .logo img { width: 150px; } }
