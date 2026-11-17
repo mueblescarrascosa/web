@@ -84,7 +84,21 @@ const PREGUNTAS = [
     // ── De las respuestas a una cocina ──
     function resultado() {
       const { tam, uso, amb, pri, tir } = resp;
-      const dist = tam === 'pequena' ? 'lineal' : tam === 'abierta' ? (uso === 'juntos' ? 'isla' : 'peninsula') : tam === 'grande' ? (uso === 'mucho' || uso === 'juntos' ? 'isla' : 'L') : 'L';
+      // Distribución según el tamaño y cuánto se cocina (quien cocina poco no necesita tanta encimera; quien cocina mucho, más;
+      // quienes cocinan juntos, dos frentes de trabajo)
+      const TABLA = {
+        pequena: { poco: 'lineal', normal: 'lineal', mucho: 'L', juntos: 'lineal' },
+        mediana: { poco: 'lineal', normal: 'L', mucho: 'L', juntos: 'peninsula' },
+        grande: { poco: 'L', normal: 'L', mucho: 'isla', juntos: 'isla' },
+        abierta: { poco: 'peninsula', normal: 'peninsula', mucho: 'isla', juntos: 'isla' },
+      };
+      const dist = TABLA[tam][uso];
+      const porque = {
+        poco: 'Como cocináis poco, no hace falta tanta encimera: una distribución sencilla os sale más práctica y más económica.',
+        normal: 'Para el día a día, lo justo de encimera y todo a mano.',
+        mucho: tam === 'pequena' ? 'Como cocinas mucho, una L te da más encimera para trabajar; si la cocina es muy estrecha y no cabe, mejor lineal con todo bien repartido.' : 'Como cocinas mucho, necesitas más encimera de trabajo y más almacenaje.',
+        juntos: tam === 'pequena' ? 'Para cocinar juntos en una cocina pequeña, lineal y con el paso libre para no chocar.' : 'Como cocináis juntos, os viene bien tener dos frentes de trabajo para no estorbaros.',
+      }[uso];
       const sin = tir === 'sin';
       const nombre = { luz: sin ? 'Blanca total' : 'Nórdica', calido: sin ? 'Japandi' : 'Blanco y roble', color: tam === 'pequena' || sin ? 'Mediterránea' : 'Verde salvia y oro', oscuro: sin ? 'Negro y madera' : 'Industrial' }[amb];
       const prop = PROPUESTAS.find((p) => p.nombre === nombre) || PROPUESTAS[0];
@@ -99,7 +113,7 @@ const PREGUNTAS = [
       const n = puntuar(e);
       const nombreDist = { lineal: 'lineal', L: 'en L', isla: 'con isla', peninsula: 'con península' }[dist];
       $('#q-titulo').textContent = `${prop.nombre}, ${nombreDist}`;
-      const m = [];
+      const m = [porque];
       m.push({ lineal: 'Lineal: en una cocina pequeña o estrecha es la que mejor aprovecha el espacio y deja paso libre.', L: 'En L: dos paredes de trabajo, más encimera y el rincón aprovechado con un rinconero extraíble.', isla: 'Con isla: ganáis encimera y sitio para comer; pide 90 cm de paso alrededor (120 si cocináis dos).', peninsula: 'Con península: separa la cocina del salón sin cerrarla y hace de barra.' }[dist]);
       m.push(`Colores: ${e.bajos.nombre.toLowerCase()} abajo y ${e.altos.nombre.toLowerCase()} arriba, encimera ${e.encimera.nombre.toLowerCase()} y tiradores ${e.tirador.nombre.toLowerCase()}. Estilo ${n.estilo}, ${n.puntos}/100 en el juego.`);
       m.push({ limpieza: 'Encimera: compacto o porcelánico, que no se manchan ni se hinchan con el agua; y frentes antihuellas si van oscuros.', durar: 'Encimera: porcelánico de 2 cm, para nuestro gusto la mejor: aguanta calor, rayas, manchas y sol.', guardar: 'Almacenaje: columnas y altos hasta el techo, cajones en vez de puertas abajo y rinconero extraíble.', bonita: 'Encimera: una con vetas, como la Calacatta, y que la encimera contraste con los muebles bajos.' }[pri]);
