@@ -96,23 +96,6 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
       </div>
     </article>
 
-    <article class="calc" id="calc-lavavajillas">
-      <span class="etiqueta">Calculadora</span>
-      <h2>¿Cabe el lavavajillas?</h2>
-      <div class="calc-mandos">
-        <fieldset class="chips"><legend>Zócalo</legend>
-          <label><input type="radio" name="lv-z" value="10" /><span>10 cm</span></label><label><input type="radio" name="lv-z" value="15" checked /><span>15 cm</span></label>
-        </fieldset>
-        <fieldset class="chips"><legend>Mueble bajo</legend>
-          <label><input type="radio" name="lv-m" value="70" checked /><span>70 cm</span></label><label><input type="radio" name="lv-m" value="80" /><span>80 cm</span></label>
-        </fieldset>
-        <label class="interruptor"><input id="lv-gola" type="checkbox" /><span></span>Con gola (sin tiradores)</label>
-        <p class="dato-grande"><b id="lv-hueco">85</b><span>cm de hueco libre bajo la encimera</span></p>
-        <p class="veredicto-isla" id="lv-ver"></p>
-        <p class="suave" id="lv-det"></p>
-      </div>
-    </article>
-
     <article class="calc" id="calc-frigo">
       <span class="etiqueta">Calculadora</span>
       <h2>¿Qué frigorífico integrable cabe?</h2>
@@ -126,17 +109,38 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
 
     <article class="calc" id="calc-campana">
       <span class="etiqueta">Calculadora</span>
-      <h2>Altura y ancho de la campana</h2>
+      <h2>¿A qué altura va la campana?</h2>
       <div class="calc-mandos">
         <fieldset class="chips"><legend>Placa</legend>
           <label><input type="radio" name="cp-tipo" value="induccion" checked /><span>Inducción o vitro</span></label><label><input type="radio" name="cp-tipo" value="gas" /><span>Gas</span></label>
         </fieldset>
-        <fieldset class="chips"><legend>Ancho de la placa</legend>
-          {[60, 70, 80, 90].map((a, i) => <label><input type="radio" name="cp-ancho" value={a} checked={i === 0} /><span>{a} cm</span></label>)}
-        </fieldset>
-        <label class="interruptor"><input id="cp-isla" type="checkbox" /><span></span>La placa está en una isla</label>
         <p class="dato-grande"><b id="cp-alto">65</b><span>cm sobre la placa</span></p>
         <p class="suave" id="cp-det"></p>
+      </div>
+    </article>
+
+    <article class="calc" id="calc-barras">
+      <span class="etiqueta">Calculadora</span>
+      <h2>¿A qué altura pongo las barras?</h2>
+      <div class="calc-in">
+        <div class="calc-mandos">
+          <label>Tu estatura <output id="br-est-v">165 cm</output><input id="br-est" type="range" min="145" max="200" value="165" step="1" /></label>
+          <label>Alto del armario <output id="br-alto-v">250 cm</output><input id="br-alto" type="range" min="200" max="280" value="250" step="5" /></label>
+          <p class="dato-grande"><b id="br-larga">175</b><span>cm la barra para colgar largo</span></p>
+          <p class="dato-grande"><b id="br-doble">195 y 100</b><span>cm con dos barras</span></p>
+          <p class="suave" id="br-det"></p>
+        </div>
+        <svg class="calc-dibujo" viewBox="0 0 220 240" aria-hidden="true">
+          <line x1="0" y1="226" x2="220" y2="226" stroke="var(--linea)" stroke-width="2" />
+          <g id="br-persona" fill="#5c5954"><circle cx="45" r="11" /><rect x="30" width="30" rx="12" /><rect x="34" width="9" rx="4" /><rect x="47" width="9" rx="4" /></g>
+          <line id="br-brazo" x1="58" x2="70" stroke="#5c5954" stroke-width="7" stroke-linecap="round" />
+          <rect id="br-armario" x="95" width="115" fill="#f1f0ec" />
+          <rect id="br-altillo" x="95" width="115" height="2" fill="#cfcdc8" />
+          <line id="br-b1" x1="100" x2="205" stroke="#9aa0a6" stroke-width="2.5" />
+          <line id="br-b2" x1="100" x2="205" stroke="#9aa0a6" stroke-width="2.5" />
+          <line id="br-alcance" x1="0" x2="220" stroke="var(--azul-vivo)" stroke-dasharray="4 4" />
+          <text id="br-alcance-t" x="2" fill="var(--azul-claro)" font-size="10" font-family="Inter, sans-serif">llegas</text>
+        </svg>
       </div>
     </article>
 
@@ -283,17 +287,6 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
     }
     $('#hm-est').addEventListener('input', hornoMicro); hornoMicro();
 
-    // ── Hueco del lavavajillas: zócalo + mueble − gola (5,6); mínimo 85 libres, más de 92 sobra ──
-    function lavavajillas() {
-      const z = +$('input[name=lv-z]:checked').value, m = +$('input[name=lv-m]:checked').value, gola = $('#lv-gola').checked;
-      const h = Math.round((z + m - (gola ? 5.6 : 0)) * 10) / 10, v = $('#lv-ver'), d = $('#lv-det');
-      $('#lv-hueco').textContent = String(h).replace('.', ',');
-      if (h < 85) { v.textContent = 'No cabe un lavavajillas integrable'; v.dataset.v = 'no'; d.textContent = `Faltan ${String(Math.round((85 - h) * 10) / 10).replace('.', ',')} cm: necesita 85 libres. No hace falta subir toda la cocina: en ese frente se pone tirador o uñero en vez de gola, o mueble de 80 solo en esa zona.`; }
-      else if (h > 92) { v.textContent = 'Cabe, y sobra hueco'; v.dataset.v = 'justa'; d.textContent = `Sobran ${String(Math.round((h - 85) * 10) / 10).replace('.', ',')} cm: se tapan con una pieza del mismo color que las puertas.`; }
-      else { v.textContent = 'Cabe sin problema'; v.dataset.v = 'si'; d.textContent = 'Entre 85 y 92 cm libres, lo justo para los lavavajillas y lavadoras integrables de serie.'; }
-    }
-    $('#calc-lavavajillas').addEventListener('change', lavavajillas); lavavajillas();
-
     // ── Frigorífico integrable: el hueco europeo más alto que cabe, dejando 20 cm o más para un alto encima ──
     const HUECOS = [194, 178, 158, 140, 122];
     function frigo() {
@@ -304,14 +297,33 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
     }
     $('#fr-col').addEventListener('input', frigo); frigo();
 
-    // ── Campana: 65 cm sobre inducción o vitro, 75 sobre gas (nunca menos de 65); igual o más ancha que la placa ──
+    // ── Campana: 65 cm sobre inducción o vitro, 75 sobre gas (nunca menos de 65) ──
     function campana() {
-      const gas = $('input[name=cp-tipo]:checked').value === 'gas', a = +$('input[name=cp-ancho]:checked').value, isla = $('#cp-isla').checked;
-      const ancho = isla ? Math.max(90, a + 30) : a <= 60 ? 60 : 90;
+      const gas = $('input[name=cp-tipo]:checked').value === 'gas';
       $('#cp-alto').textContent = gas ? 75 : 65;
-      $('#cp-det').textContent = `Campana de ${ancho} cm${isla ? ' o más (en isla el humo se escapa por los lados: mejor 90–120)' : ''}: igual o más ancha que la placa, no que el mueble. ${gas ? 'Con gas, nunca a menos de 65 cm y siempre con instalador autorizado.' : 'Manda el manual de la campana.'} Su enchufe, a unos 185 cm del suelo y desplazado 7 cm del centro.`;
+      $('#cp-det').textContent = gas ? 'Con gas, unos 75 cm y nunca menos de 65; siempre con instalador autorizado.' : 'Con inducción o vitrocerámica, unos 65 cm. En cualquier caso, manda el manual de la campana.';
     }
     $('#calc-campana').addEventListener('change', campana); campana();
+
+    // ── Barras del armario: alcance cómodo ≈ 1,2 veces la estatura; barra larga a 170–180; por encima de 200, elevador ──
+    function barras() {
+      const e = +$('#br-est').value, alto = +$('#br-alto').value, alcance = Math.round(e * 1.2), techo = alto >= 220 ? alto - 45 : alto - 2;
+      const larga = Math.min(180, Math.max(165, alcance - 25), techo - 8);
+      const alta = Math.min(alcance - 4, techo - 8, 200), baja = Math.round(Math.max(90, Math.min(105, alta / 2 + 4)));
+      $('#br-est-v').textContent = e + ' cm'; $('#br-alto-v').textContent = alto + ' cm';
+      $('#br-larga').textContent = larga; $('#br-doble').textContent = `${alta} y ${baja}`;
+      const elevador = alcance + 5 < techo - 8;
+      $('#br-det').textContent = `Llegas con comodidad hasta unos ${alcance} cm. La barra larga, para abrigos y vestidos, a ${larga} cm deja 150–170 de hueco. Con dos barras, la de arriba a ${alta} cm y la de abajo a ${baja}, para camisas y chaquetas.${alto >= 220 ? ` El altillo empieza a ${alto - 45} cm: ${alto - 45 > alcance ? 'para lo de arriba te hará falta una escalera; guarda ahí lo que menos uses, como maletas o ropa de otra temporada.' : 'llegas a él sin escalera.'}` : ''}${elevador ? ' Si quieres aprovechar más altura para colgar, un elevador abatible baja la barra hasta tu mano.' : ''}`;
+      const S = 0.8, SU = 226, y = (h) => SU - h * S, al = e * S, y0 = SU - al, [cab, cu, p1, p2] = $('#br-persona').children;
+      cab.setAttribute('cy', y0 + 11); cu.setAttribute('y', y0 + 24); cu.setAttribute('height', al * 0.42);
+      [p1, p2].forEach((x) => { x.setAttribute('y', y0 + 24 + al * 0.38); x.setAttribute('height', SU - (y0 + 24 + al * 0.38)); });
+      const brazo = $('#br-brazo'); brazo.setAttribute('y1', y0 + 30); brazo.setAttribute('y2', y(alcance) + 4); brazo.setAttribute('x1', 58); brazo.setAttribute('x2', 66);
+      $('#br-armario').setAttribute('y', y(alto)); $('#br-armario').setAttribute('height', alto * S);
+      $('#br-altillo').setAttribute('y', y(alto - 45)); $('#br-altillo').style.display = alto >= 220 ? '' : 'none';
+      [['#br-b1', alta], ['#br-b2', baja]].forEach(([id, h]) => { $(id).setAttribute('y1', y(h)); $(id).setAttribute('y2', y(h)); });
+      $('#br-alcance').setAttribute('y1', y(alcance)); $('#br-alcance').setAttribute('y2', y(alcance)); $('#br-alcance-t').setAttribute('y', y(alcance) - 4);
+    }
+    ['#br-est', '#br-alto'].forEach((id) => $(id).addEventListener('input', barras)); barras();
 
     // ── Vestidor: qué formas caben con su paso ──
     function vestidorCalc() {
