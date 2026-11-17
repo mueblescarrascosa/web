@@ -59,7 +59,7 @@ const columna = (a0, a1) => [{ a0, a1, b0: 10, b1: 80, k: 'puerta', abre: 'der' 
 const PLANOS = {
   lineal: { cx: 200, col: [0, 60], bajos: [['cajones3', 60, 120], ['placa', 120, 210], ['lava', 210, 270], ['fregadero', 270, 350], ['puerta', 350, 400]], altos: [[60, 120], [210, 270], [350, 400]], campana: [120, 210], ventana: [270, 350] },
   isla: { cx: 200, col: [0, 60], bajos: [['cajones3', 60, 120], ['placa', 120, 210], ['lava', 210, 270], ['fregadero', 270, 350], ['puerta', 350, 400]], altos: [[60, 120], [210, 270], [350, 400]], campana: [120, 210], ventana: [270, 350], isla: true },
-  peninsula: { cx: 185, col: [0, 60], bajos: [['cajones3', 60, 120], ['placa', 120, 210], ['lava', 210, 270], ['fregadero', 270, 350], ['puerta', 350, 400]], altos: [[60, 120], [210, 270]], campana: [120, 210], ventana: [270, 350], peninsula: true },
+  peninsula: { cx: 215, col: [0, 60], frigo: [60, 122], bajos: [['placa', 122, 212], ['lava', 212, 272], ['fregadero', 272, 352], ['puerta', 352, 400]], altos: [[212, 272]], campana: [122, 212], ventana: [272, 352], peninsula: true, abierto: true },
   L: { cx: 250, bajos: [['rincon', 0, 100], ['placa', 100, 190], ['lava', 190, 250], ['fregadero', 250, 330], ['cajones2', 330, 400]], altos: [[0, 100], [190, 250], [330, 400]], campana: [100, 190], ventana: [250, 330], izquierda: true },
 };
 
@@ -72,21 +72,33 @@ export function dibujo({ dist = 'lineal', puerta = 'lisa' } = {}) {
   const pon = (c, l, color, veta, extraGola = '') => { const T = { barra: [], gola: [], unero: [] };
     l.forEach((e) => { const f = frente(c, e, color, veta, puerta); s += f.s; T.barra.push(...f.barra); T.gola.push(...f.gola); T.unero.push(...f.unero); });
     s += grupoTir(T, extraGola); };
-  const ZF = 690;
+  const ZF = 690, WR = pl.abierto ? 820 : 400;
 
-  // Habitación: suelo, paredes y techo
-  s += poli([[0, 0, 0], [400, 0, 0], [400, 0, ZF], [0, 0, ZF]], 'style="fill:var(--suelo)" class="pieza"');
+  // Habitación: suelo, paredes y techo (si la cocina es abierta, sigue hacia el salón sin pared a la derecha)
+  s += poli([[0, 0, 0], [WR, 0, 0], [WR, 0, ZF], [0, 0, ZF]], 'style="fill:var(--suelo)" class="pieza"');
   let tablas = '', baldosas = '';
-  for (let x = 18; x < 400; x += 18) tablas += linea([x, 0, 0], [x, 0, ZF]);
-  for (let x = 0, i = 0; x < 400; x += 18, i++) for (let z = (i * 53) % 120; z < ZF; z += 120) tablas += linea([x, 0, z], [x + 18, 0, z]);
-  for (let x = 60; x < 400; x += 60) baldosas += linea([x, 0, 0], [x, 0, ZF]);
-  for (let z = 60; z < ZF; z += 60) baldosas += linea([0, 0, z], [400, 0, z]);
+  for (let x = 18; x < WR; x += 18) tablas += linea([x, 0, 0], [x, 0, ZF]);
+  for (let x = 0, i = 0; x < WR; x += 18, i++) for (let z = (i * 53) % 120; z < ZF; z += 120) tablas += linea([x, 0, z], [x + 18, 0, z]);
+  for (let x = 60; x < WR; x += 60) baldosas += linea([x, 0, 0], [x, 0, ZF]);
+  for (let z = 60; z < ZF; z += 60) baldosas += linea([0, 0, z], [WR, 0, z]);
   s += `<g class="dibujo" stroke="#2a1a0e" stroke-opacity=".3" stroke-width="1" style="opacity:var(--v-tablas)">${tablas}</g>`;
   s += `<g class="dibujo" stroke="#000" stroke-opacity=".17" stroke-width="1.4" style="opacity:var(--v-baldosa)">${baldosas}</g>`;
-  s += poli([[0, 0, 0], [400, 0, 0], [400, 0, ZF], [0, 0, ZF]], 'fill="url(#sueloLuz)"');
-  s += poli([[0, 0, 0], [400, 0, 0], [400, 260, 0], [0, 260, 0]], 'style="fill:var(--pared)" class="pieza"');
-  [[0, 0.07], [400, 0.13]].forEach(([x, o]) => { const l = [[x, 0, 0], [x, 260, 0], [x, 260, ZF], [x, 0, ZF]]; s += poli(l, 'style="fill:var(--pared)" class="pieza"') + poli(l, sombra(o)); });
-  s += poli([[0, 260, 0], [400, 260, 0], [400, 260, ZF], [0, 260, ZF]], 'style="fill:var(--pared)" class="pieza"') + poli([[0, 260, 0], [400, 260, 0], [400, 260, ZF], [0, 260, ZF]], sombra(0.22));
+  s += poli([[0, 0, 0], [WR, 0, 0], [WR, 0, ZF], [0, 0, ZF]], 'fill="url(#sueloLuz)"');
+  s += poli([[0, 0, 0], [WR, 0, 0], [WR, 260, 0], [0, 260, 0]], 'style="fill:var(--pared)" class="pieza"');
+  (pl.abierto ? [[0, 0.07]] : [[0, 0.07], [400, 0.13]]).forEach(([x, o]) => { const l = [[x, 0, 0], [x, 260, 0], [x, 260, ZF], [x, 0, ZF]]; s += poli(l, 'style="fill:var(--pared)" class="pieza"') + poli(l, sombra(o)); });
+  s += poli([[0, 260, 0], [WR, 260, 0], [WR, 260, ZF], [0, 260, ZF]], 'style="fill:var(--pared)" class="pieza"') + poli([[0, 260, 0], [WR, 260, 0], [WR, 260, ZF], [0, 260, ZF]], sombra(0.22));
+  if (pl.abierto) {
+    // Al fondo, el salón: un ventanal hasta el suelo, una planta y una neblina que da sensación de lejanía
+    s += poli([[440, 0, 0.4], [580, 0, 0.4], [580, 222, 0.4], [440, 222, 0.4]], 'fill="#f3f2ee"');
+    s += poli([[446, 4, 0.5], [574, 4, 0.5], [574, 216, 0.5], [446, 216, 0.5]], 'fill="url(#cielo)" class="cristal-dia"');
+    s += poli([[446, 4, 0.5], [574, 4, 0.5], [574, 216, 0.5], [446, 216, 0.5]], 'fill="url(#cieloNoche)" class="cristal-noche"');
+    s += linea([510, 4, 0.6], [510, 216, 0.6], 'stroke="#f3f2ee" stroke-width="3"');
+    s += poli([[446, 0.3, 0.5], [574, 0.3, 0.5], [574, 0.3, 70], [446, 0.3, 70]], 'fill="#fff6dc" opacity=".25" class="cristal-dia"');
+    s += poli([[602, 0, 22], [632, 0, 22], [628, 34, 22], [606, 34, 22]], 'fill="#d9d2c5"');
+    s += `<path d="${['M', ...P(617, 34, 22), 'C', ...P(585, 70, 22), ...P(592, 112, 22), ...P(615, 128, 22), 'C', ...P(632, 112, 22), ...P(652, 76, 22), ...P(617, 34, 22), 'Z'].map((v) => (typeof v === 'number' ? v.toFixed(1) : v)).join(' ')}" fill="#5d7a4f"/>`;
+    s += poli([[400, 0, 0], [WR, 0, 0], [WR, 260, 0], [400, 260, 0]], 'fill="url(#lejania)"');
+    s += poli([[400, 0, 0], [WR, 0, 0], [WR, 0, ZF], [400, 0, ZF]], 'fill="url(#lejania)"');
+  }
 
   // Pared entre muebles (azulejo, piedra o lisa) y ventana
   const trasera = (l) => { s += poli(l, 'style="fill:var(--trasera)" class="pieza"'); ['azulejo', 'marmol', 'marmolN'].forEach((p, i) => (s += poli(l, `fill="url(#${p})" class="dibujo" style="opacity:var(${['--v-azulejo', '--m-tras', '--mn-tras'][i]})"`))); };
@@ -116,7 +128,7 @@ export function dibujo({ dist = 'lineal', puerta = 'lisa' } = {}) {
   // Bancada del fondo: zócalo, frentes, columna y encimera
   const fondoBajo = cara([0, 0, 58], [1, 0, 0]);
   s += poli(rect(fondoBajo, 0, 0, 400, 10), 'style="fill:var(--bajos)" class="pieza"') + poli(rect(fondoBajo, 0, 0, 400, 10), sombra(0.5));
-  const g0 = pl.col ? pl.col[1] : 0;
+  const g0 = Math.max(pl.col ? pl.col[1] : 0, pl.frigo ? pl.frigo[1] : 0);
   pon(fondoBajo, pl.bajos.flatMap(([tipo, a0, a1]) => bajos({ tipo, a0, a1 })), '--bajos', '--v-bajos',
     poli(rect(fondoBajo, g0, 84, 400, 90), 'style="fill:var(--tir)" class="pieza"') + poli(rect(fondoBajo, g0, 86, 400, 90), 'fill="#000" opacity=".35"'));
   const encimera = (l, cantos) => {
@@ -140,7 +152,20 @@ export function dibujo({ dist = 'lineal', puerta = 'lisa' } = {}) {
     s += poli(rect(fondoBajo, a0, 0, a1, 10), 'style="fill:var(--altos)" class="pieza"') + poli(rect(fondoBajo, a0, 0, a1, 10), sombra(0.5));
     s += electro(fondoBajo, a0, a1);
     const lado = [[a1, 0, 0], [a1, 0, 58], [a1, 216, 58], [a1, 216, 0]];
-    s += poli(lado, 'style="fill:var(--altos)" class="pieza"') + poli(lado, sombra(0.2));
+    if (!(pl.frigo && pl.frigo[0] === a1)) s += poli(lado, 'style="fill:var(--altos)" class="pieza"') + poli(lado, sombra(0.2));
+  }
+  if (pl.frigo) { // Frigorífico del color de los electrodomésticos, con el congelador abajo y un altillo encima
+    const [a0, a1] = pl.frigo, fr = cara([0, 0, 63], [1, 0, 0]);
+    const ladoF = [[a1 - 1, 2, 0], [a1 - 1, 2, 63], [a1 - 1, 186, 63], [a1 - 1, 186, 0]];
+    s += poli(ladoF, 'style="fill:var(--electro)" class="pieza"') + poli(ladoF, sombra(0.24));
+    s += poli(rect(fr, a0 + 1, 2, a1 - 1, 186), 'style="fill:var(--electro)" class="pieza" stroke="#000" stroke-opacity=".25" stroke-width=".8"');
+    s += poli(rect(fr, a0 + 1, 2, a1 - 1, 186), 'fill="url(#brilloMetal)"');
+    s += poli(rect(fr, a0 + 1, 70, a1 - 1, 71.4), 'fill="#000" opacity=".35"');
+    s += poli(rect(fr, a1 - 8, 80, a1 - 5.6, 152), 'fill="#000" opacity=".5"') + poli(rect(fr, a1 - 8, 38, a1 - 5.6, 64), 'fill="#000" opacity=".5"');
+    s += poli(rect(fr, a0 + 1, 0, a1 - 1, 2), 'fill="#000" opacity=".55"');
+    pon(cara([0, 0, 58], [1, 0, 0]), [{ a0, a1, b0: 190, b1: 216, k: 'puerta', alto: true, abre: 'der' }], '--altos', '--v-altos');
+    const ladoA = [[a1, 190, 0], [a1, 190, 58], [a1, 216, 58], [a1, 216, 0]];
+    s += poli(ladoA, 'style="fill:var(--altos)" class="pieza"') + poli(ladoA, sombra(0.2));
   }
 
   // Cocina en L: bancada en la pared izquierda, con columna al final
@@ -168,6 +193,13 @@ export function dibujo({ dist = 'lineal', puerta = 'lisa' } = {}) {
     const fin = cara([310, 0, 230], [1, 0, 0]);
     pon(fin, [{ a0: 0, a1: 90, b0: 0, b1: 90, k: 'panel' }], '--bajos', '--v-bajos');
     encimera([[306, 94, 62], [400, 94, 62], [400, 94, 258], [306, 94, 258]], [[[306, 90, 62], [306, 90, 258], [306, 94, 258], [306, 94, 62]], [[306, 90, 258], [400, 90, 258], [400, 94, 258], [306, 94, 258]]]);
+    luces += poli([[306, 94.5, 120], [400, 94.5, 120], [400, 94.5, 258], [306, 94.5, 258]], 'fill="url(#luzEncimera)" class="luz-noche"');
+    [175].forEach((z) => {
+      s += linea([353, 260, z], [353, 188, z], 'stroke="#222" stroke-width="1.5"');
+      s += poli([[345, 188, z], [361, 188, z], [366, 172, z], [340, 172, z]], 'fill="#1f1f1f"');
+      const [lx, ly] = P(353, 170, z);
+      luces += `<ellipse class="luz-noche" cx="${lx.toFixed(1)}" cy="${(ly + 6).toFixed(1)}" rx="110" ry="74" fill="url(#halo)"/>`;
+    });
   }
 
   // Isla con barra, taburetes y lámparas
@@ -223,6 +255,7 @@ export const DEFS = `<defs>
 <linearGradient id="cristal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a3d42"/><stop offset=".5" stop-color="#101113"/><stop offset="1" stop-color="#26282c"/></linearGradient>
 <linearGradient id="brilloMetal" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".15"/></linearGradient>
 <linearGradient id="brilloPlaca" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".12"/><stop offset=".4" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<linearGradient id="lejania" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#f4f1ea" stop-opacity=".34"/></linearGradient>
 <radialGradient id="ambiente" cx=".45" cy=".4" r=".85"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".32"/></radialGradient>
 </defs>`;
 

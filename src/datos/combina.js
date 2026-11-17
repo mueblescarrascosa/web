@@ -186,6 +186,7 @@ export function puntuar({ bajos: b, altos: al, encimera: e, tirador: t, suelo: s
     if (colores.size) { p -= 6; ojo.push('Azulejo de color con muebles de color: demasiado. Uno de los dos, neutro.'); }
     else { p += 4; bien.push(`El ${tr.nombre.toLowerCase()} da personalidad a una cocina de colores neutros.`); }
   }
+  if (di?.clave === 'peninsula') bien.push('La península separa la cocina del salón sin cerrarla, y sirve de barra.');
   if (di?.clave === 'isla') bien.push('Con isla ganas encimera y sitio para comer; pide al menos 90 cm de paso alrededor.');
 
   // Demasiado oscuro
