@@ -642,3 +642,5 @@ html.revela .destapa.visto:hover img { transform: scale(1.03); }
 .plano-vestidor span { display: block; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--madera); margin-bottom: .3rem; }
 .plano-vestidor svg { display: block; width: auto; max-width: 150px; height: auto; max-height: 130px; }
 @media (max-width: 900px) { .plano-vestidor { padding: .3rem .4rem .2rem; } .plano-vestidor svg { max-width: 90px; max-height: 80px; } .plano-vestidor span { font-size: .55rem; } }
+label.interruptor { display: flex; align-items: center; gap: .75rem; cursor: pointer; color: var(--texto); min-height: 44px; }
+@media (max-width: 900px) { .plano-vestidor { display: none; } }
