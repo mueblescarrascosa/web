@@ -48,4 +48,20 @@ const schema = {
       </div>
     </aside>
   </section>
+  <section class="ancho" style="padding-bottom:clamp(4rem,8vw,6rem)" aria-labelledby="titulo-mapa">
+    <span class="etiqueta">Dónde estamos</span>
+    <h2 id="titulo-mapa" style="font-size:clamp(2rem,4.5vw,3.4rem)">Ven a ver el taller.</h2>
+    <p class="suave" style="max-width:56ch">Estamos en {EMPRESA.pueblo}, en la comarca de Las Villas. Trabajamos en toda la provincia de Jaén y, según el encargo, también en Granada, Albacete o Madrid.</p>
+    <div class="mapa" data-mapa={`https://www.google.com/maps?q=${encodeURIComponent(`${EMPRESA.nombre}, ${EMPRESA.calle}, ${EMPRESA.cp} ${EMPRESA.pueblo}, ${EMPRESA.provincia}`)}&z=15&output=embed`}>
+      <div class="mapa-tapa">
+        <span class="pin" aria-hidden="true"></span>
+        <p><b>{EMPRESA.calle}</b>{EMPRESA.cp} {EMPRESA.pueblo} ({EMPRESA.provincia})</p>
+        <div class="botones" style="margin:.5rem 0 0;justify-content:center">
+          <button class="boton" type="button">Ver el mapa</button>
+          <a class="boton contorno" href={EMPRESA.comoLlegar} target="_blank" rel="noopener">Cómo llegar</a>
+        </div>
+        <p style="font-size:.85rem">El mapa es de Google y solo se carga si pulsas «Ver el mapa».</p>
+      </div>
+    </div>
+  </section>
 </Base>

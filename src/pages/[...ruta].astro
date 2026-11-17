@@ -28,7 +28,7 @@ const schema = tipo === 'entrada' ? { '@context': 'https://schema.org', '@type':
     </header>
   )}
   {tipo === 'entrada' && item.portada && <figure class="ancho portada-entrada"><img src={r(item.portada.src)} alt={item.portada.alt} /></figure>}
-  <article class="contenido" set:html={conBase(item.html)} />
+  <article class={`contenido pagina-${item.slug}`} set:html={conBase(item.html)} />
   {!legal && (
     <section class="seccion claro cierre">
       <div class="ancho">
