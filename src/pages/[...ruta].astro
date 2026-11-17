@@ -27,13 +27,14 @@ const schema = tipo === 'entrada' ? { '@context': 'https://schema.org', '@type':
       <h1>{item.titulo}</h1>
     </header>
   )}
-  {tipo === 'entrada' && item.portada && <figure class="estrecho" style="margin-block:0 1rem"><img src={r(item.portada.src)} alt={item.portada.alt} style="border-radius:4px;width:100%;aspect-ratio:16/10;object-fit:cover" /></figure>}
+  {tipo === 'entrada' && item.portada && <figure class="ancho portada-entrada"><img src={r(item.portada.src)} alt={item.portada.alt} /></figure>}
   <article class="contenido" set:html={conBase(item.html)} />
-  {tipo === 'entrada' && (
-    <section class="seccion azul">
-      <div class="ancho cierre">
-        <div><h2>¿Lo hablamos para tu casa?</h2><p>Te asesoramos y te preparamos el presupuesto sin compromiso.</p></div>
-        <div class="botones" style="margin:0"><a class="boton blanco" href={r('/contacto/')}>Pide presupuesto</a><a class="boton contorno" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Escríbenos por WhatsApp</a></div>
+  {!legal && (
+    <section class="seccion claro cierre">
+      <div class="ancho">
+        <span class="etiqueta">{tipo === 'entrada' ? '¿Lo hablamos para tu casa?' : '¿Empezamos?'}</span><br />
+        <a class="frase" href={r('/contacto/')}>Hablemos <span aria-hidden="true">→</span></a>
+        <div class="botones"><a class="boton" href={r('/contacto/')}>Pide presupuesto</a><a class="boton contorno" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Escríbenos por WhatsApp</a></div>
       </div>
     </section>
   )}

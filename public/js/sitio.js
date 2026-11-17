@@ -19,6 +19,17 @@
   const cab = $('.cabecera.sobre-foto');
   if (cab) { const f = () => cab.classList.toggle('solida', scrollY > innerHeight * 0.6); addEventListener('scroll', f, { passive: true }); f(); }
 
+  // Proceso de la portada: el paso que está a la vista se enciende y su número sale en grande a la izquierda
+  const pasos = $$('.paso'), grande = $('.proceso-fijo .grande');
+  if (pasos.length && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      pasos.forEach(p => p.classList.toggle('activo', p === e.target));
+      if (grande) grande.textContent = e.target.dataset.n;
+    }), { rootMargin: '-45% 0px -45% 0px' });
+    pasos.forEach(p => io.observe(p)); pasos[0].classList.add('activo');
+  }
+
   // Antes y después de Jetpack → deslizador propio
   $$('.wp-block-jetpack-image-compare').forEach(fig => {
     const antes = $('.image-compare__image-before', fig), despues = $('.image-compare__image-after', fig);
@@ -28,15 +39,15 @@
     despues.classList.add('despues');
     const r = document.createElement('input'); r.type = 'range'; r.min = 0; r.max = 100; r.value = 50; r.setAttribute('aria-label', 'Deslizar para comparar antes y después');
     const t = document.createElement('span'); t.className = 'tirador';
-    const e1 = Object.assign(document.createElement('span'), { className: 'etiqueta', textContent: 'Antes' }); e1.style.left = '1rem';
-    const e2 = Object.assign(document.createElement('span'), { className: 'etiqueta', textContent: 'Después' }); e2.style.right = '1rem';
+    const e1 = Object.assign(document.createElement('span'), { className: "etiqueta-foto", textContent: "Antes" }); e1.style.left = '1rem';
+    const e2 = Object.assign(document.createElement('span'), { className: "etiqueta-foto", textContent: "Después" }); e2.style.right = '1rem';
     caja.append(antes, despues, t, e1, e2, r);
     r.addEventListener('input', () => caja.style.setProperty('--corte', r.value + '%'));
     $('.juxtapose', fig)?.replaceWith(caja);
   });
 
   // Visor de fotos: galerías y fotos sueltas del contenido y del mosaico de la portada
-  const fotos = $$('.wp-block-gallery img, .contenido .wp-block-image img, .mosaico img');
+  const fotos = $$('.wp-block-gallery img, .contenido .wp-block-image img, .pista img');
   if (fotos.length) {
     const v = document.createElement('div'); v.className = 'visor'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-modal', 'true'); v.setAttribute('aria-label', 'Foto ampliada');
     v.innerHTML = '<figure style="margin:0"><img alt=""><p></p></figure><button class="cerrar" aria-label="Cerrar">×</button><button class="ant" aria-label="Foto anterior">‹</button><button class="sig" aria-label="Foto siguiente">›</button>';

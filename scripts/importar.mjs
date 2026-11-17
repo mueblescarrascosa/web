@@ -72,7 +72,7 @@ fs.writeFileSync(path.join(DATOS, 'entradas.json'), JSON.stringify(salidaEntrada
 fs.writeFileSync(path.join(DATOS, 'categorias.json'), JSON.stringify(cats.map(c => ({ id: c.id, nombre: titulo(c.name), slug: c.slug })), null, 1));
 
 // Fotos de la portada y las que se usan sueltas en las plantillas (ids de la biblioteca).
-for (const id of [618, 559, 536, 1619, 542, 620, 608, 611, 572, 589, 587, 1216, 1219, 567, 358]) { const m = medioPorId.get(id); if (m) local(m.source_url); }
+for (const id of [618, 559, 536, 1619, 542, 620, 608, 611, 572, 589, 587, 1216, 1219, 567, 358, 1679, 1667, 1662, 606, 573, 603, 609, 588, 583]) { const m = medioPorId.get(id); if (m) local(m.source_url); }
 const lista = [...pendientes]; let i = 0;
 await Promise.all(Array.from({ length: 6 }, async () => { while (i < lista.length) { const [n, u] = lista[i++]; await descargar(n, u); } }));
 fs.writeFileSync(path.join(DATOS, 'medios.json'), JSON.stringify(Object.fromEntries([...medioPorId].filter(([, m]) => pendientes.has(nombreLocal(m.source_url))).map(([id, m]) => [id, { src: `/img/${nombreLocal(m.source_url)}.webp`, alt: m.alt_text || '', ancho: m.media_details?.width, alto: m.media_details?.height }])), null, 1));

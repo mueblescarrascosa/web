@@ -1,6 +1,6 @@
 ---
-import '@fontsource-variable/lora';
-import '@fontsource-variable/source-sans-3';
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource-variable/inter';
 import '../styles/global.css';
 import Cabecera from '../components/Cabecera.astro';
 import Pie from '../components/Pie.astro';
@@ -28,7 +28,7 @@ const og = imagen ? new URL(r(imagen), Astro.site).href : new URL(r('/img/imagen
   <meta property="og:image" content={og} />
   <meta property="og:url" content={canonica} />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="theme-color" content="#0017BF" />
+  <meta name="theme-color" content="#0d0d0e" />
   <link rel="icon" href={r('/favicon.png')} type="image/png" />
   {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
 </head>

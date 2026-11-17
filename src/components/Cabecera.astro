@@ -8,10 +8,10 @@ const servicios = [
 const ruta = Astro.url.pathname;
 const activo = (p) => ruta.endsWith(p) ? 'page' : undefined;
 ---
-<header class={`cabecera ${portada ? 'sobre-foto' : ''}`}>
+<header class={`cabecera ${portada ? 'sobre-foto' : ''}`} data-cabecera>
   <div class="cabecera-in">
     <a class="logo" href={r('/')} aria-label="Muebles Carrascosa, inicio">
-      <img src={r(portada ? '/img/carrascosa-horizontal-blanco-4096-800.webp' : '/logo-negro.png')} alt="Carrascosa, madera de diseño" width="200" height="40" />
+      <img src={r('/img/carrascosa-horizontal-blanco-4096-800.webp')} alt="Carrascosa, madera de diseño" width="176" height="32" />
     </a>
     <button class="menu-boton" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir el menú"><span></span><span></span><span></span></button>
     <nav id="menu" class="menu" aria-label="Principal">

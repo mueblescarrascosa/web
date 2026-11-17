@@ -15,24 +15,25 @@ const schema = {
 ---
 <Base titulo={p?.tituloSeo || 'Contacto y presupuesto'} descripcion={p?.descripcion} schema={schema}>
   <header class="cabeza-pagina ancho" data-entra>
-    <span class="antetitulo">Contacto</span>
+    <span class="etiqueta">Contacto</span>
     <h1>Pide presupuesto sin compromiso</h1>
     <p class="entradilla">¿Tienes en mente una cocina, un armario o cualquier mueble a medida? Cuéntanos qué necesitas. Puedes escribirnos aquí, llamarnos, mandarnos un WhatsApp o pasarte por el taller.</p>
   </header>
   <section class="ancho contacto" style="padding-bottom:clamp(3rem,7vw,5rem)">
     <form id="pide-presupuesto" class="formulario" novalidate>
-      <label>Tu nombre<input name="nombre" autocomplete="name" required /></label>
-      <label>Teléfono (opcional)<input name="telefono" type="tel" inputmode="tel" autocomplete="tel" /></label>
-      <label>¿Qué necesitas?
-        <select name="tipo" required>
-          <option>Cocina a medida</option><option>Armario o vestidor</option><option>Mueble de baño</option><option>Puertas</option><option>Otro mueble a medida</option>
-        </select>
-      </label>
+      <fieldset class="chips">
+        <legend>¿Qué necesitas?</legend>
+        {['Cocina a medida', 'Armario o vestidor', 'Mueble de baño', 'Puertas', 'Otro mueble'].map((t, i) => <label><input type="radio" name="tipo" value={t} checked={i === 0} /><span>{t}</span></label>)}
+      </fieldset>
+      <div class="dos">
+        <label>Tu nombre<input name="nombre" autocomplete="name" required /></label>
+        <label>Teléfono (opcional)<input name="telefono" type="tel" inputmode="tel" autocomplete="tel" /></label>
+      </div>
       <label>Pueblo (opcional)<input name="pueblo" autocomplete="address-level2" /></label>
       <label>Cuéntanos tu proyecto<textarea name="mensaje" required placeholder="Medidas aproximadas, colores que te gustan, cuándo lo necesitas…"></textarea></label>
       <div class="botones" style="margin:.5rem 0 0">
         <button class="boton" type="submit" value="whatsapp">Enviar por WhatsApp</button>
-        <button class="boton contorno" type="submit" value="correo" style="color:var(--azul)">Enviar por correo</button>
+        <button class="boton contorno" type="submit" value="correo">Enviar por correo</button>
       </div>
       <p class="nota">Al enviar se abre WhatsApp o tu correo con el mensaje ya escrito. Usamos tus datos solo para responderte. <a href={r('/politica-de-privacidad/')}>Política de privacidad</a>.</p>
     </form>
@@ -43,7 +44,7 @@ const schema = {
       <dl>{EMPRESA.horario.map(([d, h]) => <><dt>{d}</dt><dd>{h}</dd></>)}</dl>
       <div class="botones">
         <a class="boton" href={`tel:${EMPRESA.tel}`}>Llamar al {EMPRESA.telefono}</a>
-        <a class="boton contorno" style="color:var(--azul)" href={EMPRESA.comoLlegar} target="_blank" rel="noopener">Cómo llegar</a>
+        <a class="boton contorno" href={EMPRESA.comoLlegar} target="_blank" rel="noopener">Cómo llegar</a>
       </div>
     </aside>
   </section>
