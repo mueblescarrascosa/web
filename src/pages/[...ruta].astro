@@ -39,6 +39,16 @@ const schema = tipo === 'entrada' ? { '@context': 'https://schema.org', '@type':
       <a class="boton" href={r('/combina-tu-cocina/')}>Combina tu cocina <span class="flecha" aria-hidden="true">→</span></a>
     </section>
   )}
+  {item.slug === 'armarios' && (
+    <section class="ancho aviso-juego">
+      <div>
+        <span class="etiqueta">Juego</span>
+        <h2>¿Cabe todo en tu armario?</h2>
+        <p class="suave">Pon tus medidas, elige puertas e interior y te decimos cuánta ropa cabe y qué mejorarías.</p>
+      </div>
+      <a class="boton" href={r('/disena-tu-armario/')}>Diseña tu armario <span class="flecha" aria-hidden="true">→</span></a>
+    </section>
+  )}
   {!legal && (
     <section class="seccion claro cierre">
       <div class="ancho">
