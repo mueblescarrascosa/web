@@ -644,3 +644,7 @@ html.revela .destapa.visto:hover img { transform: scale(1.03); }
 @media (max-width: 900px) { .plano-vestidor { padding: .3rem .4rem .2rem; } .plano-vestidor svg { max-width: 90px; max-height: 80px; } .plano-vestidor span { font-size: .55rem; } }
 label.interruptor { display: flex; align-items: center; gap: .75rem; cursor: pointer; color: var(--texto); min-height: 44px; }
 @media (max-width: 900px) { .plano-vestidor { display: none; } }
+/* Con el menú del móvil abierto, la cabecera no lleva desenfoque: si no, el menú (fijo) queda encerrado en ella */
+body.menu-abierto .cabecera { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--fondo); }
+.lista-muestras label.no-disponible { opacity: .38; cursor: not-allowed; }
+.lista-muestras label.no-disponible .texto-muestra::after { content: ' (no cabe)'; }

@@ -1,6 +1,6 @@
 // Juego «Diseña tu armario»: acabados, propuestas y consejos (con las medidas de la guía del taller).
 import { FRENTES } from './combina.js';
-import { TIPOS, MODELOS, CRISTALES, modulosPara } from '../scripts/armario-dibujo.js';
+import { TIPOS, MODELOS, CRISTALES, modulosPara, correderas } from '../scripts/armario-dibujo.js';
 
 export const PUERTAS_ARMARIO = [
   { clave: 'correderas', nombre: 'Correderas' }, { clave: 'abatibles', nombre: 'Abatibles' }, { clave: 'vestidor', nombre: 'Vestidor abierto' },
@@ -61,7 +61,9 @@ export function consejos(e, datos) {
   if (datos.altillo) bien.push('El altillo guarda maletas y la ropa de otra temporada.');
   else ojo.push('Con menos de 220 cm de alto no queda altillo: las maletas tendrán que ir en otro sitio.');
   // Puertas
-  if (e.puertas === 'correderas') bien.push('Las correderas no ocupan espacio al abrir. Ojo: el armario necesita 65 cm de fondo, porque las guías ocupan 8–9.');
+  const cr = correderas(e.ancho, e.alto);
+  if (!vest && !cr.ok) ojo.push(`Con ${e.ancho} cm de ancho, cada hoja corredera mediría ${cr.hoja} × ${cr.H} cm: ${String(cr.esbeltez).replace('.', ',')} veces más alta que ancha. Pasando de 3,5 la hoja cabecea al deslizar, así que van abatibles. Las correderas, a partir de unos ${cr.anchoMinimo} cm de ancho con este alto.`);
+  if (e.puertas === 'correderas') bien.push(`Correderas de ${cr.k} hojas de ${cr.hoja} cm: no ocupan espacio al abrir. Ojo: el armario necesita 65 cm de fondo, porque las guías ocupan 8–9.`);
   if (e.puertas === 'abatibles') bien.push('Las abatibles dejan ver todo el armario a la vez. Deja 80–90 cm libres delante para abrirlas.');
   if (!vest) {
     if (e.modelo === 'cristal' || e.modelo === 'cruz') (e.cristal === 'claro' ? ojo : bien).push(e.cristal === 'claro' ? 'Con cristal transparente se ve todo: pide orden dentro y luz LED para que luzca.' : `El cristal ${e.cristal === 'mate' ? 'mate deja pasar la luz sin enseñar el desorden' : 'ahumado deja intuir el interior con un aire elegante'}.`);
@@ -82,4 +84,4 @@ export function consejos(e, datos) {
   p = Math.max(35, Math.min(100, p));
   return { puntos: p, personas, bien, ojo, veredicto: p >= 90 ? '¡Todo en su sitio!' : p >= 75 ? 'Muy bien organizado' : p >= 60 ? 'Le falta algo' : 'Hay que repensarlo' };
 }
-export { modulosPara };
+export { modulosPara, correderas };

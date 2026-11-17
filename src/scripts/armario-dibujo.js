@@ -15,6 +15,12 @@ const PANT = ['#2f3b52', '#4a5a72', '#c9b79a', '#3a3a3a', '#6b6f73', '#8a7356', 
 const ZAP = ['#2b2b2b', '#7a5c48', '#e7e2d6', '#a33b2f', '#3b4a5e'];
 const f = (n) => +n.toFixed(1);
 export const modulosPara = (ancho) => Math.max(1, Math.ceil(ancho / 100));
+// Correderas: hojas de hasta unos 110 cm, y cada hoja como mucho 3,5 veces más alta que ancha (si no, cabecea al deslizar).
+export const ESBELTEZ_MAX = 3.5;
+export function correderas(ancho, alto) {
+  const k = Math.max(2, Math.ceil(ancho / 110)), hoja = ancho / k, H = alto - 8, esbeltez = H / hoja;
+  return { k, hoja: Math.round(hoja), H, esbeltez: Math.round(esbeltez * 10) / 10, ok: esbeltez <= ESBELTEZ_MAX, anchoMinimo: Math.ceil((2 * H) / ESBELTEZ_MAX / 5) * 5 };
+}
 
 // ── Interior de un hueco: lista de piezas y lo que cabe ──
 export function interior(tipo, a0, a1, techoUtil, altillo, alto, sem) {
@@ -172,7 +178,7 @@ export function armario({ ancho = 240, alto = 250, puertas = 'correderas', mods 
   };
   let p = '';
   if (puertas === 'correderas') {
-    const k = Math.max(2, Math.round(ancho / 90)), wh = ancho / k;
+    const { k } = correderas(ancho, alto), wh = ancho / k;
     for (let j = 0; j < k; j++) {
       const x = j * wh, dir = j % 2 ? 1 : -1;
       p += `<g class="hoja corredera" style="--mover:${f(dir * wh * 0.42)}px">${hoja(x, wh + (j < k - 1 ? 1 : 0), R(x, 0, 1.4, H, 'style="fill:var(--perfil)" class="pieza"') + R(x + wh - 1.4, 0, 1.4, H, 'style="fill:var(--perfil)" class="pieza"') + R(x, H - 1.4, wh, 1.4, 'style="fill:var(--perfil)" class="pieza"'))}</g>`;

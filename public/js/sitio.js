@@ -8,7 +8,12 @@
     const abrir = boton.getAttribute('aria-expanded') !== 'true';
     boton.setAttribute('aria-expanded', String(abrir)); boton.setAttribute('aria-label', abrir ? 'Cerrar el menú' : 'Abrir el menú');
     menu.classList.toggle('abierto', abrir); document.body.classList.toggle('menu-abierto', abrir);
+    // Con el menú abierto, el desplazamiento suave se para para poder bajar dentro del menú
+    if (window.__lenis) abrir ? window.__lenis.stop() : window.__lenis.start();
   });
+  if (menu) menu.setAttribute('data-lenis-prevent', '');
+  // Al tocar un enlace del menú, se cierra
+  if (menu) menu.addEventListener('click', e => { if (e.target.closest('a') && menu.classList.contains('abierto')) boton.click(); });
   $$('.desplegable > button').forEach(b => b.addEventListener('click', () => {
     const li = b.parentElement, abrir = !li.classList.contains('abierto');
     li.classList.toggle('abierto', abrir); b.setAttribute('aria-expanded', String(abrir));

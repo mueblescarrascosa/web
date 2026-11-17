@@ -155,7 +155,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   </section>
 
   <script>
-    import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, PERFILES, SOLO_CORREDERAS, TIPOS, ORDEN_TIPOS, INICIAL_A, PROPUESTAS_A, consejos, modulosPara } from '../../datos/armario.js';
+    import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, PERFILES, SOLO_CORREDERAS, TIPOS, ORDEN_TIPOS, INICIAL_A, PROPUESTAS_A, consejos, modulosPara, correderas } from '../../datos/armario.js';
     import { armario, vestidor, plano, DEFS_ARMARIO } from '../../scripts/armario-dibujo.js';
     import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
     const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -185,6 +185,11 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
 
     function pintar() {
       const vest = esVest();
+      // Correderas solo si la hoja no queda demasiado esbelta (cabecearía); si no, pasan a abatibles
+      const corr = correderas(e.ancho, e.alto), opCorr = $('input[name="puertas"][value="correderas"]');
+      opCorr.disabled = !corr.ok; opCorr.closest('label').classList.toggle('no-disponible', !corr.ok);
+      opCorr.closest('label').title = corr.ok ? 'Correderas' : `Con este ancho cada hoja sería de ${corr.hoja} × ${corr.H} cm: demasiado esbelta, cabecearía`;
+      if (e.puertas === 'correderas' && !corr.ok) { e.puertas = 'abatibles'; if (SOLO_CORREDERAS.includes(e.modelo)) e.modelo = 'lisa'; history.replaceState(null, '', '#' + new URLSearchParams(Object.fromEntries(Object.entries(e).map(([k, v]) => [k, Array.isArray(v) ? v.join(',') : v]))).toString()); }
       // Japonesas y cuatro paneles solo en correderas
       if (e.puertas === 'abatibles' && SOLO_CORREDERAS.includes(e.modelo)) e.modelo = 'lisa';
       $$('input[name="modelo"]').forEach((i) => (i.closest('label').hidden = e.puertas === 'abatibles' && SOLO_CORREDERAS.includes(i.value)));
