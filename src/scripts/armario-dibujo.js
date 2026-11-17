@@ -8,7 +8,7 @@ export const TIPOS = {
   largo: 'Colgar largo', doble: 'Dos barras', baldas: 'Baldas', cajones: 'Cajones y barra', zapatero: 'Zapatero y baldas',
   pantalonero: 'Pantalonero y barra', accesorios: 'Bandejas y baldas',
 };
-export const MODELOS = { lisa: 'Lisa', japonesa: 'Japonesa', rayas: 'Cuatro paneles', moldura: 'Con moldura', cristal: 'Cristal', cruz: 'Cristal con cruz' };
+export const MODELOS = { lisa: 'Lisa', japonesa3: 'Japonesa 3 paneles', japonesa: 'Japonesa 4 paneles', rayas: 'Cuatro paneles', moldura: 'Con moldura', cristal: 'Cristal', cruz: 'Cristal con cruz' };
 export const CRISTALES = { claro: { nombre: 'Transparente', hex: '#cfe0e6', op: 0.2 }, mate: { nombre: 'Mate', hex: '#f3f3f1', op: 0.82 }, ahumado: { nombre: 'Ahumado', hex: '#2c3035', op: 0.6 } };
 const ROPA = ['#3b4a5e', '#a9b4c2', '#e7e2d6', '#7a5c48', '#c6a77d', '#2f2f33', '#8e9c86', '#b46a55', '#d9d4ca', '#556b7a', '#efe9dc', '#6b5a7a'];
 const ZAP = ['#2b2b2b', '#7a5c48', '#e7e2d6', '#a33b2f', '#3b4a5e'];
@@ -96,6 +96,7 @@ export function armario({ ancho = 240, alto = 250, puertas = 'correderas', mods 
   s += R(-60, alto, ancho + 120, 3, 'fill="#000" opacity=".12"');
   s += R(0, 0, ancho, alto, 'style="fill:var(--ext)" class="pieza"');
   s += R(2, 2, ancho - 4, alto - 10, 'style="fill:var(--int)" class="pieza"') + R(2, 2, ancho - 4, alto - 10, 'fill="url(#vetaA)" class="dibujo" style="opacity:var(--v-int)"');
+  s += R(2, 2, ancho - 4, alto - 10, 'fill="url(#telaA)" class="dibujo" style="opacity:var(--t-int)"');
   s += R(2, 2, ancho - 4, alto - 10, 'fill="url(#fondoSombra)"');
   s += R(0, alto - 8, ancho, 8, 'style="fill:var(--ext)" class="pieza"') + R(0, alto - 8, ancho, 8, 'fill="#000" opacity=".35"');
   if (altillo) s += R(2, Y(altillo) - 1, ancho - 4, 2, 'style="fill:var(--int)" class="pieza"') + R(2, Y(altillo) + 1, ancho - 4, 0.6, 'fill="#000" opacity=".25"');
@@ -121,9 +122,11 @@ export function armario({ ancho = 240, alto = 250, puertas = 'correderas', mods 
       if (modelo === 'cruz') t += R(x + wh / 2 - 1.3, m, 2.6, H - 2 * m, 'style="fill:var(--ext)" class="pieza"') + R(x + m, H / 2 - 1.3, wh - 2 * m, 2.6, 'style="fill:var(--ext)" class="pieza"');
     } else {
       t += R(x, 0, wh, H, 'style="fill:var(--ext)" class="pieza" stroke="#000" stroke-opacity=".25" stroke-width=".4"') + R(x, 0, wh, H, 'fill="url(#vetaA)" class="dibujo" style="opacity:var(--v-ext)"');
-      if (modelo === 'japonesa') { const bandas = [0, 0.26, 0.5, 0.74, 1].map((v) => v * H);
-        t += R(x, bandas[1], wh, bandas[2] - bandas[1], 'style="fill:var(--franja)" class="pieza"') + R(x, bandas[1], wh, bandas[2] - bandas[1], 'fill="url(#vetaA)" class="dibujo" style="opacity:var(--v-franja)"');
-        [1, 2, 3].forEach((k) => (t += R(x, bandas[k] - 0.6, wh, 1.2, 'fill="#2b2b2b"'))); }
+      if (modelo === 'japonesa' || modelo === 'japonesa3') {
+        // 4 paneles con la franja en el segundo, o 3 paneles: dos grandes y uno estrecho en el centro con la franja
+        const bandas = (modelo === 'japonesa' ? [0, 0.26, 0.5, 0.74, 1] : [0, 0.42, 0.58, 1]).map((v) => v * H), fr = 1;
+        t += R(x, bandas[fr], wh, bandas[fr + 1] - bandas[fr], 'style="fill:var(--franja)" class="pieza"') + R(x, bandas[fr], wh, bandas[fr + 1] - bandas[fr], 'fill="url(#vetaA)" class="dibujo" style="opacity:var(--v-franja)"');
+        bandas.slice(1, -1).forEach((y) => (t += R(x, y - 0.7, wh, 1.4, 'style="fill:var(--perfil)" class="pieza"'))); }
       if (modelo === 'rayas') [0.25, 0.5, 0.75].forEach((v) => (t += R(x, v * H - 0.5, wh, 1, 'fill="#000" opacity=".3"')));
       if (modelo === 'moldura') t += R(x + 7, 7, wh - 14, H - 14, 'fill="none" stroke="#fff" stroke-opacity=".4" stroke-width=".6"') + R(x + 8, 8, wh - 15, H - 15, 'fill="none" stroke="#000" stroke-opacity=".2" stroke-width=".5"');
       t += R(x, 0, wh, H, 'fill="url(#brilloPuerta)"');
@@ -135,9 +138,9 @@ export function armario({ ancho = 240, alto = 250, puertas = 'correderas', mods 
     const k = Math.max(2, Math.round(ancho / 90)), wh = ancho / k;
     for (let j = 0; j < k; j++) {
       const x = j * wh, dir = j % 2 ? 1 : -1;
-      p += `<g class="hoja corredera" style="--mover:${f(dir * wh * 0.42)}px">${hoja(x, wh + (j < k - 1 ? 1 : 0), R(x, 0, 1.4, H, 'fill="#2b2b2b"') + R(x + wh - 1.4, 0, 1.4, H, 'fill="#2b2b2b"'))}</g>`;
+      p += `<g class="hoja corredera" style="--mover:${f(dir * wh * 0.42)}px">${hoja(x, wh + (j < k - 1 ? 1 : 0), R(x, 0, 1.4, H, 'style="fill:var(--perfil)" class="pieza"') + R(x + wh - 1.4, 0, 1.4, H, 'style="fill:var(--perfil)" class="pieza"') + R(x, H - 1.4, wh, 1.4, 'style="fill:var(--perfil)" class="pieza"'))}</g>`;
     }
-    p += R(0, -1, ancho, 2.2, 'fill="#2b2b2b"');
+    p += R(0, -1, ancho, 2.2, 'style="fill:var(--perfil)" class="pieza"') + R(0, 1, ancho, 0.5, 'fill="#000" opacity=".25"');
   }
   if (puertas === 'abatibles') {
     for (let i = 0; i < n; i++) {
@@ -181,7 +184,7 @@ export function vestidor({ ancho = 300, alto = 250, forma = 'lineal', lado = 180
     const lateral = (a, b0, b1, d0, d1) => [Q(a, b0, d0), Q(a, b0, d1), Q(a, b1, d1), Q(a, b1, d0)];
     let t = '';
     // Fondo, techo del mueble, zócalo y altillo
-    t += poli(cuad(0, 8, largo, alto, 0.5), 'style="fill:var(--int)" class="pieza"') + poli(cuad(0, 8, largo, alto, 0.5), 'fill="url(#vetaA)" class="dibujo" style="opacity:var(--v-int)"') + poli(cuad(0, 8, largo, alto, 0.5), 'fill="#000" opacity=".1"');
+    t += poli(cuad(0, 8, largo, alto, 0.5), 'style="fill:var(--int)" class="pieza"') + poli(cuad(0, 8, largo, alto, 0.5), 'fill="url(#vetaA)" class="dibujo" style="opacity:var(--v-int)"') + poli(cuad(0, 8, largo, alto, 0.5), 'fill="url(#telaV)" class="dibujo" style="opacity:var(--t-int)"') + poli(cuad(0, 8, largo, alto, 0.5), 'fill="#000" opacity=".1"');
     t += poli(plano(0, largo, alto - 2, 0, FONDO), 'style="fill:var(--int)" class="pieza"') + poli(plano(0, largo, alto - 2, 0, FONDO), 'fill="#000" opacity=".22"');
     t += poli(plano(0, largo, 8, 0, FONDO), 'style="fill:var(--int)" class="pieza"') + poli(plano(0, largo, 8, 0, FONDO), 'fill="#fff" opacity=".06"');
     t += poli(cuad(0, 0, largo, 8, FONDO), 'style="fill:var(--ext)" class="pieza"') + poli(cuad(0, 0, largo, 8, FONDO), 'fill="#000" opacity=".4"');
@@ -252,6 +255,8 @@ export function vestidor({ ancho = 300, alto = 250, forma = 'lineal', lado = 180
 
 export const DEFS_ARMARIO = `<defs>
 <pattern id="vetaA" width="12" height="70" patternUnits="userSpaceOnUse"><path d="M2 0c1 16-1 32 .4 48s-.8 16 0 22M6 0c-.8 12 1.4 28 0 40s1.2 24 .4 30M10 0c1 20-1.4 36 0 52s-.4 12 .4 18" fill="none" stroke="#3b2414" stroke-opacity=".2" stroke-width=".3"/></pattern>
+<pattern id="telaA" width="2.4" height="2.4" patternUnits="userSpaceOnUse"><path d="M0 .6h2.4M0 1.8h2.4" stroke="#5a4a36" stroke-opacity=".24" stroke-width=".5"/><path d="M.6 0v2.4M1.8 0v2.4" stroke="#fff" stroke-opacity=".3" stroke-width=".45"/></pattern>
+<pattern id="telaV" width="3" height="3" patternUnits="userSpaceOnUse"><path d="M0 .75h3M0 2.25h3" stroke="#5a4a36" stroke-opacity=".14" stroke-width=".6"/><path d="M.75 0v3M2.25 0v3" stroke="#fff" stroke-opacity=".2" stroke-width=".5"/></pattern>
 <linearGradient id="fondoSombra" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".25" stop-color="#000" stop-opacity=".05"/><stop offset="1" stop-color="#000" stop-opacity=".14"/></linearGradient>
 <linearGradient id="luzArriba" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe6bd" stop-opacity=".9"/><stop offset="1" stop-color="#ffe6bd" stop-opacity="0"/></linearGradient>
 <linearGradient id="luzArribaV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe6bd" stop-opacity=".95"/><stop offset="1" stop-color="#ffe6bd" stop-opacity=".1"/></linearGradient>

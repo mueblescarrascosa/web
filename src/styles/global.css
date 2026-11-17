@@ -632,3 +632,4 @@ html.revela .destapa.visto:hover img { transform: scale(1.03); }
 .formas-vestidor li[data-v="si"] em { background: rgb(61 85 255 / .2); color: var(--azul-claro); }
 .formas-vestidor li[data-v="justa"] em { background: rgb(201 162 122 / .2); color: var(--madera); }
 .formas-vestidor li[data-v="no"] em { background: rgb(224 122 98 / .18); color: #e07a62; }
+.muestra.tela { background: repeating-linear-gradient(0deg, rgb(90 74 54 / .16) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgb(255 255 255 / .28) 0 1px, transparent 1px 3px), var(--c); }

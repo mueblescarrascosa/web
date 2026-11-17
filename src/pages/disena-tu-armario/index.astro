@@ -3,14 +3,14 @@
 // con modelos de puerta, colores, el interior de cada hueco, lo que cabe y los consejos del taller.
 import Base from '../../layouts/Base.astro';
 import { r, EMPRESA } from '../../lib/sitio.js';
-import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, INICIAL_A, consejos } from '../../datos/armario.js';
+import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, PERFILES, INICIAL_A, consejos } from '../../datos/armario.js';
 import { armario, DEFS_ARMARIO } from '../../scripts/armario-dibujo.js';
 
 const buscar = (l, k) => l.find((x) => x.clave === k);
 const e0 = { ...INICIAL_A, mods: INICIAL_A.mods.split(','), modsI: INICIAL_A.modsI.split(','), modsD: INICIAL_A.modsD.split(',') };
 const d0 = armario(e0), n0 = consejos(e0, d0.datos);
-const ext0 = buscar(EXTERIORES, e0.ext), int0 = buscar(INTERIORES, e0.int), tir0 = buscar(TIRADORES_ARMARIO, e0.tir), fr0 = buscar(EXTERIORES, e0.franja), cr0 = buscar(CRISTALES_LISTA, e0.cristal);
-const vars0 = `--ext:${ext0.hex};--int:${int0.hex};--tir:${tir0.hex};--franja:${fr0.hex};--cristal:${cr0.hex};--cristal-op:${cr0.op};--v-ext:${ext0.dibujo === 'veta' ? 1 : 0};--v-int:${int0.dibujo === 'veta' ? 1 : 0};--v-franja:${fr0.dibujo === 'veta' ? 1 : 0}`;
+const ext0 = buscar(EXTERIORES, e0.ext), int0 = buscar(INTERIORES, e0.int), tir0 = buscar(TIRADORES_ARMARIO, e0.tir), fr0 = buscar(EXTERIORES, e0.franja), cr0 = buscar(CRISTALES_LISTA, e0.cristal), pe0 = buscar(PERFILES, e0.perfil);
+const vars0 = `--ext:${ext0.hex};--int:${int0.hex};--tir:${tir0.hex};--franja:${fr0.hex};--cristal:${cr0.hex};--cristal-op:${cr0.op};--v-ext:${ext0.dibujo === 'veta' ? 1 : 0};--v-int:${int0.dibujo === 'veta' ? 1 : 0};--v-franja:${fr0.dibujo === 'veta' ? 1 : 0};--t-int:${int0.dibujo === 'tela' ? 1 : 0};--perfil:${pe0.hex}`;
 const R = '<rect x="11" y="5" width="18" height="30" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>';
 const ICONOS = {
   correderas: '<rect x="5" y="6" width="30" height="28" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 6v28" stroke="currentColor" stroke-width="2"/><path d="M9 20h7m-3-3 3 3-3 3M31 20h-7m3-3-3 3 3 3" fill="none" stroke="currentColor" stroke-width="1.5"/>',
@@ -21,6 +21,7 @@ const ICONOS = {
   C: '<rect x="5" y="8" width="30" height="8" rx="1"/><rect x="5" y="8" width="8" height="25" rx="1"/><rect x="27" y="8" width="8" height="25" rx="1"/>',
   isla: '<rect x="5" y="8" width="30" height="8" rx="1"/><rect x="5" y="8" width="7" height="25" rx="1"/><rect x="28" y="8" width="7" height="25" rx="1"/><rect x="17" y="21" width="6" height="11" rx="1"/>',
   lisa: R + '<rect x="24" y="16" width="2" height="8"/>',
+  japonesa3: R + '<rect x="11" y="17.5" width="18" height="5"/><path d="M11 17.5h18M11 22.5h18" stroke="currentColor" stroke-width="1.4"/>',
   japonesa: R + '<rect x="11" y="12" width="18" height="7"/><path d="M11 12h18M11 19h18M11 27h18" stroke="currentColor" stroke-width="1.4"/>',
   rayas: R + '<path d="M11 12.5h18M11 20h18M11 27.5h18" stroke="currentColor" stroke-width="1.4"/>',
   moldura: R + '<rect x="14.5" y="8.5" width="11" height="23" fill="none" stroke="currentColor" stroke-width="1.3"/>',
@@ -91,6 +92,10 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
         <legend>Modelo de puerta <span class="elegido">{buscar(MODELOS_PUERTA, e0.modelo).nombre}</span></legend>
         <div class="lista-muestras con-iconos" set:html={icono(null, MODELOS_PUERTA, 'modelo')} />
       </fieldset>
+      <fieldset class="muestras" data-grupo="perfil" data-solo="correderas">
+        <legend>Herraje de las correderas <span class="elegido">{pe0.nombre}</span></legend>
+        <div class="lista-muestras" set:html={colores(PERFILES, 'perfil')} />
+      </fieldset>
       <fieldset class="muestras" data-grupo="cristal" data-solo="cristal">
         <legend>Cristal <span class="elegido">{cr0.nombre}</span></legend>
         <div class="lista-muestras" set:html={colores(CRISTALES_LISTA, 'cristal')} />
@@ -145,12 +150,12 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   </section>
 
   <script>
-    import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, TIPOS, ORDEN_TIPOS, INICIAL_A, PROPUESTAS_A, consejos, modulosPara } from '../../datos/armario.js';
+    import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, PERFILES, SOLO_CORREDERAS, TIPOS, ORDEN_TIPOS, INICIAL_A, PROPUESTAS_A, consejos, modulosPara } from '../../datos/armario.js';
     import { armario, vestidor, DEFS_ARMARIO } from '../../scripts/armario-dibujo.js';
     import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
     const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
     const svg = $('svg.armario'), quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const listas = { puertas: PUERTAS_ARMARIO, forma: FORMAS, modelo: MODELOS_PUERTA, cristal: CRISTALES_LISTA, ext: EXTERIORES, franja: EXTERIORES, int: INTERIORES, tir: TIRADORES_ARMARIO };
+    const listas = { puertas: PUERTAS_ARMARIO, forma: FORMAS, modelo: MODELOS_PUERTA, cristal: CRISTALES_LISTA, ext: EXTERIORES, franja: EXTERIORES, int: INTERIORES, tir: TIRADORES_ARMARIO, perfil: PERFILES };
     const LISTAS_HUECOS = ['mods', 'modsI', 'modsD'], PARED = { f: 'mods', i: 'modsI', d: 'modsD' }, NOMBRE_PARED = { f: 'Fondo', i: 'Izquierda', d: 'Derecha' };
     const nuevo = (o) => ({ ...INICIAL_A, ...o, ...Object.fromEntries(LISTAS_HUECOS.map((k) => [k, String(o[k] ?? INICIAL_A[k]).split(',')])) });
     let e = nuevo({}), abierto = false, mostrado = null, dibujado = '', datosActuales = null;
@@ -174,6 +179,9 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
 
     function pintar() {
       const vest = esVest();
+      // Japonesas y cuatro paneles solo en correderas
+      if (e.puertas === 'abatibles' && SOLO_CORREDERAS.includes(e.modelo)) e.modelo = 'lisa';
+      $$('input[name="modelo"]').forEach((i) => (i.closest('label').hidden = e.puertas === 'abatibles' && SOLO_CORREDERAS.includes(i.value)));
       completar('mods', modulosPara(e.ancho)); completar('modsI', modulosPara(e.lado)); completar('modsD', modulosPara(e.lado));
       const d = vest ? vestidor(e) : armario({ ...e, mods: e.mods.slice(0, modulosPara(e.ancho)) });
       const clave = JSON.stringify([vest, e.ancho, e.alto, e.lado, e.puertas, e.forma, e.modelo, e.mods, e.modsI, e.modsD]);
@@ -183,13 +191,13 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
         Object.entries(d.datos).forEach(([k, v]) => { const b = $(`[data-dato="${k}"]`); if (b) contar(b, antes[k], v); });
       }
       datosActuales = d.datos;
-      const ext = busca('ext'), int = busca('int'), tir = busca('tir'), fr = busca('franja'), cr = busca('cristal');
-      [['--ext', ext.hex], ['--int', int.hex], ['--tir', tir.hex], ['--franja', fr.hex], ['--cristal', cr.hex], ['--cristal-op', cr.op], ['--v-ext', ext.dibujo === 'veta' ? 1 : 0], ['--v-int', int.dibujo === 'veta' ? 1 : 0], ['--v-franja', fr.dibujo === 'veta' ? 1 : 0]].forEach(([k, v]) => svg.style.setProperty(k, v));
+      const ext = busca('ext'), int = busca('int'), tir = busca('tir'), fr = busca('franja'), cr = busca('cristal'), pe = busca('perfil');
+      [['--ext', ext.hex], ['--int', int.hex], ['--tir', tir.hex], ['--franja', fr.hex], ['--cristal', cr.hex], ['--cristal-op', cr.op], ['--v-ext', ext.dibujo === 'veta' ? 1 : 0], ['--v-int', int.dibujo === 'veta' ? 1 : 0], ['--v-franja', fr.dibujo === 'veta' ? 1 : 0], ['--t-int', int.dibujo === 'tela' ? 1 : 0], ['--perfil', pe.hex]].forEach(([k, v]) => svg.style.setProperty(k, v));
       svg.dataset.tirador = tir.tipo; svg.dataset.abierto = abierto || vest ? '1' : '0';
       const ba = $('.boton-abrir'); ba.hidden = vest; ba.setAttribute('aria-pressed', String(abierto)); $('span', ba).textContent = abierto ? 'Cerrar puertas' : 'Abrir puertas';
       // Qué grupos se ven según lo elegido
       const cristal = e.modelo === 'cristal' || e.modelo === 'cruz';
-      $$('fieldset[data-solo]').forEach((f) => { const s = f.dataset.solo; f.hidden = !(s === 'vestidor' ? vest : s === 'puertas' ? !vest : s === 'cristal' ? !vest && cristal : s === 'japonesa' ? !vest && e.modelo === 'japonesa' : s === 'abatibles' ? e.puertas === 'abatibles' : true); });
+      $$('fieldset[data-solo]').forEach((f) => { const s = f.dataset.solo; f.hidden = !(s === 'vestidor' ? vest : s === 'puertas' ? !vest : s === 'cristal' ? !vest && cristal : s === 'japonesa' ? !vest && (e.modelo === 'japonesa' || e.modelo === 'japonesa3') : s === 'abatibles' ? e.puertas === 'abatibles' : s === 'correderas' ? e.puertas === 'correderas' : true); });
       const lados = vest && e.forma !== 'lineal';
       $('.solo-lados').hidden = !lados; $('.rotulo-ancho').textContent = vest ? 'Ancho de la pared del fondo' : 'Ancho';
       $('.rotulo-ext').textContent = vest ? 'Cantos y exterior' : 'Puertas y exterior';
@@ -212,7 +220,8 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       l.push(vest ? `Vestidor ${{ lineal: 'lineal', L: 'en L', C: 'en C', isla: 'con isla' }[e.forma]}` : `Puertas ${busca('puertas').nombre.toLowerCase()}, ${busca('modelo').nombre.toLowerCase()}`);
       l.push(`${e.ancho} × ${e.alto} cm${vest && e.forma !== 'lineal' ? `, laterales de ${e.lado}` : ''}`);
       if (!vest && (e.modelo === 'cristal' || e.modelo === 'cruz')) l.push(`Cristal ${busca('cristal').nombre.toLowerCase()}`);
-      if (!vest && e.modelo === 'japonesa') l.push(`Franja ${busca('franja').nombre.toLowerCase()}`);
+      if (!vest && (e.modelo === 'japonesa' || e.modelo === 'japonesa3')) l.push(`Franja ${busca('franja').nombre.toLowerCase()}`);
+      if (e.puertas === 'correderas') l.push(`Herraje ${busca('perfil').nombre.toLowerCase()}`);
       l.push(`Exterior ${busca('ext').nombre.toLowerCase()}`, `Interior ${busca('int').nombre.toLowerCase()}`);
       if (e.puertas === 'abatibles') l.push(`Tiradores ${busca('tir').nombre.toLowerCase()}`);
       (datosActuales?.huecos || []).forEach(([p, n]) => l.push(`${vest ? NOMBRE_PARED[p] : 'Huecos'}: ${e[PARED[p]].slice(0, n).map((t) => TIPOS[t].toLowerCase()).join(' / ')}`));
@@ -220,7 +229,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     }
     const cambiar = (k) => { const [p, i] = k.split('-'), lista = e[PARED[p]]; lista[+i] = ORDEN_TIPOS[(ORDEN_TIPOS.indexOf(lista[+i]) + 1) % ORDEN_TIPOS.length]; if (!abierto && !esVest()) abierto = true; aEnlace(); pintar(); };
 
-    document.addEventListener('change', (ev) => { const i = ev.target; if (i.type === 'radio' && listas[i.name]) { e[i.name] = i.value; if (i.name === 'puertas') abierto = false; aEnlace(); pintar(); } });
+    document.addEventListener('change', (ev) => { const i = ev.target; if (i.type === 'radio' && listas[i.name]) { e[i.name] = i.value; if (i.name === 'puertas') { abierto = false; if (i.value === 'abatibles' && SOLO_CORREDERAS.includes(e.modelo)) e.modelo = 'lisa'; } aEnlace(); pintar(); } });
     ['ancho', 'alto', 'lado'].forEach((k) => $('#' + k).addEventListener('input', (ev) => { e[k] = +ev.target.value; aEnlace(); pintar(); }));
     $('#huecos').addEventListener('click', (ev) => { const b = ev.target.closest('.hueco'); if (b) cambiar(b.dataset.k); });
     svg.addEventListener('click', (ev) => {
