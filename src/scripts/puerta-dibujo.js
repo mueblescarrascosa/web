@@ -14,6 +14,19 @@ export function hojaPara(hueco, tipo) {
 }
 export const conObra = (hueco, hoja, tipo) => tipo !== 'granero' && hueco - hoja < HOLGURA;
 
+// Alto de la hoja según el alto del hueco (abatible y empotrada; la de granero se hace a la medida):
+//   menos de 206: la de 203 no entra sin obra (o una hoja más baja, a medida) · 206–213: la normal de 203
+//   214–221: altura especial de 211 · más de 221: altura especial superior (a medida) o la de 211 con un fijo arriba.
+export const ALTO_NORMAL = 203, ALTO_ESPECIAL = 211;
+export function altoPara(alto, tipo, alta = 'medida') {
+  if (tipo === 'granero') return { altoHoja: alto + 5, nivel: 'granero', fijo: 0 };
+  if (alto < 206) return { altoHoja: ALTO_NORMAL, nivel: 'bajo', fijo: 0 };
+  if (alto <= 213) return { altoHoja: ALTO_NORMAL, nivel: 'normal', fijo: 0 };
+  if (alto <= 221) return { altoHoja: ALTO_ESPECIAL, nivel: 'especial', fijo: 0 };
+  if (alta === 'fijo') return { altoHoja: ALTO_ESPECIAL, nivel: 'fijo', fijo: alto - ALTO_ESPECIAL - 7 };
+  return { altoHoja: alto - 8, nivel: 'superior', fijo: 0 };
+}
+
 // Tirador de las correderas, embutido en la hoja (del color de los herrajes): redondo, dedal (alargado) o barra (granero).
 export const TIRADORES = [{ clave: 'redondo', nombre: 'Embutido redondo' }, { clave: 'dedal', nombre: 'Dedal' }, { clave: 'barra', nombre: 'Barra (solo granero)' }];
 const tirador = (clase, xc, yc) => {
@@ -22,8 +35,8 @@ const tirador = (clase, xc, yc) => {
   return `<circle cx="${f(xc)}" cy="${f(yc)}" r="4.2" style="fill:var(--manilla)" class="pieza"/><circle cx="${f(xc)}" cy="${f(yc)}" r="2.8" fill="#000" opacity=".45"/>`;
 };
 
-export function puerta({ hueco = 82, alto = 210, tipo = 'abatible', modelo = 'lisa', abre = 'der', tirador: tir = 'redondo' }) {
-  const W = 300, x0 = (W - hueco) / 2, hoja = hojaPara(hueco, tipo), altoHoja = tipo === 'granero' ? alto + 5 : 203;
+export function puerta({ hueco = 82, alto = 210, tipo = 'abatible', modelo = 'lisa', abre = 'der', tirador: tir = 'redondo', alta = 'medida' }) {
+  const W = 300, x0 = (W - hueco) / 2, hoja = hojaPara(hueco, tipo), A = altoPara(alto, tipo, alta), altoHoja = A.altoHoja;
   let s = '';
   // Pared y suelo
   s += R(0, 0, W, TOP, 'style="fill:var(--pared)" class="pieza"') + R(0, TOP, W, 30, 'style="fill:var(--suelo)" class="pieza"') + R(0, TOP, W, 30, 'fill="url(#tablasP)"') + R(0, TOP - 8, W, 8, 'fill="#f1f0ec"') + R(0, TOP - 8, W, 0.8, 'fill="#000" opacity=".12"');
@@ -41,11 +54,18 @@ export function puerta({ hueco = 82, alto = 210, tipo = 'abatible', modelo = 'li
     if (modelo === 'cristal') t += vidrio(x + 8, y + 10, w - 16, h - 20);
     return t + R(x, y, w, h, 'fill="url(#brilloP)"');
   };
+  // Fijo encima de la hoja (montante): panel del color de la puerta y un travesaño que lo separa
+  function fijoArriba(xh, w, hHoja, altoHueco) {
+    const y0 = Y(altoHueco - 1), y1 = Y(hHoja + 2.5);
+    return R(xh, y0, w, y1 - y0, 'style="fill:var(--hoja)" class="pieza" stroke="#000" stroke-opacity=".25" stroke-width=".5"') + R(xh, y0, w, y1 - y0, 'fill="url(#vetaP)" class="dibujo" style="opacity:var(--v-hoja)"')
+      + R(xh, y1, w, 2.5, 'fill="#000" opacity=".35"');
+  }
   if (tipo === 'abatible') {
     // Marco y tapajuntas alrededor del hueco; la hoja gira sobre las bisagras
     s += R(x0 - 7, Y(alto + 7), hueco + 14, alto + 7, 'style="fill:var(--hoja)" class="pieza"') + R(x0 - 7, Y(alto + 7), hueco + 14, alto + 7, 'fill="#000" opacity=".08"');
     s += R(x0, Y(alto), hueco, alto, 'fill="#2a2a2e"') + R(x0, Y(alto), hueco, alto, 'fill="url(#fondoP)"');
     const xh = x0 + (hueco - hoja) / 2;
+    if (A.fijo > 0) s += fijoArriba(xh, hoja, altoHoja, alto);
     const izq = abre === 'izq', xm = izq ? xh + hoja - 8 : xh + 4;
     s += `<g class="hoja-puerta abatible" style="transform-origin:${izq ? 'left' : 'right'} center">${dibujaHoja(xh, hoja, altoHoja)}`
       + R(xm, Y(105), 4, 2.2, 'rx="1" style="fill:var(--manilla)" class="pieza"') + R(izq ? xm - 10 : xm, Y(105), 14, 2.2, 'rx="1" style="fill:var(--manilla)" class="pieza"') + `<circle cx="${f(xm + 2)}" cy="${Y(104)}" r="2.8" style="fill:var(--manilla)" class="pieza"/>`
@@ -67,11 +87,13 @@ export function puerta({ hueco = 82, alto = 210, tipo = 'abatible', modelo = 'li
     // La hoja entra en el tabique (dentro de un casoneto): solo se ve en el hueco
     const xh = x0 + (hueco - hoja) / 2;
     s += `<clipPath id="huecoP"><rect x="${f(x0)}" y="${Y(alto)}" width="${f(hueco)}" height="${alto}"/></clipPath>`;
+    if (A.fijo > 0) s += fijoArriba(xh, hoja, altoHoja, alto);
     s += `<g clip-path="url(#huecoP)"><g class="hoja-puerta empotrada" style="--mover:${f(-hoja)}px">${dibujaHoja(xh, hoja, Math.min(altoHoja, alto))}`
       + tirador(tir === 'barra' ? 'redondo' : tir, xh + hoja - 8, Y(105)) + `</g></g>`;
     s += R(x0 - 1.5, Y(alto + 1.5), hueco + 3, alto + 1.5, 'fill="none" stroke="#000" stroke-opacity=".18" stroke-width="1.5"');
   }
-  return { vista: `0 20 ${W} ${TOP + 10}`, s, hoja, altoHoja };
+  const ys = Math.min(20, TOP - alto - 22);   // con huecos altos, el encuadre sube para que entren el marco y el carril
+  return { vista: `0 ${ys} ${W} ${TOP + 30 - ys}`, s, hoja, altoHoja, nivel: A.nivel, fijo: A.fijo };
 }
 
 export const DEFS_PUERTA = `<defs>

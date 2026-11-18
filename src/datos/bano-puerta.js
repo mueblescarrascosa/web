@@ -32,13 +32,13 @@ export const P_TIPOS = [{ clave: 'abatible', nombre: 'Abatible' }, { clave: 'gra
 export const P_MODELOS = [{ clave: 'lisa', nombre: 'Lisa' }, { clave: 'ranuras', nombre: 'Ranuras' }, { clave: 'vertical', nombre: 'Vidriera vertical' }, { clave: 'vidrieras', nombre: '4 vidrieras' }, { clave: 'clasica', nombre: 'Clásica' }, { clave: 'cristal', nombre: 'De cristal' }];
 export const P_COLORES = FRENTES.filter((x) => ['blanco', 'blanco-roto', 'gris-perla', 'vison', 'antracita', 'negro', 'salvia', 'roble-claro', 'roble', 'nogal'].includes(x.clave));
 export const MANILLAS = [{ clave: 'inox', nombre: 'Inox', hex: '#c4c6c7' }, { clave: 'negro', nombre: 'Negra', hex: '#1d1d1d' }, { clave: 'oro', nombre: 'Oro cepillado', hex: '#b6955c' }];
-export const P_INICIAL = { hueco: 82, alto: 210, galce: 9, tipo: 'abatible', modelo: 'ranuras', abre: 'der', tirador: 'redondo', color: 'blanco', manilla: 'negro' };
+export const P_INICIAL = { hueco: 82, alto: 210, galce: 9, tipo: 'abatible', modelo: 'ranuras', abre: 'der', tirador: 'redondo', alta: 'medida', color: 'blanco', manilla: 'negro' };
 
-export function consejosPuerta(e, hoja) {
+export function consejosPuerta(e, hoja, a = {}) {
   const bien = [], ojo = [];
-  const hojaTxt = String(hoja).replace('.', ',');
+  const hojaTxt = String(hoja).replace('.', ','), altoHoja = a.altoHoja || 203;
   if (e.tipo === 'abatible') {
-    bien.push(`Hoja estándar de ${hojaTxt} × 203 cm para un hueco de ${e.hueco} cm. Las medidas habituales son 62,5, 72,5 y 82,5 cm de ancho.`);
+    bien.push(`Hoja de ${hojaTxt} × ${altoHoja} cm para un hueco de ${e.hueco} × ${e.alto} cm. Las medidas habituales son 62,5, 72,5 y 82,5 cm de ancho, y 203 de alto.`);
     if (e.hueco - hoja < 8.5) ojo.push(`Con ${e.hueco} cm de hueco la de ${hojaTxt} cabe con algo de obra: hay que ajustar el hueco para el marco (lo normal es ${String(hoja + 8.5).replace('.', ',')} cm o más).`);
     if (hoja < 72.5) ojo.push('Con menos de 72,5 cm se pasa justo con muebles o compra; para una silla de ruedas, mejor 82,5.');
     bien.push('Deja libre el barrido de la puerta al abrir: que no choque con muebles ni enchufes.');
@@ -51,6 +51,12 @@ export function consejosPuerta(e, hoja) {
     bien.push(`Hoja de ${hojaTxt} cm que se esconde dentro del tabique: no ocupa sitio al abrir.`);
     if (e.hueco - hoja < 8.5) ojo.push(`Con ${e.hueco} cm de hueco la de ${hojaTxt} entra con algo de obra al montar el armazón.`);
     ojo.push('Hay que meter un armazón (casoneto) dentro de la pared: se decide antes de la obra o al hacer reforma.');
+  }
+  if (e.tipo !== 'granero') {
+    if (a.nivel === 'bajo') ojo.push(`Con ${e.alto} cm de alto la hoja de 203 no entra sin obra: hay que subir el hueco o hacer una hoja más baja, a medida.`);
+    if (a.nivel === 'especial') ojo.push(`Con ${e.alto} cm de alto va una puerta de altura especial, de 211 cm (la normal es de 203, para huecos de 206 a 213).`);
+    if (a.nivel === 'superior') ojo.push(`Con ${e.alto} cm de alto pasa de la altura especial de 211: hoja de altura especial superior, a medida, o la de 211 con un fijo arriba.`);
+    if (a.nivel === 'fijo') ojo.push(`Con ${e.alto} cm de alto: hoja de 211 y un fijo arriba de unos ${Math.round(a.fijo)} cm, del mismo acabado.`);
   }
   const g = +e.galce || 9, gTxt = String(g).replace('.', ',');
   if (e.tipo === 'empotrada') { if (g < 10) ojo.push(`Con ${gTxt} cm de pared no cabe el armazón: para esconder la hoja el tabique terminado necesita unos 10 cm o más.`); else bien.push(`Galce de ${gTxt} cm: el armazón cabe dentro del tabique.`); }
