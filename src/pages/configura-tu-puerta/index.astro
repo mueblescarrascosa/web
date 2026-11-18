@@ -3,7 +3,7 @@
 import Base from '../../layouts/Base.astro';
 import { r, EMPRESA } from '../../lib/sitio.js';
 import { P_TIPOS, P_MODELOS, P_COLORES, MANILLAS, P_INICIAL, consejosPuerta } from '../../datos/bano-puerta.js';
-import { puerta, DEFS_PUERTA } from '../../scripts/puerta-dibujo.js';
+import { puerta, DEFS_PUERTA, TIRADORES } from '../../scripts/puerta-dibujo.js';
 
 const e0 = { ...P_INICIAL };
 const d0 = puerta(e0), c0 = consejosPuerta(e0, d0.hoja);
@@ -40,15 +40,16 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       </fieldset>
       <fieldset class="muestras chips" data-g="tipo"><legend>Cómo abre</legend><Fragment set:html={chips('tipo', P_TIPOS)} /></fieldset>
       <fieldset class="muestras chips" data-g="abre" data-solo="abatible"><legend>Abre hacia</legend><Fragment set:html={chips('abre', [{ clave: 'der', nombre: 'Bisagras a la derecha' }, { clave: 'izq', nombre: 'Bisagras a la izquierda' }])} /></fieldset>
+      <fieldset class="muestras chips" data-g="tirador" data-solo="granero empotrada"><legend>Tirador</legend><Fragment set:html={chips('tirador', TIRADORES)} /></fieldset>
       <fieldset class="muestras chips" data-g="modelo"><legend>Modelo</legend><Fragment set:html={chips('modelo', P_MODELOS)} /></fieldset>
       <fieldset class="muestras" data-g="color"><legend>Color <span class="elegido">{col.nombre}</span></legend><div class="lista-muestras" set:html={colores('color', P_COLORES)} /></fieldset>
-      <fieldset class="muestras" data-g="manilla"><legend>Manilla y herrajes <span class="elegido">{ma.nombre}</span></legend><div class="lista-muestras" set:html={colores('manilla', MANILLAS)} /></fieldset>
+      <fieldset class="muestras" data-g="manilla"><legend><span class="titulo-herrajes">Manilla, bisagras y herrajes</span> <span class="elegido">{ma.nombre}</span></legend><div class="lista-muestras" set:html={colores('manilla', MANILLAS)} /></fieldset>
       <div class="botones combina-botones">
         <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
         <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
         <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándasela al taller</a>
       </div>
-      <p class="aviso-colores">Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. Medidas orientativas: el hueco lo medimos nosotros en casa.</p>
+      <p class="aviso-colores">Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. <b>Las medidas y la hoja son estimaciones:</b> siempre hay que verlo en obra, y el hueco lo medimos nosotros en casa.</p>
     </div>
   </section>
 
@@ -62,7 +63,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
 
   <script>
     import { P_TIPOS, P_MODELOS, P_COLORES, MANILLAS, P_INICIAL, consejosPuerta } from '../../datos/bano-puerta.js';
-    import { puerta, DEFS_PUERTA } from '../../scripts/puerta-dibujo.js';
+    import { puerta, DEFS_PUERTA, TIRADORES } from '../../scripts/puerta-dibujo.js';
     import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
     import { guardarEnProyecto, dibujoActual } from '../../scripts/proyecto.js';
     const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -72,7 +73,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     const busca = (k) => colores[k].find((x) => x.clave === e[k]) || colores[k][0];
     const nombre = (l, k) => l.find((x) => x.clave === e[k])?.nombre || e[k];
     let hoja = 0;
-    const resumen = () => [`Puerta ${nombre(P_TIPOS, 'tipo').toLowerCase()}`, `modelo ${nombre(P_MODELOS, 'modelo').toLowerCase()}`, `hueco de ${e.hueco} × ${e.alto} cm (hoja de ${String(hoja).replace('.', ',')})`, `galce de ${String(e.galce).replace('.', ',')} cm`, `color ${busca('color').nombre.toLowerCase()}`, `manilla ${busca('manilla').nombre.toLowerCase()}`];
+    const resumen = () => [`Puerta ${nombre(P_TIPOS, 'tipo').toLowerCase()}`, `modelo ${nombre(P_MODELOS, 'modelo').toLowerCase()}`, `hueco de ${e.hueco} × ${e.alto} cm (hoja de ${String(hoja).replace('.', ',')})`, `galce de ${String(e.galce).replace('.', ',')} cm`, `color ${busca('color').nombre.toLowerCase()}`, ...(e.tipo === 'abatible' ? [`manilla y bisagras ${busca('manilla').nombre.toLowerCase()}`] : [`tirador ${nombre(TIRADORES, 'tirador').toLowerCase().replace(' (solo granero)', '')}`, `herrajes ${busca('manilla').nombre.toLowerCase()}`])];
     function pintar() {
       const d = puerta(e); hoja = d.hoja;
       svg.setAttribute('viewBox', d.vista); svg.innerHTML = DEFS_PUERTA + d.s;
@@ -83,7 +84,11 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       $('#hueco-v').textContent = e.hueco + ' cm'; $('#alto-v').textContent = e.alto + ' cm'; $('#galce-v').textContent = String(e.galce).replace('.', ',') + ' cm'; $('#galce').value = e.galce; $('#hueco').value = e.hueco; $('#alto').value = e.alto;
       $('#medidas-v').textContent = `${e.hueco} × ${e.alto} × ${String(e.galce).replace('.', ',')} cm`;
       $$('input[type=radio]').forEach((i) => (i.checked = String(e[i.name]) === i.value));
-      $$('fieldset[data-solo]').forEach((f) => (f.hidden = e.tipo !== f.dataset.solo));
+      if (e.tipo === 'empotrada' && e.tirador === 'barra') e.tirador = 'redondo';   // la barra no deja entrar la hoja en el tabique
+      $$('input[type=radio]').forEach((i) => (i.checked = String(e[i.name]) === i.value));
+      const barra = $('input[name=tirador][value=barra]'); barra.disabled = e.tipo === 'empotrada'; barra.closest('label').hidden = e.tipo === 'empotrada';
+      $('.titulo-herrajes').textContent = e.tipo === 'abatible' ? 'Manilla, bisagras y herrajes' : e.tipo === 'granero' ? 'Carril, ruedas y tirador' : 'Tirador';
+      $$('fieldset[data-solo]').forEach((f) => (f.hidden = !f.dataset.solo.split(' ').includes(e.tipo)));
       $$('fieldset[data-g]').forEach((f) => { const k = f.dataset.g, el = $('.elegido', f); if (el && colores[k]) el.textContent = busca(k).nombre; });
       const b = $('.boton-abrir-puerta'); $('span', b).textContent = abierta ? 'Cerrar' : 'Abrir'; b.setAttribute('aria-pressed', String(abierta));
       const co = consejosPuerta(e, d.hoja);

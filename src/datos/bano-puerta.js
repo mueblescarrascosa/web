@@ -32,13 +32,14 @@ export const P_TIPOS = [{ clave: 'abatible', nombre: 'Abatible' }, { clave: 'gra
 export const P_MODELOS = [{ clave: 'lisa', nombre: 'Lisa' }, { clave: 'ranuras', nombre: 'Ranuras' }, { clave: 'vertical', nombre: 'Vidriera vertical' }, { clave: 'vidrieras', nombre: '4 vidrieras' }, { clave: 'clasica', nombre: 'Clásica' }, { clave: 'cristal', nombre: 'De cristal' }];
 export const P_COLORES = FRENTES.filter((x) => ['blanco', 'blanco-roto', 'gris-perla', 'vison', 'antracita', 'negro', 'salvia', 'roble-claro', 'roble', 'nogal'].includes(x.clave));
 export const MANILLAS = [{ clave: 'inox', nombre: 'Inox', hex: '#c4c6c7' }, { clave: 'negro', nombre: 'Negra', hex: '#1d1d1d' }, { clave: 'oro', nombre: 'Oro cepillado', hex: '#b6955c' }];
-export const P_INICIAL = { hueco: 82, alto: 210, galce: 9, tipo: 'abatible', modelo: 'ranuras', abre: 'der', color: 'blanco', manilla: 'negro' };
+export const P_INICIAL = { hueco: 82, alto: 210, galce: 9, tipo: 'abatible', modelo: 'ranuras', abre: 'der', tirador: 'redondo', color: 'blanco', manilla: 'negro' };
 
 export function consejosPuerta(e, hoja) {
   const bien = [], ojo = [];
   const hojaTxt = String(hoja).replace('.', ',');
   if (e.tipo === 'abatible') {
     bien.push(`Hoja estándar de ${hojaTxt} × 203 cm para un hueco de ${e.hueco} cm. Las medidas habituales son 62,5, 72,5 y 82,5 cm de ancho.`);
+    if (e.hueco - hoja < 8.5) ojo.push(`Con ${e.hueco} cm de hueco la de ${hojaTxt} cabe con algo de obra: hay que ajustar el hueco para el marco (lo normal es ${String(hoja + 8.5).replace('.', ',')} cm o más).`);
     if (hoja < 72.5) ojo.push('Con menos de 72,5 cm se pasa justo con muebles o compra; para una silla de ruedas, mejor 82,5.');
     bien.push('Deja libre el barrido de la puerta al abrir: que no choque con muebles ni enchufes.');
   }
@@ -48,6 +49,7 @@ export function consejosPuerta(e, hoja) {
   }
   if (e.tipo === 'empotrada') {
     bien.push(`Hoja de ${hojaTxt} cm que se esconde dentro del tabique: no ocupa sitio al abrir.`);
+    if (e.hueco - hoja < 8.5) ojo.push(`Con ${e.hueco} cm de hueco la de ${hojaTxt} entra con algo de obra al montar el armazón.`);
     ojo.push('Hay que meter un armazón (casoneto) dentro de la pared: se decide antes de la obra o al hacer reforma.');
   }
   const g = +e.galce || 9, gTxt = String(g).replace('.', ',');
@@ -55,6 +57,6 @@ export function consejosPuerta(e, hoja) {
   else if (g > 11) bien.push(`Galce de ${gTxt} cm: con paredes tan gruesas el marco lleva un forro (prolongación) para cubrir todo el canto.`);
   else bien.push(`Marco de ${gTxt} cm de galce, el grueso de la pared ya con el yeso o el azulejo.`);
   if (e.modelo === 'cristal' || e.modelo === 'vidrieras' || e.modelo === 'vertical') bien.push('El cristal deja pasar la luz al pasillo; si es un baño, mejor cristal mate.');
-  bien.push('Las medidas exactas las tomamos nosotros en casa, con la obra terminada.');
+  ojo.push('Todo esto son estimaciones: siempre hay que verlo en obra. Las medidas exactas las tomamos nosotros en casa.');
   return { bien, ojo };
 }
