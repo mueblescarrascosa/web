@@ -1,6 +1,7 @@
 ---
 // «Mi proyecto»: junta lo último que el visitante ha diseñado en los juegos (se guarda solo en su navegador)
-// para verlo de un vistazo, mandarlo al taller en un único mensaje o guardarlo como PDF.
+// para verlo de un vistazo, mandarlo al taller en un único mensaje, pedir cita, guardarlo como PDF o compartirlo
+// con un enlace (#c=…) que abre la misma página en modo «proyecto compartido», con los dibujos de cada juego.
 import Base from '../../layouts/Base.astro';
 import { r, EMPRESA } from '../../lib/sitio.js';
 const juegos = [
@@ -8,14 +9,15 @@ const juegos = [
   ['armario', 'Tu armario o vestidor', '/disena-tu-armario/', 'Diseña tu armario'],
   ['bano', 'Tu baño', '/combina-tu-bano/', 'Combina tu baño'],
   ['puerta', 'Tu puerta', '/configura-tu-puerta/', 'Configura tu puerta'],
+  ['salon', 'Tu salón', '/disena-tu-salon/', 'Diseña tu salón'],
   ['quiz', '¿Qué cocina va contigo?', '/que-cocina-va-contigo/', 'Hacer el quiz'],
 ];
 ---
-<Base titulo="Mi proyecto" descripcion="Todo lo que has diseñado en los juegos de Muebles Carrascosa, junto: cocina, armario, baño y puertas. Mándalo al taller en un solo mensaje." noindex>
+<Base titulo="Mi proyecto" descripcion="Todo lo que has diseñado en los juegos de Muebles Carrascosa, junto: cocina, armario, baño, puertas y salón. Mándalo al taller en un solo mensaje." noindex>
   <header class="cabeza-pagina ancho" data-entra>
-    <span class="etiqueta">Mi proyecto</span>
-    <h1>Todo lo que has diseñado.</h1>
-    <p class="entradilla">Aquí se guarda lo último que has hecho en cada juego, solo en este navegador. Revísalo y mándanoslo todo junto: con esto ya sabemos qué te gusta.</p>
+    <span class="etiqueta" id="mp-etiqueta">Mi proyecto</span>
+    <h1 id="mp-titulo">Todo lo que has diseñado.</h1>
+    <p class="entradilla" id="mp-entradilla">Aquí se guarda lo último que has hecho en cada juego, solo en este navegador. Revísalo y mándanoslo todo junto: con esto ya sabemos qué te gusta.</p>
   </header>
   <section class="ancho proyecto" id="proyecto">
     <div class="proyecto-lista">
@@ -34,27 +36,50 @@ const juegos = [
       ))}
     </div>
     <div class="proyecto-envio">
-      <h2>Mándanoslo</h2>
-      <label>Algo más que quieras contarnos (opcional)<textarea id="tp-nota" placeholder="Medidas aproximadas, pueblo, cuándo lo necesitas…"></textarea></label>
+      <h2 id="mp-envio">Mándanoslo</h2>
+      <label id="mp-nota-l">Algo más que quieras contarnos (opcional)<textarea id="tp-nota" placeholder="Medidas aproximadas, pueblo, cuándo lo necesitas…"></textarea></label>
       <div class="botones">
         <a class="boton" id="tp-wa" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Enviar por WhatsApp</a>
+        <a class="boton contorno" id="tp-cita" href={r('/contacto/#cita')}>Pedir cita para medir</a>
+        <button class="boton contorno" type="button" id="tp-compartir">Compartir mi proyecto</button>
         <a class="boton contorno" id="tp-correo" href={`mailto:${EMPRESA.email}`}>Por correo</a>
         <button class="boton contorno" type="button" id="tp-imprimir">Imprimir o guardar en PDF</button>
+        <button class="boton contorno" type="button" id="tp-importar" hidden>Guardarlo en mi proyecto</button>
       </div>
-      <p class="nota suave">Lo que has diseñado solo se guarda en tu navegador: no lo vemos hasta que nos lo mandas.</p>
+      <p class="nota suave" id="mp-pie">Lo que has diseñado solo se guarda en tu navegador: no lo vemos hasta que nos lo mandas.</p>
     </div>
   </section>
 
   <script>
-    import { leerProyecto, quitarDeProyecto } from '../../scripts/proyecto.js';
+    import { leerProyecto, quitarDeProyecto, ponerEnProyecto, enlaceCita, conSolo, ajustarMarcos } from '../../scripts/proyecto.js';
     const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+    const QUE = { cocina: 'Cocina', armario: 'Armario o vestidor', bano: 'Baño', puerta: 'Puertas', salon: 'Salón o mueble de TV' };
+    // Proyecto compartido: va en el enlace, sin los dibujos (se ven abriendo cada juego en modo «solo dibujo»)
+    const aB64 = (o) => btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const deB64 = (s) => JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0))));
+    let compartido = null;
+    try { const c = new URLSearchParams(location.hash.slice(1)).get('c'); if (c) compartido = deB64(c); } catch (e) { compartido = null; }
+    ajustarMarcos();
+    if (compartido) {
+      $('#mp-etiqueta').textContent = 'Proyecto compartido';
+      $('#mp-titulo').textContent = 'Un proyecto que te han mandado.';
+      $('#mp-entradilla').textContent = 'Esto es lo que han diseñado en nuestros juegos. Ábrelo para cambiarlo, guárdalo en tu proyecto o mándanoslo.';
+      $('#tp-importar').hidden = false; $('#tp-compartir').hidden = true; $('#mp-pie').textContent = 'Si lo guardas en tu proyecto, se queda solo en tu navegador.';
+      if (compartido.nota) $('#tp-nota').value = compartido.nota;
+    }
+    const datos = () => (compartido ? compartido.p || {} : leerProyecto());
     function pintar() {
-      const p = leerProyecto(), lineas = [];
+      const p = datos(), lineas = [];
       $$('.tarjeta-proyecto').forEach((t) => {
         const d = p[t.dataset.k];
         t.classList.toggle('vacia', !d);
-        $('.tp-quitar', t).hidden = !d;
-        $('.tp-dibujo', t).innerHTML = d?.svg || '';
+        t.hidden = !!compartido && !d;
+        $('.tp-quitar', t).hidden = !d || !!compartido;
+        // El dibujo guardado; si no lo hay (proyecto compartido o importado), el propio juego en modo «solo dibujo»
+        const caja = $('.tp-dibujo', t);
+        if (!d) caja.innerHTML = '';
+        else if (d.svg) caja.innerHTML = d.svg;
+        else if (!caja.querySelector('iframe') && d.enlace && t.dataset.k !== 'quiz') caja.innerHTML = `<iframe data-solo scrolling="no" loading="lazy" title="Dibujo" src="${conSolo(d.enlace)}"></iframe>`;
         $('.tp-resumen', t).textContent = d ? d.resumen : 'Todavía no lo has diseñado.';
         if (d) { $('.tp-abrir', t).href = d.enlace; $('.tp-abrir', t).textContent = 'Abrir y cambiar'; lineas.push(`• ${t.dataset.titulo}: ${d.resumen}\n${d.enlace}`); }
       });
@@ -62,10 +87,19 @@ const juegos = [
       const texto = `Hola, os mando mi proyecto hecho en vuestra web:\n\n${lineas.join('\n\n') || '(todavía sin diseños)'}${nota ? `\n\n${nota}` : ''}`;
       $('#tp-wa').href = 'https://wa.me/34653451270?text=' + encodeURIComponent(texto);
       $('#tp-correo').href = 'mailto:carrascosamuebles@gmail.com?subject=' + encodeURIComponent('Mi proyecto') + '&body=' + encodeURIComponent(texto);
+      const claves = Object.keys(p).filter((k) => QUE[k]);
+      $('#tp-cita').href = enlaceCita(claves.length === 1 ? QUE[claves[0]] : 'Otro', `Mi proyecto: ${lineas.join('\n') || '(sin diseños)'}`);
     }
     $('#proyecto').addEventListener('click', (ev) => { const q = ev.target.closest('.tp-quitar'); if (q) { quitarDeProyecto(q.closest('.tarjeta-proyecto').dataset.k); pintar(); } });
     $('#tp-nota').addEventListener('input', pintar);
     $('#tp-imprimir').addEventListener('click', () => { window.medir?.('mi-proyecto/imprimir'); print(); });
+    $('#tp-compartir').addEventListener('click', async (ev) => {
+      const p = {}; Object.entries(leerProyecto()).forEach(([k, d]) => (p[k] = { titulo: d.titulo, resumen: d.resumen, enlace: d.enlace }));
+      const url = `${location.origin}${location.pathname}#c=${aB64({ p, nota: $('#tp-nota').value.trim() })}`;
+      window.medir?.('mi-proyecto/compartir');
+      try { if (navigator.share) { await navigator.share({ title: 'Mi proyecto', text: 'Mira lo que he diseñado para casa:', url }); return; } await navigator.clipboard.writeText(url); const b = ev.currentTarget; b.textContent = 'Enlace copiado ✓'; setTimeout(() => (b.textContent = 'Compartir mi proyecto'), 2000); } catch (e) {}
+    });
+    $('#tp-importar').addEventListener('click', (ev) => { ponerEnProyecto(compartido.p || {}); ev.currentTarget.textContent = 'Guardado en tu proyecto ✓'; window.medir?.('mi-proyecto/importar'); });
     pintar();
   </script>
 </Base>

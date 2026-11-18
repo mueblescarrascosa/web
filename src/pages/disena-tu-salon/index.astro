@@ -1,0 +1,117 @@
+---
+// Juego «Diseña tu salón»: mueble de TV a medida (bajo suspendido, columnas, puente, panel de listones, estantes,
+// chimenea eléctrica y LED), con la tele a escala, colores y consejos del taller.
+import Base from '../../layouts/Base.astro';
+import { r, EMPRESA } from '../../lib/sitio.js';
+import { S_COLORES, S_PANELES, S_PAREDES, S_FRENTES, S_TIRADORES, TVS, SI_NO, S_INICIAL, consejosSalon } from '../../datos/salon.js';
+import { salon, DEFS_SALON } from '../../scripts/salon-dibujo.js';
+
+const e0 = { ...S_INICIAL };
+const d0 = salon(e0), c0 = consejosSalon(e0, d0);
+const busca = (l, k) => l.find((x) => x.clave === k);
+const col = busca(S_COLORES, e0.color), pan = busca(S_PANELES, e0.panelColor), pa = busca(S_PAREDES, e0.pared);
+const vars0 = `--frente:${col.hex};--panel:${pan.hex};--pared:${pa.hex};--suelo:#c8ad87;--v-frente:${col.dibujo === 'veta' ? 1 : 0};--v-panel:${pan.dibujo === 'veta' ? 1 : 0}`;
+const chips = (nombre, l) => l.map((x) => `<label><input type="radio" name="${nombre}" value="${x.clave}" ${String(e0[nombre]) === String(x.clave) ? 'checked' : ''} /><span>${x.nombre}</span></label>`).join('');
+const colores = (nombre, l) => l.map((x) => `<label title="${x.nombre}"><input type="radio" name="${nombre}" value="${x.clave}" ${e0[nombre] === x.clave ? 'checked' : ''} /><span class="muestra ${x.dibujo || ''}" style="--c:${x.hex}"></span><span class="nombre-muestra">${x.nombre}</span></label>`).join('');
+const siNo = (nombre, texto) => `<fieldset class="muestras chips" data-g="${nombre}"><legend>${texto}</legend>${chips(nombre, SI_NO)}</fieldset>`;
+const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Diseña tu salón', applicationCategory: 'DesignApplication', operatingSystem: 'Navegador web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' }, provider: { '@type': 'Organization', name: EMPRESA.nombre } };
+---
+<Base titulo="Diseña tu mueble de salón y TV" descripcion="Juega a diseñar tu mueble de salón a medida: bajo suspendido, columnas, panel de listones, chimenea eléctrica y LED, con tu tele a escala y consejos del taller. Muebles Carrascosa, Jaén." schema={schema}>
+  <header class="cabeza-pagina ancho" data-entra>
+    <span class="etiqueta">Juego · Diseña tu salón</span>
+    <h1>Tu mueble de salón, a tu medida.</h1>
+    <p class="entradilla">Pon el ancho de la pared y el tamaño de tu tele, y elige columnas, panel, chimenea y colores. Te decimos a qué altura va la tele y qué tamaño te conviene según la distancia al sofá.</p>
+  </header>
+
+  <section class="ancho combina" id="combina">
+    <div class="combina-vista">
+      <div class="lienzo">
+        <svg class="salon" id="dibujo" viewBox={d0.vista} role="img" aria-label="Dibujo del mueble de salón" style={vars0} set:html={DEFS_SALON + d0.s} />
+      </div>
+      <ul class="motivos" id="motivos">{c0.bien.map((t) => <li class="bien">{t}</li>)}{c0.ojo.map((t) => <li class="ojo">{t}</li>)}</ul>
+    </div>
+    <div class="combina-mandos">
+      <fieldset class="muestras"><legend>Medidas <span class="elegido" id="medidas-v">{e0.ancho} × {e0.alto} cm</span></legend>
+        <div class="calc-mandos">
+          <label>Ancho de la pared <output id="ancho-v">{e0.ancho} cm</output><input id="ancho" type="range" min="180" max="500" step="5" value={e0.ancho} /></label>
+          <label>Alto del techo <output id="alto-v">{e0.alto} cm</output><input id="alto" type="range" min="240" max="300" step="5" value={e0.alto} /></label>
+          <label>Centro de la tele <output id="tvAltura-v">{e0.tvAltura} cm</output><input id="tvAltura" type="range" min="85" max="140" step="1" value={e0.tvAltura} /></label>
+          <label>Distancia al sofá <output id="sofa-v">{e0.sofa} m</output><input id="sofa" type="range" min="1.5" max="5" step="0.1" value={e0.sofa} /></label>
+        </div>
+      </fieldset>
+      <fieldset class="muestras chips" data-g="tv"><legend>Tamaño de la tele</legend><Fragment set:html={chips('tv', TVS.map((v) => ({ clave: String(v), nombre: v + '"' })))} /></fieldset>
+      <Fragment set:html={siNo('columnas', 'Columnas a los lados')} />
+      <Fragment set:html={siNo('puente', 'Puente arriba')} />
+      <Fragment set:html={siNo('panel', 'Panel de listones detrás de la tele')} />
+      <Fragment set:html={siNo('estantes', 'Estantes flotantes')} />
+      <Fragment set:html={siNo('chimenea', 'Chimenea eléctrica en el bajo')} />
+      <Fragment set:html={siNo('led', 'Luz LED indirecta')} />
+      <fieldset class="muestras chips" data-g="frente"><legend>Frentes del bajo</legend><Fragment set:html={chips('frente', S_FRENTES)} /></fieldset>
+      <fieldset class="muestras chips" data-g="tirador"><legend>Cómo se abre</legend><Fragment set:html={chips('tirador', S_TIRADORES)} /></fieldset>
+      <fieldset class="muestras" data-g="color"><legend>Color del mueble <span class="elegido">{col.nombre}</span></legend><div class="lista-muestras" set:html={colores('color', S_COLORES)} /></fieldset>
+      <fieldset class="muestras" data-g="panelColor"><legend>Panel de listones <span class="elegido">{pan.nombre}</span></legend><div class="lista-muestras" set:html={colores('panelColor', S_PANELES)} /></fieldset>
+      <fieldset class="muestras" data-g="pared"><legend>Pared <span class="elegido">{pa.nombre}</span></legend><div class="lista-muestras" set:html={colores('pared', S_PAREDES)} /></fieldset>
+      <div class="botones combina-botones">
+        <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
+        <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
+        <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándaselo al taller</a>
+        <a class="boton contorno" data-accion="cita" href={r('/contacto/#cita')}>Pide cita para medirlo</a>
+        <button class="boton contorno" type="button" data-accion="comparar">⇄ Comparar dos versiones</button>
+      </div>
+      <p class="aviso-colores">Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. <b>Medidas y colores orientativos:</b> siempre hay que verlo en obra, y la pared la medimos nosotros en casa.</p>
+    </div>
+  </section>
+
+  <section class="seccion claro cierre">
+    <div class="ancho">
+      <span class="etiqueta">¿Te gusta tu salón?</span><br />
+      <a class="frase" href={r('/contacto/')}>Hablemos <span aria-hidden="true">→</span></a>
+      <div class="botones"><a class="boton" href={r('/miscelanea/')}>Ver muebles a medida</a><a class="boton contorno" href={r('/contacto/')}>Pide presupuesto</a></div>
+    </div>
+  </section>
+
+  <script>
+    import { S_COLORES, S_PANELES, S_PAREDES, S_FRENTES, S_TIRADORES, S_INICIAL, consejosSalon } from '../../datos/salon.js';
+    import { salon, DEFS_SALON } from '../../scripts/salon-dibujo.js';
+    import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
+    import { guardarEnProyecto, dibujoActual } from '../../scripts/proyecto.js';
+    const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+    const svg = $('#dibujo'), colores = { color: S_COLORES, panelColor: S_PANELES, pared: S_PAREDES };
+    const NUM = ['ancho', 'alto', 'tv', 'tvAltura', 'sofa'];
+    let e = { ...S_INICIAL };
+    const p = new URLSearchParams(location.hash.slice(1)); Object.keys(e).forEach((k) => { if (p.get(k)) e[k] = NUM.includes(k) ? +p.get(k) : p.get(k); });
+    const busca = (k) => colores[k].find((x) => x.clave === e[k]) || colores[k][0];
+    const nombre = (l, k) => l.find((x) => x.clave === e[k])?.nombre || e[k];
+    const si = (k, t) => (e[k] === '1' ? t : '');
+    const resumen = () => [`Pared de ${e.ancho} × ${e.alto} cm`, `tele de ${e.tv}" con el centro a ${e.tvAltura} cm`, `bajo con ${nombre(S_FRENTES, 'frente').toLowerCase()}`, nombre(S_TIRADORES, 'tirador').toLowerCase(), si('columnas', 'columnas a los lados'), si('puente', 'puente arriba'), si('panel', `panel de listones ${busca('panelColor').nombre.toLowerCase()}`), si('estantes', 'estantes flotantes'), si('chimenea', 'chimenea eléctrica'), si('led', 'LED indirecto'), `color ${busca('color').nombre.toLowerCase()}`, `pared ${busca('pared').nombre.toLowerCase()}`].filter(Boolean);
+    function pintar() {
+      const d = salon(e);
+      svg.setAttribute('viewBox', d.vista); svg.innerHTML = DEFS_SALON + d.s;
+      const c = busca('color'), pn = busca('panelColor');
+      [['--frente', c.hex], ['--panel', pn.hex], ['--pared', busca('pared').hex], ['--v-frente', c.dibujo === 'veta' ? 1 : 0], ['--v-panel', pn.dibujo === 'veta' ? 1 : 0]].forEach(([k, v]) => svg.style.setProperty(k, v));
+      NUM.filter((k) => k !== 'tv').forEach((k) => { $('#' + k).value = e[k]; $('#' + k + '-v').textContent = String(e[k]).replace('.', ',') + (k === 'sofa' ? ' m' : ' cm'); });
+      $('#medidas-v').textContent = `${e.ancho} × ${e.alto} cm`;
+      $$('input[type=radio]').forEach((i) => (i.checked = String(e[i.name]) === i.value));
+      $('fieldset[data-g="panelColor"]').hidden = e.panel !== '1';
+      $$('fieldset[data-g]').forEach((f) => { const k = f.dataset.g, el = $('.elegido', f); if (el && colores[k]) el.textContent = busca(k).nombre; });
+      const co = consejosSalon(e, d);
+      $('#motivos').innerHTML = [...co.bien.map((t) => `<li class="bien">${t}</li>`), ...co.ojo.map((t) => `<li class="ojo">${t}</li>`)].join('');
+      history.replaceState(null, '', '#' + new URLSearchParams(e).toString());
+      $('[data-accion="whatsapp"]').href = 'https://wa.me/34653451270?text=' + encodeURIComponent(`Hola, he diseñado mi mueble de salón en vuestra web:\n${resumen().join(' · ')}\n${location.href}`);
+      guardarEnProyecto('salon', { titulo: 'Tu salón', resumen: resumen().join(' · '), enlace: location.href, svg: dibujoActual(svg) });
+    }
+    document.addEventListener('change', (ev) => { const i = ev.target; if (i.type === 'radio' && i.name in e) { e[i.name] = i.name === 'tv' ? +i.value : i.value; pintar(); } });
+    NUM.filter((k) => k !== 'tv').forEach((k) => $('#' + k).addEventListener('input', (ev) => { e[k] = +ev.target.value; pintar(); }));
+    const avisar = (b, t, o) => { b.textContent = t; setTimeout(() => (b.textContent = o), 2000); };
+    $('[data-accion="compartir"]').addEventListener('click', async (ev) => { try { if (navigator.share) await navigator.share({ title: 'Mi salón', url: location.href }); else { await navigator.clipboard.writeText(location.href); avisar(ev.currentTarget, 'Enlace copiado ✓', 'Compartir enlace'); } } catch (er) {} });
+    $('[data-accion="descargar"]').addEventListener('click', async (ev) => {
+      const b = ev.currentTarget; b.textContent = 'Preparando…';
+      try { const blob = await imagenConMarca(svg, { titulo: 'Mi mueble de salón', lineas: resumen() }); await descargarOCompartir(blob, 'mi-salon-carrascosa.png', 'Mi salón'); avisar(b, 'Imagen lista ✓', 'Descargar imagen'); } catch (er) { avisar(b, 'No se pudo crear la imagen', 'Descargar imagen'); }
+    });
+    // En el móvil, el dibujo se queda fijo arriba y los consejos bajan junto a los botones
+    const mq = matchMedia('(max-width: 900px)'), motivos = $('#motivos');
+    const colocar = () => (mq.matches ? $('.combina-botones').before(motivos) : $('.combina-vista').append(motivos));
+    mq.addEventListener('change', colocar); colocar();
+    pintar();
+  </script>
+</Base>

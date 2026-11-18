@@ -2,8 +2,9 @@
 // Juego «Combina tu cocina»: el visitante elige distribución, colores y acabados, ve su cocina en perspectiva
 // (de día o de noche) y le decimos si combina y por qué. Puede guardar 3 favoritas, descargar la imagen y mandarla al taller.
 import Base from '../../layouts/Base.astro';
-import { r, EMPRESA } from '../../lib/sitio.js';
-import { LISTAS, INICIAL, puntuar, estiloVars, GAMAS } from '../../datos/combina.js';
+import { r, peq, EMPRESA } from '../../lib/sitio.js';
+import { LISTAS, INICIAL, puntuar, estiloVars, GAMAS, DE_LA_CASA } from '../../datos/combina.js';
+import medios from '../../datos/medios.json';
 import { svgCocina, VISTA } from '../../scripts/cocina-dibujo.js';
 
 const L = LISTAS();
@@ -101,8 +102,22 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
         <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
         <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
         <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándasela al taller</a>
+        <a class="boton contorno" data-accion="cita" href={r('/contacto/#cita')}>Pide cita para medirlo</a>
+        <button class="boton contorno" type="button" data-accion="comparar">⇄ Comparar dos versiones</button>
       </div>
-      <p class="aviso-colores">Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. Los colores son orientativos: la pantalla no reproduce bien la madera ni las texturas. En el taller te enseñamos las muestras reales.</p>
+      <p class="aviso-colores">¿Dudas con el material de la encimera? <a class="enlace" href={r('/elige-tu-encimera/')}>Compáralas aquí</a>. Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. Los colores son orientativos: la pantalla no reproduce bien la madera ni las texturas. En el taller te enseñamos las muestras reales.</p>
+    </div>
+  </section>
+
+  <section class="ancho de-la-casa" id="de-la-casa">
+    <div class="favoritas-cabeza"><h2>Cocinas que hemos hecho</h2><p class="suave">Cárgalas en el juego y cámbiales lo que quieras: los colores están sacados de la foto.</p></div>
+    <div class="casa-lista">
+      {DE_LA_CASA.map((c, i) => (
+        <button type="button" class="casa-tarjeta" data-casa={i}>
+          <img src={r(peq(medios[c.foto].src))} alt={medios[c.foto].alt} loading="lazy" width="400" height="300" />
+          <span>{c.nombre}</span><em>Cárgala en el juego →</em>
+        </button>
+      ))}
     </div>
   </section>
 
@@ -139,7 +154,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   </section>
 
   <script>
-    import { LISTAS, INICIAL, PROPUESTAS, puntuar, variables, estiloVars, precioOrientativo } from '../../datos/combina.js';
+    import { LISTAS, INICIAL, PROPUESTAS, puntuar, variables, estiloVars, precioOrientativo, DE_LA_CASA } from '../../datos/combina.js';
     import { svgCocina, VISTA } from '../../scripts/cocina-dibujo.js';
     import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
     import { guardarEnProyecto, dibujoActual } from '../../scripts/proyecto.js';
@@ -190,6 +205,13 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     raiz.addEventListener('change', (ev) => { const i = ev.target; if (i.type !== 'radio' || !listas[i.name]) return; estado[i.name] = i.value; aEnlace(); pintar(); });
     $('.boton-luz').addEventListener('click', () => { noche = !noche; aEnlace(); pintar(false); });
 
+    // Cocinas que hemos hecho: se cargan en el juego con su combinación
+    document.querySelectorAll('.casa-tarjeta').forEach((b) => b.addEventListener('click', () => {
+      const { nombre, foto, ...destino } = DE_LA_CASA[+b.dataset.casa];
+      estado = { ...estado, ...destino }; aEnlace(); pintar();
+      window.medir?.('de-la-casa/cocina');
+      document.querySelector('#combina').scrollIntoView({ behavior: 'smooth' });
+    }));
     // Inspírame: la cocina se monta pieza a pieza
     let ultima = -1;
     $('[data-accion="inspirame"]').addEventListener('click', () => {

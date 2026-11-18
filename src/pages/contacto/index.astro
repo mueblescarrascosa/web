@@ -65,13 +65,14 @@ const schema = {
       <p class="nota cita-aviso" aria-live="polite"></p>
       <fieldset class="chips">
         <legend>¿Qué hay que medir?</legend>
-        {['Cocina', 'Armario o vestidor', 'Baño', 'Puertas', 'Otro'].map((t, i) => <label><input type="radio" name="que" value={t} checked={i === 0} /><span>{t}</span></label>)}
+        {['Cocina', 'Armario o vestidor', 'Baño', 'Puertas', 'Salón o mueble de TV', 'Otro'].map((t, i) => <label><input type="radio" name="que" value={t} checked={i === 0} /><span>{t}</span></label>)}
       </fieldset>
       <div class="dos">
         <label>Tu nombre<input name="nombre" autocomplete="name" required /></label>
         <label>Teléfono<input name="telefono" type="tel" inputmode="tel" autocomplete="tel" required /></label>
       </div>
       <label>Dirección o pueblo<input name="donde" autocomplete="street-address" required /></label>
+      <div class="cita-diseno" hidden><p class="nota"><b>Va con tu diseño:</b> <span></span></p><button class="boton contorno pequeno" type="button">Quitar</button></div>
       <div class="botones" style="margin:.5rem 0 0">
         <button class="boton" type="submit" value="whatsapp">Pedir cita por WhatsApp</button>
         <button class="boton contorno" type="submit" value="correo">Por correo</button>

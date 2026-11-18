@@ -47,6 +47,8 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
         <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
         <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
         <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándaselo al taller</a>
+        <a class="boton contorno" data-accion="cita" href={r('/contacto/#cita')}>Pide cita para medirlo</a>
+        <button class="boton contorno" type="button" data-accion="comparar">⇄ Comparar dos versiones</button>
       </div>
       <p class="aviso-colores">Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. Dibujo y colores orientativos: el mueble se hace a la medida exacta del hueco.</p>
     </div>

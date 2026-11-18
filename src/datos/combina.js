@@ -226,3 +226,13 @@ export function precioOrientativo(metros, gama) {
   const g = GAMAS.find((x) => x.clave === gama) || GAMAS[1], r100 = (v) => Math.round(v / 100) * 100;
   return { desde: r100(metros * g.ml[0]), hasta: r100(metros * g.ml[1]), gama: g };
 }
+
+// Cocinas que hemos hecho, con su foto (medios.json), para cargarlas en el juego: colores elegidos a ojo de la foto.
+export const DE_LA_CASA = [
+  { nombre: 'Gris nube con Silestone', foto: 620, dist: 'lineal', bajos: 'gris-perla', altos: 'gris-perla', puerta: 'lisa', encimera: 'blanca', tirador: 'gola', electro: 'negro', trasera: 'encimera', suelo: 'porcelanico', pared: 'blanca' },
+  { nombre: 'Madera y negro', foto: 609, dist: 'peninsula', bajos: 'roble', altos: 'negro', puerta: 'lisa', encimera: 'negra', tirador: 'unero', electro: 'inox', trasera: 'pared', suelo: 'cemento', pared: 'blanca' },
+  { nombre: 'Blanco brillo y encimera negra', foto: 608, dist: 'L', bajos: 'blanco', altos: 'blanco', puerta: 'lisa', encimera: 'negra', tirador: 'gola', electro: 'negro', trasera: 'azulejo-blanco', suelo: 'roble-claro', pared: 'blanca' },
+  { nombre: 'Blanca y madera', foto: 611, dist: 'lineal', bajos: 'blanco', altos: 'roble', puerta: 'lisa', encimera: 'roble-macizo', tirador: 'negro', electro: 'inox', trasera: 'azulejo-blanco', suelo: 'porcelanico', pared: 'blanca' },
+  { nombre: 'Rústica con hidráulico', foto: 606, dist: 'lineal', bajos: 'blanco-roto', altos: 'blanco-roto', puerta: 'ranurada', encimera: 'roble-macizo', tirador: 'negro', electro: 'blanco', trasera: 'azulejo-verde', suelo: 'roble', pared: 'blanca' },
+  { nombre: 'Isla con Ascale Black', foto: 618, dist: 'isla', bajos: 'roble-claro', altos: 'roble-claro', puerta: 'lisa', encimera: 'negra-veteada', tirador: 'gola', electro: 'negro', trasera: 'encimera', suelo: 'porcelanico', pared: 'blanca' },
+];

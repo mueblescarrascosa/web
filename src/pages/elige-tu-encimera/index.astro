@@ -1,0 +1,91 @@
+---
+// «Elige tu encimera»: materiales lado a lado (laminado, compacto, madera, cuarzo, porcelánico y granito) con lo que
+// aguanta cada uno y su precio relativo. El visitante marca lo que más le importa y se ordenan solos.
+import Base from '../../layouts/Base.astro';
+import { r, EMPRESA } from '../../lib/sitio.js';
+
+// Notas de 1 a 5 (5 = lo mejor; en precio, 5 = lo más económico). Orientativas: dependen de la marca y el acabado.
+const MATERIALES = [
+  { clave: 'laminado', nombre: 'Laminado', hex: '#c9b49a', dibujo: 'veta', notas: { calor: 2, manchas: 3, golpes: 2, precio: 5, agua: 2, madera: 4, piedra: 3, fina: 3 },
+    texto: 'Tablero con una capa decorativa: el más económico, con muchísimos diseños (madera, piedra, lisos).',
+    bien: ['El más económico', 'Muchos diseños', 'Ligero y fácil de cambiar'], ojo: ['No apoyes ollas calientes', 'Las juntas y el corte del fregadero temen al agua', 'Si se raya o quema, no se repara'] },
+  { clave: 'compacto', nombre: 'Compacto', hex: '#3d3f42', notas: { calor: 3, manchas: 4, golpes: 4, precio: 3, agua: 5, madera: 3, piedra: 3, fina: 5 },
+    texto: 'Resina prensada de 12 mm, maciza de arriba abajo: fina, muy resistente al agua y con el canto del mismo color.',
+    bien: ['Fino (12 mm) y moderno', 'No le afecta el agua', 'Fregadero bajo encimera'], ojo: ['El calor directo puede marcarla', 'Menos diseños que el laminado'] },
+  { clave: 'madera', nombre: 'Madera maciza', hex: '#a7774d', dibujo: 'veta', notas: { calor: 2, manchas: 2, golpes: 2, precio: 3, agua: 2, madera: 5, piedra: 1, fina: 2 },
+    texto: 'Roble, nogal o iroko de verdad: cálida y natural, envejece bonita si se cuida.',
+    bien: ['Cálida y natural', 'Se lija y se renueva', 'Única: cada pieza es distinta'], ojo: ['Hay que aceitarla de vez en cuando', 'Cerca del fregadero sufre con el agua', 'Se marca con golpes y calor'] },
+  { clave: 'cuarzo', nombre: 'Cuarzo', hex: '#e8e4dc', dibujo: 'marmol', notas: { calor: 3, manchas: 5, golpes: 4, precio: 2, agua: 5, madera: 1, piedra: 5, fina: 3 },
+    texto: 'Cuarzo y resina (tipo Silestone o Compac): no absorbe manchas y tiene muchos colores, también imitación mármol.',
+    bien: ['No se mancha', 'Muy higiénico', 'Muchos colores y vetas'], ojo: ['No apoyes ollas recién sacadas del fuego', 'Al sol directo algunos colores pueden cambiar'] },
+  { clave: 'porcelanico', nombre: 'Porcelánico', hex: '#d9d6d0', dibujo: 'marmol', notas: { calor: 5, manchas: 5, golpes: 3, precio: 1, agua: 5, madera: 2, piedra: 5, fina: 5 },
+    texto: 'Cerámica de gran formato (tipo Dekton o Neolith): aguanta el calor, no se raya ni se mancha, y puede ser muy fina.',
+    bien: ['Aguanta ollas calientes', 'No se raya ni se mancha', 'Sirve para fuera y al sol'], ojo: ['El más caro', 'Un golpe fuerte en el canto puede desconcharlo'] },
+  { clave: 'granito', nombre: 'Granito', hex: '#6f6a64', dibujo: 'marmol', notas: { calor: 5, manchas: 3, golpes: 5, precio: 3, agua: 4, madera: 1, piedra: 4, fina: 1 },
+    texto: 'Piedra natural de toda la vida: durísima y aguanta el calor; los claros conviene tratarlos para que no se manchen.',
+    bien: ['Durísimo', 'Aguanta el calor', 'Dura toda la vida'], ojo: ['Los colores claros pueden mancharse sin tratamiento', 'Pocos diseños lisos'] },
+];
+const CRITERIOS = [['calor', 'Que aguante el calor'], ['manchas', 'Que no se manche'], ['golpes', 'Que no se raye ni se golpee'], ['agua', 'Que no le afecte el agua'], ['precio', 'Lo más económico'], ['madera', 'Aspecto de madera'], ['piedra', 'Aspecto de piedra o mármol'], ['fina', 'Que sea fina']];
+const PRECIO = { 5: '€', 4: '€', 3: '€€', 2: '€€€', 1: '€€€€' };
+const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Elige tu encimera', applicationCategory: 'DesignApplication', operatingSystem: 'Navegador web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' }, provider: { '@type': 'Organization', name: EMPRESA.nombre } };
+---
+<Base titulo="Elige tu encimera: comparativa de materiales" descripcion="Laminado, compacto, madera, cuarzo, porcelánico o granito: marca lo que más te importa y te ordenamos las encimeras, con lo que aguanta cada una y su precio relativo. Muebles Carrascosa, Jaén." schema={schema}>
+  <header class="cabeza-pagina ancho" data-entra>
+    <span class="etiqueta">Juego · Elige tu encimera</span>
+    <h1>¿Qué encimera te va?</h1>
+    <p class="entradilla">Marca lo que más te importa y te ordenamos los materiales, con lo bueno y lo malo de cada uno, sin letra pequeña.</p>
+  </header>
+  <section class="ancho encimeras">
+    <fieldset class="muestras chips criterios"><legend>Lo que más me importa <span class="elegido" id="en-cuantos">marca uno o varios</span></legend>
+      {CRITERIOS.map(([k, t]) => <label><input type="checkbox" name="criterio" value={k} /><span>{t}</span></label>)}
+    </fieldset>
+    <ol class="lista-encimeras" id="lista-encimeras">
+      {MATERIALES.map((m) => (
+        <li class="encimera-tarjeta" data-clave={m.clave} data-notas={JSON.stringify(m.notas)}>
+          <span class={`muestra grande ${m.dibujo || ''}`} style={`--c:${m.hex}`}></span>
+          <div class="encimera-texto">
+            <h2>{m.nombre} <span class="precio-rel" title="Precio relativo">{PRECIO[m.notas.precio]}</span></h2>
+            <p class="suave">{m.texto}</p>
+            <div class="barras">
+              {[['calor', 'Calor'], ['manchas', 'Manchas'], ['golpes', 'Golpes y rayas'], ['agua', 'Agua']].map(([k, t]) => (
+                <div class="barra-nota"><span>{t}</span><i style={`--n:${m.notas[k]}`}></i></div>
+              ))}
+            </div>
+            <ul class="motivos">{m.bien.map((t) => <li class="bien">{t}</li>)}{m.ojo.map((t) => <li class="ojo">{t}</li>)}</ul>
+          </div>
+          <span class="encaje" hidden></span>
+        </li>
+      ))}
+    </ol>
+    <p class="aviso-colores">Notas orientativas: cada marca y acabado cambia algo. Te enseñamos muestras en el taller y te decimos cuál va mejor con tu cocina.</p>
+    <div class="botones">
+      <a class="boton" href={r('/combina-tu-cocina/')}>Pruébala en tu cocina</a>
+      <a class="boton contorno" id="en-wa" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Pregúntanos por WhatsApp</a>
+    </div>
+  </section>
+
+  <script>
+    const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+    const lista = $('#lista-encimeras');
+    function ordenar() {
+      const marcados = $$('input[name=criterio]:checked').map((i) => i.value);
+      $('#en-cuantos').textContent = marcados.length ? `${marcados.length} marcado${marcados.length > 1 ? 's' : ''}` : 'marca uno o varios';
+      const tarjetas = $$('.encimera-tarjeta', lista).map((t) => {
+        const n = JSON.parse(t.dataset.notas), puntos = marcados.length ? marcados.reduce((a, k) => a + n[k], 0) / marcados.length : 0;
+        return { t, puntos };
+      });
+      if (marcados.length) tarjetas.sort((a, b) => b.puntos - a.puntos);
+      tarjetas.forEach(({ t, puntos }, i) => {
+        lista.append(t);
+        const e = $('.encaje', t); e.hidden = !marcados.length;
+        e.textContent = i === 0 ? 'La que más te encaja' : `${Math.round((puntos / 5) * 100)} %`;
+        t.classList.toggle('primera', !!marcados.length && i === 0);
+      });
+      const mejor = marcados.length ? $('.encimera-tarjeta h2', lista).firstChild.textContent.trim() : '';
+      $('#en-wa').href = 'https://wa.me/34653451270?text=' + encodeURIComponent(mejor ? `Hola, estoy mirando encimeras en vuestra web y me encaja la de ${mejor.toLowerCase()}. ¿Me contáis más?` : 'Hola, tengo dudas con la encimera de mi cocina.');
+      if (marcados.length) window.medir?.('encimera/' + marcados.join('+'));
+    }
+    document.addEventListener('change', (ev) => { if (ev.target.name === 'criterio') ordenar(); });
+    ordenar();
+  </script>
+</Base>

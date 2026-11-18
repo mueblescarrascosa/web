@@ -1,0 +1,66 @@
+---
+// «Comparar dos versiones»: dos diseños del mismo juego, uno al lado del otro (cada uno en su marco, en modo «solo dibujo»),
+// para elegir en casa con un toque y mandar el voto. Los diseños van en el enlace (#a=… &b=…), no se guarda nada.
+import Base from '../../layouts/Base.astro';
+import { r } from '../../lib/sitio.js';
+---
+<Base titulo="Compara dos versiones" descripcion="Dos versiones de tu diseño, una al lado de la otra, para elegir en casa." noindex>
+  <header class="cabeza-pagina ancho" data-entra>
+    <span class="etiqueta">Comparar</span>
+    <h1 id="c-titulo">¿Cuál os gusta más?</h1>
+    <p class="entradilla">Dos versiones de tu diseño, una al lado de la otra. Mándale este enlace a quien quieras para que vote con un toque.</p>
+  </header>
+  <section class="ancho">
+    <div class="compara-arriba">
+      <button class="boton" type="button" id="c-compartir">Compartir para que voten</button>
+      <a class="boton contorno" id="c-otra" href={r('/')}>Empezar otra comparación</a>
+    </div>
+    <div class="compara" id="compara">
+      {['A', 'B'].map((l) => (
+        <article class="compara-lado" data-l={l}>
+          <h2>Versión {l}</h2>
+          <iframe data-solo scrolling="no" title={`Dibujo de la versión ${l}`} loading="lazy"></iframe>
+          <p class="suave tp-resumen"></p>
+          <div class="botones">
+            <button class="boton" type="button" data-votar={l}>Me gusta la {l}</button>
+            <a class="boton contorno" data-abrir={l} href="#">Abrir y cambiar</a>
+          </div>
+        </article>
+      ))}
+    </div>
+    <p class="nota suave" id="c-vacio" hidden>Este enlace no trae dos diseños. Ve a un juego, pulsa «Comparar dos versiones», cambia algo y vuelve a pulsar.</p>
+  </section>
+
+  <script>
+    import { conSolo, olvidarComparar, ajustarMarcos } from '../../scripts/proyecto.js';
+    const $ = (s, c = document) => c.querySelector(s);
+    const p = new URLSearchParams(location.hash.slice(1)), k = p.get('k') || '', t = p.get('t') || 'Tu diseño';
+    const JUEGOS = { cocina: '/combina-tu-cocina/', armario: '/disena-tu-armario/', bano: '/combina-tu-bano/', puerta: '/configura-tu-puerta/', salon: '/disena-tu-salon/' };
+    const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+    ajustarMarcos();
+    if (!p.get('a') || !p.get('b')) { $('#compara').hidden = true; $('#c-vacio').hidden = false; }
+    else {
+      $('#c-titulo').textContent = `${t}: ¿cuál os gusta más?`;
+      [['A', p.get('a'), p.get('ra')], ['B', p.get('b'), p.get('rb')]].forEach(([l, enlace, resumen]) => {
+        const lado = $(`.compara-lado[data-l="${l}"]`);
+        $('iframe', lado).src = conSolo(enlace);
+        $('.tp-resumen', lado).textContent = resumen || '';
+        $('[data-abrir]', lado).href = enlace;
+      });
+    }
+    if (JUEGOS[k]) $('#c-otra').href = base + JUEGOS[k];
+    $('#c-otra').addEventListener('click', () => olvidarComparar(k));
+    const compartir = async (texto) => {
+      window.medir?.('comparar/compartir');
+      try { if (navigator.share) { await navigator.share({ title: t, text: texto, url: location.href }); return; } } catch (e) { return; }
+      location.href = 'https://wa.me/?text=' + encodeURIComponent(`${texto}\n${location.href}`);
+    };
+    $('#c-compartir').addEventListener('click', () => compartir(`${t}: ¿cuál te gusta más, la A o la B? Ábrelo y vota con un toque.`));
+    document.querySelectorAll('[data-votar]').forEach((b) => b.addEventListener('click', () => {
+      const l = b.dataset.votar;
+      document.querySelectorAll('.compara-lado').forEach((x) => x.classList.toggle('elegida', x.dataset.l === l));
+      window.medir?.('comparar/voto');
+      compartir(`${t}: a mí me gusta más la ${l} 👍`);
+    }));
+  </script>
+</Base>

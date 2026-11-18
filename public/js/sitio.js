@@ -181,12 +181,22 @@ window.medir = (nombre) => { try { window.goatcounter?.count?.({ path: 'evento/'
       return true;
     };
     dia.addEventListener('change', revisar);
+    // Si viene de un juego («Pide cita para medirlo»): qué hay que medir y el diseño, que va en el mensaje
+    const qs = new URLSearchParams(location.search), cajaDiseno = $('.cita-diseno', cita);
+    let diseno = qs.get('diseno') || '';
+    const que = qs.get('que'), opcion = que && $(`input[name="que"][value="${que.replace(/"/g, '')}"]`, cita);
+    if (opcion) opcion.checked = true;
+    if (diseno && cajaDiseno) {
+      $('span', cajaDiseno).textContent = diseno.split('\n')[0];
+      cajaDiseno.hidden = false;
+      $('button', cajaDiseno).addEventListener('click', () => { diseno = ''; cajaDiseno.hidden = true; });
+    }
     cita.addEventListener('submit', e => {
       e.preventDefault();
       if (!cita.reportValidity() || !revisar()) return;
       window.medir('contacto/cita');
       const d = new FormData(cita), fecha = new Date(d.get('dia') + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-      const texto = `Hola, soy ${d.get('nombre')}. Quiero pedir cita para medir: ${d.get('que').toLowerCase()}.\nDía: ${fecha}, por la ${d.get('franja')}.\nDónde: ${d.get('donde')}\nMi teléfono: ${d.get('telefono')}`;
+      const texto = `Hola, soy ${d.get('nombre')}. Quiero pedir cita para medir: ${d.get('que').toLowerCase()}.\nDía: ${fecha}, por la ${d.get('franja')}.\nDónde: ${d.get('donde')}\nMi teléfono: ${d.get('telefono')}${diseno ? `\n\nMi diseño:\n${diseno}` : ''}`;
       location.href = e.submitter?.value === 'correo'
         ? `mailto:carrascosamuebles@gmail.com?subject=${encodeURIComponent('Cita para medir: ' + d.get('que'))}&body=${encodeURIComponent(texto)}`
         : `https://wa.me/34653451270?text=${encodeURIComponent(texto)}`;

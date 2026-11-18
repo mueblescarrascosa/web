@@ -2,8 +2,9 @@
 // Juego «Diseña tu armario»: armario con puertas (de frente) o vestidor (en perspectiva: lineal, en L, en C o con isla),
 // con modelos de puerta, colores, el interior de cada hueco, lo que cabe y los consejos del taller.
 import Base from '../../layouts/Base.astro';
-import { r, EMPRESA } from '../../lib/sitio.js';
-import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, PERFILES, INICIAL_A, consejos } from '../../datos/armario.js';
+import { r, peq, EMPRESA } from '../../lib/sitio.js';
+import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, PERFILES, INICIAL_A, consejos, DE_LA_CASA_A, GAMAS_A } from '../../datos/armario.js';
+import medios from '../../datos/medios.json';
 import { armario, DEFS_ARMARIO } from '../../scripts/armario-dibujo.js';
 
 const buscar = (l, k) => l.find((x) => x.clave === k);
@@ -121,13 +122,36 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
         <legend>Tiradores <span class="elegido">{tir0.nombre}</span></legend>
         <div class="lista-muestras" set:html={colores(TIRADORES_ARMARIO, 'tir')} />
       </fieldset>
+      <section class="precio-orientativo" aria-labelledby="titulo-precio">
+        <h3 id="titulo-precio">¿Cuánto costaría?</h3>
+        <p class="suave" id="pr-metros">Para 2,4 m de armario</p>
+        <fieldset class="chips gamas"><legend>Gama</legend>
+          {GAMAS_A.map((g, i) => <label><input type="radio" name="pr-gama" value={g.clave} checked={i === 0} /><span><b>{g.nombre}</b>{' · '}{g.texto}</span></label>)}
+        </fieldset>
+        <p class="precio-cifra"><span>Entre</span> <b id="pr-desde">1.550</b> <span>y</span> <b id="pr-hasta">1.800 €</b></p>
+        <p class="precio-nota"><strong>IVA incluido.</strong> Mueble de suelo a techo con interior básico y montaje; luz LED, pantaloneros extraíbles y otros extras, aparte. Es una orientación: el precio exacto te lo damos en tu presupuesto, sin compromiso.</p>
+      </section>
       <div class="botones combina-botones">
         <button class="boton contorno" type="button" data-accion="inspirame">✦ Inspírame</button>
         <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
         <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
         <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándaselo al taller</a>
+        <a class="boton contorno" data-accion="cita" href={r('/contacto/#cita')}>Pide cita para medirlo</a>
+        <button class="boton contorno" type="button" data-accion="comparar">⇄ Comparar dos versiones</button>
       </div>
       <p class="aviso-colores">Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. Dibujo orientativo: el interior lo decidimos contigo según lo que guardas, y en el taller te enseñamos las muestras reales.</p>
+    </div>
+  </section>
+
+  <section class="ancho de-la-casa" id="de-la-casa">
+    <div class="favoritas-cabeza"><h2>Armarios y vestidores que hemos hecho</h2><p class="suave">Cárgalos en el juego y cámbiales lo que quieras: es una aproximación a la foto.</p></div>
+    <div class="casa-lista">
+      {DE_LA_CASA_A.map((c, i) => (
+        <button type="button" class="casa-tarjeta" data-casa={i}>
+          <img src={r(peq(medios[c.foto].src))} alt={medios[c.foto].alt} loading="lazy" width="400" height="300" />
+          <span>{c.nombre}</span><em>Cárgalo en el juego →</em>
+        </button>
+      ))}
     </div>
   </section>
 
@@ -155,7 +179,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   </section>
 
   <script>
-    import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, PERFILES, SOLO_CORREDERAS, TIPOS, ORDEN_TIPOS, INICIAL_A, PROPUESTAS_A, consejos, modulosPara, correderas } from '../../datos/armario.js';
+    import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, PERFILES, SOLO_CORREDERAS, TIPOS, ORDEN_TIPOS, INICIAL_A, PROPUESTAS_A, consejos, modulosPara, correderas, DE_LA_CASA_A, precioArmario } from '../../datos/armario.js';
     import { armario, vestidor, plano, DEFS_ARMARIO } from '../../scripts/armario-dibujo.js';
     import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
     import { guardarEnProyecto, dibujoActual } from '../../scripts/proyecto.js';
@@ -231,6 +255,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       $('.motivos').innerHTML = [...c.bien.map((t) => `<li class="bien">${t}</li>`), ...c.ojo.map((t) => `<li class="ojo">${t}</li>`)].join('');
       $('[data-accion="whatsapp"]').href = 'https://wa.me/34653451270?text=' + encodeURIComponent(`Hola, he diseñado mi ${vest ? 'vestidor' : 'armario'} en vuestra web:\n${resumen().join(' · ')}\n${location.href}`);
       guardarEnProyecto('armario', { titulo: vest ? 'Tu vestidor' : 'Tu armario', resumen: resumen().join(' · '), enlace: location.href, svg: dibujoActual(svg) });
+      precioArm();
     }
     function resumen() {
       const vest = esVest(), l = [];
@@ -258,6 +283,21 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     svg.addEventListener('keydown', (ev) => { const m = ev.target.closest('.modulo'); if (m && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); cambiar(m.dataset.k); } });
     $('.boton-abrir').addEventListener('click', () => { abierto = !abierto; pintar(); });
     $('#led').addEventListener('change', (ev) => { e.led = ev.target.checked ? '1' : '0'; if (ev.target.checked && !esVest()) abierto = true; aEnlace(); pintar(); });
+    // Precio orientativo con IVA, con los metros del propio diseño
+    const eur = (v) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    function precioArm() {
+      const g = $('input[name=pr-gama]:checked')?.value, pr = precioArmario(e, g);
+      $('#pr-metros').textContent = `Para ${String(Math.round(pr.metros * 10) / 10).replace('.', ',')} m de ${e.puertas === 'vestidor' ? 'vestidor' : 'armario'}`;
+      $('#pr-desde').textContent = eur(pr.desde); $('#pr-hasta').textContent = eur(pr.hasta) + ' €';
+    }
+    $('.precio-orientativo').addEventListener('change', precioArm);
+    // Armarios y vestidores que hemos hecho: se cargan en el juego
+    $$('.casa-tarjeta').forEach((b) => b.addEventListener('click', () => {
+      const { nombre, foto, ...p } = DE_LA_CASA_A[+b.dataset.casa]; e = nuevo(p); abierto = false; aEnlace(); pintar();
+      if (!esVest()) setTimeout(() => { abierto = true; pintar(); }, 900);
+      window.medir?.('de-la-casa/armario');
+      $('#combina').scrollIntoView({ behavior: 'smooth' });
+    }));
     let ultima = -1;
     $('[data-accion="inspirame"]').addEventListener('click', (ev) => {
       let n; do { n = Math.floor(Math.random() * PROPUESTAS_A.length); } while (n === ultima); ultima = n;

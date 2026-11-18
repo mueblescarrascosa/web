@@ -45,6 +45,12 @@ const schema = tipo === 'entrada' ? { '@context': 'https://schema.org', '@type':
       <a class="boton" href={r('/combina-tu-bano/')}>Combina tu baño <span class="flecha" aria-hidden="true">→</span></a>
     </section>
   )}
+  {item.slug === 'miscelanea' && (
+    <section class="ancho aviso-juego">
+      <div><span class="etiqueta">Juego</span><h2>Diseña tu mueble de salón</h2><p class="suave">Columnas, panel de listones, chimenea y LED, con tu tele a escala y a qué altura ponerla.</p></div>
+      <a class="boton" href={r('/disena-tu-salon/')}>Diseña tu salón <span class="flecha" aria-hidden="true">→</span></a>
+    </section>
+  )}
   {item.slug === 'puertas' && (
     <section class="ancho aviso-juego">
       <div><span class="etiqueta">Juego</span><h2>Configura tu puerta</h2><p class="suave">Abatible o corredera, modelo, color y manilla, con la medida de tu hueco.</p></div>

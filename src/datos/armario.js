@@ -85,3 +85,34 @@ export function consejos(e, datos) {
   return { puntos: p, personas, bien, ojo, veredicto: p >= 90 ? '¡Todo en su sitio!' : p >= 75 ? 'Muy bien organizado' : p >= 60 ? 'Le falta algo' : 'Hay que repensarlo' };
 }
 export { modulosPara, correderas };
+
+// Armarios y vestidores que hemos hecho, con su foto (medios.json), para cargarlos en el juego.
+export const DE_LA_CASA_A = [
+  { nombre: 'Vestidor en U blanco', foto: 536, ancho: 300, alto: 250, puertas: 'vestidor', forma: 'C', lado: 200, ext: 'blanco', int: 'blanco', tir: 'negro', mods: 'baldas,doble,cajones', modsI: 'largo,doble', modsD: 'baldas,cajones' },
+  { nombre: 'Correderas de cristal negro en buhardilla', foto: 589, ancho: 220, alto: 250, puertas: 'correderas', modelo: 'cristal', cristal: 'ahumado', perfil: 'inox', ext: 'negro', int: 'roble-claro', tir: 'negro', mods: 'largo,doble' },
+  { nombre: 'Corredera Halifax con estantes', foto: 572, ancho: 180, alto: 250, puertas: 'correderas', modelo: 'japonesa3', franja: 'blanco', perfil: 'inox', ext: 'roble', int: 'roble-claro', tir: 'negro', mods: 'largo,cajones' },
+  { nombre: 'Vestidor de madera blanca', foto: 587, ancho: 240, alto: 250, puertas: 'vestidor', forma: 'C', lado: 220, ext: 'roble-claro', int: 'roble-claro', tir: 'negro', mods: 'baldas', modsI: 'doble,pantExtra,cajones', modsD: 'largo,accesorios' },
+  { nombre: 'Vitrina de aspa lacada', foto: 588, ancho: 300, alto: 250, puertas: 'abatibles', modelo: 'cruz', cristal: 'claro', ext: 'blanco-roto', int: 'blanco', tir: 'negro', mods: 'baldas,doble,largo' },
+];
+
+// ── Precio orientativo (con IVA, montado) ──
+// Sacado de la app de Presupuestos (armarios.js, tabla inicial, margen del 25 %) el 18/11/2026: armario de suelo a techo
+// (250 de alto, 60 de fondo) con interior básico y dos cajones, de 150, 200 y 300 cm; vestidor abierto de 200, 300 y 400 cm.
+// Por metro, con IVA: armario laminado 670–725 · lacado blanco 885–925 · lacado color ~1.105; vestidor 600–860.
+export const GAMAS_A = [
+  { clave: 'economica', nombre: 'Económica', texto: 'Laminados (melamina o roble)', armario: [650, 750], vestidor: [600, 650] },
+  { clave: 'media', nombre: 'Media', texto: 'Lacado blanco, textiles', armario: [850, 950], vestidor: [650, 750] },
+  { clave: 'alta', nombre: 'Alta', texto: 'Lacado de color, herrajes altos', armario: [1050, 1200], vestidor: [780, 900] },
+];
+// Metros de mueble: el ancho del armario; en el vestidor, lo que miden sus paredes con cuerpos
+export function metrosArmario(e) {
+  if (e.puertas !== 'vestidor') return e.ancho / 100;
+  const lado = (+e.lado || 0) / 100, fondo = e.ancho / 100;
+  // En cada esquina se solapan los fondos (60 cm): no se cuentan dos veces
+  return e.forma === 'L' ? fondo + lado - 0.6 : e.forma === 'C' || e.forma === 'isla' ? fondo + 2 * lado - 1.2 : fondo;
+}
+export function precioArmario(e, gama) {
+  const g = GAMAS_A.find((x) => x.clave === gama) || GAMAS_A[1], m = metrosArmario(e), t = e.puertas === 'vestidor' ? g.vestidor : g.armario;
+  const r50 = (v) => Math.round(v / 50) * 50;
+  return { desde: r50(m * t[0]), hasta: r50(m * t[1]), metros: m, gama: g };
+}
