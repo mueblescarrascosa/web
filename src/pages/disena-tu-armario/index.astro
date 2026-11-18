@@ -179,7 +179,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   </section>
 
   <script>
-    import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, PERFILES, SOLO_CORREDERAS, TIPOS, ORDEN_TIPOS, INICIAL_A, PROPUESTAS_A, consejos, modulosPara, correderas, DE_LA_CASA_A, precioArmario } from '../../datos/armario.js';
+    import { PUERTAS_ARMARIO, FORMAS, MODELOS_PUERTA, CRISTALES_LISTA, EXTERIORES, INTERIORES, TIRADORES_ARMARIO, PERFILES, SOLO_CORREDERAS, TIPOS, ORDEN_TIPOS, INICIAL_A, PROPUESTAS_A, consejos, modulosPara, cuerposPara, correderas, DE_LA_CASA_A, precioArmario } from '../../datos/armario.js';
     import { armario, vestidor, plano, DEFS_ARMARIO } from '../../scripts/armario-dibujo.js';
     import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
     import { guardarEnProyecto, dibujoActual } from '../../scripts/proyecto.js';
@@ -218,8 +218,9 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       // Japonesas y cuatro paneles solo en correderas
       if (e.puertas === 'abatibles' && SOLO_CORREDERAS.includes(e.modelo)) e.modelo = 'lisa';
       $$('input[name="modelo"]').forEach((i) => (i.closest('label').hidden = e.puertas === 'abatibles' && SOLO_CORREDERAS.includes(i.value)));
-      completar('mods', modulosPara(e.ancho)); completar('modsI', modulosPara(e.lado)); completar('modsD', modulosPara(e.lado));
-      const d = vest ? vestidor(e) : armario({ ...e, mods: e.mods.slice(0, modulosPara(e.ancho)) });
+      const nFondo = vest ? modulosPara(e.ancho) : cuerposPara(e.ancho, e.alto, e.puertas);
+      completar('mods', nFondo); completar('modsI', modulosPara(e.lado)); completar('modsD', modulosPara(e.lado));
+      const d = vest ? vestidor(e) : armario({ ...e, mods: e.mods.slice(0, nFondo) });
       const clave = JSON.stringify([vest, e.ancho, e.alto, e.lado, e.puertas, e.forma, e.modelo, e.mods, e.modsI, e.modsD]);
       if (clave !== dibujado) {
         const antes = {}; $$('[data-dato]').forEach((b) => (antes[b.dataset.dato] = +b.textContent));

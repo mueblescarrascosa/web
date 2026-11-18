@@ -1,6 +1,6 @@
 // Juego «Diseña tu armario»: acabados, propuestas y consejos (con las medidas de la guía del taller).
 import { FRENTES } from './combina.js';
-import { TIPOS, MODELOS, CRISTALES, modulosPara, correderas } from '../scripts/armario-dibujo.js';
+import { TIPOS, MODELOS, CRISTALES, modulosPara, cuerposPara, correderas } from '../scripts/armario-dibujo.js';
 
 export const PUERTAS_ARMARIO = [
   { clave: 'correderas', nombre: 'Correderas' }, { clave: 'abatibles', nombre: 'Abatibles' }, { clave: 'vestidor', nombre: 'Vestidor abierto' },
@@ -84,7 +84,7 @@ export function consejos(e, datos) {
   p = Math.max(35, Math.min(100, p));
   return { puntos: p, personas, bien, ojo, veredicto: p >= 90 ? '¡Todo en su sitio!' : p >= 75 ? 'Muy bien organizado' : p >= 60 ? 'Le falta algo' : 'Hay que repensarlo' };
 }
-export { modulosPara, correderas };
+export { modulosPara, cuerposPara, correderas };
 
 // Armarios y vestidores que hemos hecho, con su foto (medios.json), para cargarlos en el juego.
 export const DE_LA_CASA_A = [

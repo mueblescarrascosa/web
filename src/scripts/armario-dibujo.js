@@ -15,6 +15,9 @@ const PANT = ['#2f3b52', '#4a5a72', '#c9b79a', '#3a3a3a', '#6b6f73', '#8a7356', 
 const ZAP = ['#2b2b2b', '#7a5c48', '#e7e2d6', '#a33b2f', '#3b4a5e'];
 const f = (n) => +n.toFixed(1);
 export const modulosPara = (ancho) => Math.max(1, Math.ceil(ancho / 100));
+// Cuerpos del armario: con correderas, uno detrás de cada hoja (cuerpo y puerta a pares, como en la app de presupuestos);
+// con abatibles o vestidor, uno por cada metro más o menos.
+export const cuerposPara = (ancho, alto, puertas) => (puertas === 'correderas' ? correderas(ancho, alto).k : modulosPara(ancho));
 // Correderas: hojas de hasta unos 110 cm, y cada hoja como mucho 3,5 veces más alta que ancha (si no, cabecea al deslizar).
 export const ESBELTEZ_MAX = 3.5;
 export function correderas(ancho, alto) {
@@ -116,8 +119,8 @@ function deFrente(piezas, alto) {
 }
 
 // ── Cuerpo de un mueble de frente: carcasa, interior de cada hueco, separaciones y luz (sin puertas ni habitación) ──
-function cuerpo(ancho, alto, mods, clave, semBase = 3, nombre = 'Hueco') {
-  const n = modulosPara(ancho), w = ancho / n, Y = (h) => alto - h;
+function cuerpo(ancho, alto, mods, clave, semBase = 3, nombre = 'Hueco', nCuerpos = null) {
+  const n = nCuerpos || modulosPara(ancho), w = ancho / n, Y = (h) => alto - h;
   const altillo = alto >= 220 ? alto - 45 : null, techoUtil = altillo ?? alto - 2;
   const tot = { perchas: 0, zapatos: 0, montones: 0, cajones: 0, pantalones: 0 }, cuenta = { largo: 0, corto: 0, doblado: 0, zapatos: 0 };
   const R = (x, y, an, al, a = '') => `<rect x="${f(x)}" y="${f(y)}" width="${f(an)}" height="${f(al)}" ${a}/>`;
@@ -143,13 +146,13 @@ const sumar = (a, b) => Object.keys(b).forEach((k) => (a[k] = (a[k] || 0) + b[k]
 
 // ── Armario con puertas, de frente ──
 export function armario({ ancho = 240, alto = 250, puertas = 'correderas', mods = [], modelo = 'lisa' }) {
-  const n = modulosPara(ancho), w = ancho / n;
+  const n = cuerposPara(ancho, alto, puertas), w = ancho / n;
   const R = (x, y, an, al, a = '') => `<rect x="${f(x)}" y="${f(y)}" width="${f(an)}" height="${f(al)}" ${a}/>`;
   let s = '';
   s += R(-60, -40, ancho + 120, alto + 40, 'fill="#e9e6df"') + R(-60, alto, ancho + 120, 40, 'fill="#c8ad87"');
   for (let x = -60; x < ancho + 60; x += 14) s += `<line x1="${x}" y1="${alto}" x2="${x - 6}" y2="${alto + 40}" stroke="#7a5c40" stroke-opacity=".25" stroke-width=".3"/>`;
   s += R(-60, alto, ancho + 120, 3, 'fill="#000" opacity=".12"');
-  const c = cuerpo(ancho, alto, mods, 'f');
+  const c = cuerpo(ancho, alto, mods, 'f', 3, 'Hueco', n);
   s += c.s;
 
   // Puertas con su modelo
