@@ -2,16 +2,16 @@
 // Juego «Configura tu puerta»: puerta de paso abatible, corredera de granero o empotrada, con modelo, color, manilla y medidas.
 import Base from '../../layouts/Base.astro';
 import { r, EMPRESA } from '../../lib/sitio.js';
-import { P_TIPOS, P_MODELOS, P_COLORES, MANILLAS, P_INICIAL, consejosPuerta } from '../../datos/bano-puerta.js';
-import { puerta, DEFS_PUERTA, TIRADORES } from '../../scripts/puerta-dibujo.js';
+import { P_TIPOS, P_MODELOS, P_COLORES, MANILLAS, P_PAREDES, P_ZOCALO_COLORES, P_INICIAL, consejosPuerta } from '../../datos/bano-puerta.js';
+import { puerta, DEFS_PUERTA, TIRADORES, ZOCALOS } from '../../scripts/puerta-dibujo.js';
 
 const e0 = { ...P_INICIAL };
 const d0 = puerta(e0), c0 = consejosPuerta(e0, d0.hoja, d0);
 const busca = (l, k) => l.find((x) => x.clave === k);
-const col = busca(P_COLORES, e0.color), ma = busca(MANILLAS, e0.manilla);
-const vars0 = `--hoja:${col.hex};--manilla:${ma.hex};--pared:#e9e6df;--suelo:#c8ad87;--v-hoja:${col.dibujo === 'veta' ? 1 : 0}`;
+const col = busca(P_COLORES, e0.color), ma = busca(MANILLAS, e0.manilla), pa = busca(P_PAREDES, e0.pared), zc = busca(P_ZOCALO_COLORES, e0.zcolor);
+const vars0 = `--hoja:${col.hex};--manilla:${ma.hex};--pared:${pa.hex};--zocalo:${zc.hex || col.hex};--suelo:#c8ad87;--v-hoja:${col.dibujo === 'veta' ? 1 : 0}`;
 const chips = (nombre, l) => l.map((x) => `<label><input type="radio" name="${nombre}" value="${x.clave}" ${e0[nombre] === x.clave ? 'checked' : ''} /><span>${x.nombre}</span></label>`).join('');
-const colores = (nombre, l) => l.map((x) => `<label title="${x.nombre}"><input type="radio" name="${nombre}" value="${x.clave}" ${e0[nombre] === x.clave ? 'checked' : ''} /><span class="muestra ${x.dibujo || ''}" style="--c:${x.hex}"></span><span class="nombre-muestra">${x.nombre}</span></label>`).join('');
+const colores = (nombre, l) => l.map((x) => `<label title="${x.nombre}"><input type="radio" name="${nombre}" value="${x.clave}" ${e0[nombre] === x.clave ? 'checked' : ''} /><span class="muestra ${x.dibujo || ''}" style="--c:${x.hex || col.hex}"></span><span class="nombre-muestra">${x.nombre}</span></label>`).join('');
 const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Configura tu puerta', applicationCategory: 'DesignApplication', operatingSystem: 'Navegador web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' }, provider: { '@type': 'Organization', name: EMPRESA.nombre } };
 ---
 <Base titulo="Configura tu puerta de paso" descripcion="Juega a configurar tu puerta de paso: abatible, corredera de granero o empotrada, modelo, color, manilla y medidas del hueco, con consejos del taller. Muebles Carrascosa, Jaén." schema={schema}>
@@ -33,18 +33,22 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     <div class="combina-mandos">
       <fieldset class="muestras"><legend>Medidas del hueco <span class="elegido" id="medidas-v">{e0.hueco} × {e0.alto} × {e0.galce} cm</span></legend>
         <div class="calc-mandos">
-          <label>Ancho <output id="hueco-v">{e0.hueco} cm</output><input id="hueco" type="range" min="65" max="110" step="1" value={e0.hueco} /></label>
-          <label>Alto <output id="alto-v">{e0.alto} cm</output><input id="alto" type="range" min="200" max="240" step="1" value={e0.alto} /></label>
+          <label>Ancho <output id="hueco-v">{e0.hueco} cm</output><input id="hueco" type="range" min="60" max="200" step="1" value={e0.hueco} /></label>
+          <label>Alto <output id="alto-v">{e0.alto} cm</output><input id="alto" type="range" min="195" max="260" step="1" value={e0.alto} /></label>
           <label>Galce (grueso de la pared) <output id="galce-v">{e0.galce} cm</output><input id="galce" type="range" min="5" max="30" step="0.5" value={e0.galce} /></label>
         </div>
       </fieldset>
       <fieldset class="muestras chips" data-g="tipo"><legend>Cómo abre</legend><Fragment set:html={chips('tipo', P_TIPOS)} /></fieldset>
       <fieldset class="muestras chips" data-g="abre" data-solo="abatible"><legend>Abre hacia</legend><Fragment set:html={chips('abre', [{ clave: 'der', nombre: 'Bisagras a la derecha' }, { clave: 'izq', nombre: 'Bisagras a la izquierda' }])} /></fieldset>
+      <fieldset class="muestras chips" data-g="ancha" hidden><legend>Hueco de más de 120</legend><Fragment set:html={chips('ancha', [{ clave: 'fijo', nombre: 'Hoja con fijo lateral' }, { clave: 'doble', nombre: 'Doble bandera' }])} /></fieldset>
       <fieldset class="muestras chips" data-g="alta" hidden><legend>Hueco muy alto</legend><Fragment set:html={chips('alta', [{ clave: 'medida', nombre: 'Hoja más alta, a medida' }, { clave: 'fijo', nombre: 'Hoja de 211 con fijo arriba' }])} /></fieldset>
       <fieldset class="muestras chips" data-g="tirador" data-solo="granero empotrada"><legend>Tirador</legend><Fragment set:html={chips('tirador', TIRADORES)} /></fieldset>
       <fieldset class="muestras chips" data-g="modelo"><legend>Modelo</legend><Fragment set:html={chips('modelo', P_MODELOS)} /></fieldset>
       <fieldset class="muestras" data-g="color"><legend>Color <span class="elegido">{col.nombre}</span></legend><div class="lista-muestras" set:html={colores('color', P_COLORES)} /></fieldset>
       <fieldset class="muestras" data-g="manilla"><legend><span class="titulo-herrajes">Manilla, bisagras y herrajes</span> <span class="elegido">{ma.nombre}</span></legend><div class="lista-muestras" set:html={colores('manilla', MANILLAS)} /></fieldset>
+      <fieldset class="muestras" data-g="pared"><legend>Pared <span class="elegido">{pa.nombre}</span></legend><div class="lista-muestras" set:html={colores('pared', P_PAREDES)} /></fieldset>
+      <fieldset class="muestras chips" data-g="zocalo"><legend>Zócalo</legend><Fragment set:html={chips('zocalo', ZOCALOS)} /></fieldset>
+      <fieldset class="muestras" data-g="zcolor"><legend>Color del zócalo <span class="elegido">{zc.nombre}</span></legend><div class="lista-muestras" set:html={colores('zcolor', P_ZOCALO_COLORES)} /></fieldset>
       <div class="botones combina-botones">
         <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
         <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
@@ -63,25 +67,32 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   </section>
 
   <script>
-    import { P_TIPOS, P_MODELOS, P_COLORES, MANILLAS, P_INICIAL, consejosPuerta } from '../../datos/bano-puerta.js';
-    import { puerta, DEFS_PUERTA, TIRADORES } from '../../scripts/puerta-dibujo.js';
+    import { P_TIPOS, P_MODELOS, P_COLORES, MANILLAS, P_PAREDES, P_ZOCALO_COLORES, P_INICIAL, consejosPuerta } from '../../datos/bano-puerta.js';
+    import { puerta, DEFS_PUERTA, TIRADORES, ZOCALOS } from '../../scripts/puerta-dibujo.js';
     import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
     import { guardarEnProyecto, dibujoActual } from '../../scripts/proyecto.js';
     const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
-    const svg = $('#dibujo'), colores = { color: P_COLORES, manilla: MANILLAS };
+    const svg = $('#dibujo'), colores = { color: P_COLORES, manilla: MANILLAS, pared: P_PAREDES, zcolor: P_ZOCALO_COLORES };
     let e = { ...P_INICIAL }, abierta = false, ultima = null;
     const p = new URLSearchParams(location.hash.slice(1)); Object.keys(e).forEach((k) => { if (p.get(k)) e[k] = ['hueco', 'alto', 'galce'].includes(k) ? +p.get(k) : p.get(k); });
     const busca = (k) => colores[k].find((x) => x.clave === e[k]) || colores[k][0];
     const nombre = (l, k) => l.find((x) => x.clave === e[k])?.nombre || e[k];
-    let hoja = 0, altoHoja = 203, fijo = 0;
-    const resumen = () => [`Puerta ${nombre(P_TIPOS, 'tipo').toLowerCase()}`, `modelo ${nombre(P_MODELOS, 'modelo').toLowerCase()}`, `hueco de ${e.hueco} × ${e.alto} cm (hoja de ${String(hoja).replace('.', ',')} × ${altoHoja}${fijo > 0 ? ` y fijo arriba de ${Math.round(fijo)}` : ''})`, `galce de ${String(e.galce).replace('.', ',')} cm`, `color ${busca('color').nombre.toLowerCase()}`, ...(e.tipo === 'abatible' ? [`manilla y bisagras ${busca('manilla').nombre.toLowerCase()}`] : [`tirador ${nombre(TIRADORES, 'tirador').toLowerCase().replace(' (solo granero)', '')}`, `herrajes ${busca('manilla').nombre.toLowerCase()}`])];
+    let hoja = 0, altoHoja = 203, fijo = 0, reparto = null;
+    const nn = (v) => String(Math.round(v * 10) / 10).replace('.', ',');
+    // «hoja de 82,5 × 203», «hoja de 92,5 y fijo lateral de 30 × 203», «doble bandera de 82,5 + 30 × 203», «dos hojas de 62,5 × 203»
+    const hojas = () => { const [a, b] = reparto.piezas; const t = !b ? `hoja de ${nn(a.w)}` : b.clase === 'fijo' ? `hoja de ${nn(a.w)} y fijo lateral de ${nn(b.w)}` : e.tipo === 'abatible' ? `doble bandera de ${nn(a.w)} + ${nn(b.w)}` : `dos hojas de ${nn(a.w)}`; return `${t} × ${altoHoja}${fijo > 0 ? ` y fijo arriba de ${Math.round(fijo)}` : ''}`; };
+    const resumen = () => [`Puerta ${nombre(P_TIPOS, 'tipo').toLowerCase()}`, `modelo ${nombre(P_MODELOS, 'modelo').toLowerCase()}`, `hueco de ${e.hueco} × ${e.alto} cm (${hojas()})`, `galce de ${String(e.galce).replace('.', ',')} cm`, `color ${busca('color').nombre.toLowerCase()}`, ...(e.tipo === 'abatible' ? [`manilla y bisagras ${busca('manilla').nombre.toLowerCase()}`] : [`tirador ${nombre(TIRADORES, 'tirador').toLowerCase().replace(' (solo granero)', '')}`, `herrajes ${busca('manilla').nombre.toLowerCase()}`]), `pared ${busca('pared').nombre.toLowerCase()}`, e.zocalo === 'no' ? 'sin zócalo' : `${e.zocalo === 'alto' ? 'zócalo alto' : 'rodapié'} ${busca('zcolor').nombre.toLowerCase()}`];
     function pintar() {
-      const d = puerta(e); hoja = d.hoja; altoHoja = d.altoHoja; fijo = d.fijo;
+      const d = puerta(e); hoja = d.hoja; altoHoja = d.altoHoja; fijo = d.fijo; reparto = d.reparto;
       svg.setAttribute('viewBox', d.vista); svg.innerHTML = DEFS_PUERTA + d.s;
       const c = busca('color'), m = busca('manilla');
-      [['--hoja', c.hex], ['--manilla', m.hex], ['--v-hoja', c.dibujo === 'veta' ? 1 : 0]].forEach(([k, v]) => svg.style.setProperty(k, v));
+      [['--hoja', c.hex], ['--manilla', m.hex], ['--pared', busca('pared').hex], ['--zocalo', busca('zcolor').hex || c.hex], ['--v-hoja', c.dibujo === 'veta' ? 1 : 0]].forEach(([k, v]) => svg.style.setProperty(k, v));
       svg.dataset.abierta = abierta ? '1' : '0';
-      $('#hoja').textContent = String(d.hoja).replace('.', ','); $('#hoja-t').textContent = `× ${d.altoHoja} cm de hoja`;
+      $('#hoja').textContent = String(d.hoja).replace('.', ','); const [, segunda] = d.reparto.piezas;
+      $('#hoja-t').textContent = !segunda ? `× ${d.altoHoja} cm de hoja` : segunda.clase === 'fijo' ? `× ${d.altoHoja} cm de hoja, y fijo de ${nn(segunda.w)}` : `× ${d.altoHoja} cm, y otra de ${nn(segunda.w)}`;
+      const mp = $('input[name=zcolor][value=puerta]'); if (mp) $('.muestra', mp.closest('label')).style.setProperty('--c', c.hex);   // «como la puerta» toma su color
+      $('fieldset[data-g="zcolor"]').hidden = e.zocalo === 'no';
+      $('fieldset[data-g="ancha"]').hidden = !(e.tipo === 'abatible' && e.hueco > 120);
       $('#hueco-v').textContent = e.hueco + ' cm'; $('#alto-v').textContent = e.alto + ' cm'; $('#galce-v').textContent = String(e.galce).replace('.', ',') + ' cm'; $('#galce').value = e.galce; $('#hueco').value = e.hueco; $('#alto').value = e.alto;
       $('#medidas-v').textContent = `${e.hueco} × ${e.alto} × ${String(e.galce).replace('.', ',')} cm`;
       $$('input[type=radio]').forEach((i) => (i.checked = String(e[i.name]) === i.value));
