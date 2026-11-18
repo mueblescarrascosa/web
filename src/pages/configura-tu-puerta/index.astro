@@ -121,6 +121,10 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       const b = ev.currentTarget; b.textContent = 'Preparando…';
       try { const blob = await imagenConMarca(svg, { titulo: 'Mi puerta', lineas: resumen() }); await descargarOCompartir(blob, 'mi-puerta-carrascosa.png', 'Mi puerta'); avisar(b, 'Imagen lista ✓', 'Descargar imagen'); } catch (er) { avisar(b, 'No se pudo crear la imagen', 'Descargar imagen'); }
     });
+    // En el móvil, el dibujo se queda fijo arriba y los consejos bajan junto a los botones
+    const mq = matchMedia('(max-width: 900px)'), motivos = $('#motivos');
+    const colocar = () => (mq.matches ? $('.combina-botones').before(motivos) : $('.combina-vista').append(motivos));
+    mq.addEventListener('change', colocar); colocar();
     pintar();
   </script>
 </Base>

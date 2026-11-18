@@ -708,6 +708,14 @@ body.menu-abierto .cabecera { backdrop-filter: none; -webkit-backdrop-filter: no
 .puerta-paso[data-abierta="1"] .abatible { transform: scaleX(.12); }
 .puerta-paso[data-abierta="1"] .granero, .puerta-paso[data-abierta="1"] .empotrada { transform: translateX(var(--mover)); }
 .combina .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+@media (max-width: 900px) {
+  /* En el móvil el dibujo se queda fijo arriba: que deje aire para tocar los mandos */
+  .bano, .puerta-paso { max-height: 30svh; border-radius: 10px; }
+  .combina-vista .dato-grande { margin: .3rem 0 0; } .combina-vista .dato-grande b { font-size: 1.6rem; }
+  .armario, .armario[data-modo="vestidor"] { max-height: 26svh; }
+  .combina-vista .cabe { margin-top: .4rem; gap: .3rem; } .combina-vista .cabe li { padding: .3rem .45rem; } .combina-vista .cabe b { font-size: 1rem; }
+  .combina-vista .nota { margin-top: .4rem; }
+}
 /* Mi proyecto */
 .proyecto { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, .6fr); gap: clamp(1.5rem, 4vw, 3rem); align-items: start; padding-bottom: clamp(3rem, 7vw, 5rem); }
 .proyecto-lista { display: grid; gap: 1rem; }

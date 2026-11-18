@@ -219,6 +219,8 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       $('.medidas-texto').textContent = `${e.ancho} × ${e.alto} cm${lados ? ` · laterales de ${e.lado}` : ''}`;
       $$('fieldset[data-grupo]').forEach((f) => { const k = f.dataset.grupo, x = busca(k); if (!x) return; $('.elegido', f).textContent = x.nombre; const i = $(`input[value="${e[k]}"]`, f); if (i) i.checked = true; });
       // Botones de cada hueco, por pared
+      const nHuecos = d.datos.huecos.reduce((a, [p, n]) => a + Math.min(n, e[PARED[p]].length), 0);
+      $('#huecos').style.gridTemplateColumns = `repeat(${nHuecos <= 4 ? nHuecos : Math.ceil(nHuecos / Math.ceil(nHuecos / 4))}, minmax(0, 1fr))`;
       $('#huecos').innerHTML = d.datos.huecos.map(([p, n]) => e[PARED[p]].slice(0, n).map((t, i) => `<button type="button" class="hueco" data-k="${p}-${i}"><span class="num">${vest ? NOMBRE_PARED[p] + ' ' : 'Hueco '}${i + 1}</span>${TIPOS[t]}</button>`).join('')).join('');
       // Nota, personas y consejos
       const c = consejos(e, d.datos);
@@ -278,7 +280,9 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       } catch (er) { avisar(b, 'No se pudo crear la imagen', 'Descargar imagen'); }
     });
     const mq = matchMedia('(max-width: 900px)'), motivos = $('.motivos');
-    const colocar = () => (mq.matches ? $('.combina-botones').before(motivos) : $('.combina-vista').append(motivos));
+    // En el móvil, «lo que cabe» baja junto a los huecos para que el dibujo fijo de arriba deje sitio a los mandos
+    const cabe = $('.cabe'), notaArm = $('.combina-vista .nota');
+    const colocar = () => { if (mq.matches) { $('.combina-botones').before(motivos); $('#huecos').closest('fieldset').after(cabe); } else { notaArm.after(cabe); $('.combina-vista').append(motivos); } };
     mq.addEventListener('change', colocar); colocar();
     deEnlace(); pintar();
   </script>
