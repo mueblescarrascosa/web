@@ -18,7 +18,7 @@ export const EMPRESA = {
   verResenas: 'https://www.google.com/maps/search/?api=1&query=Muebles+Carrascosa+Villanueva+del+Arzobispo',
   // Estadísticas sin cookies (GoatCounter, gratis): poner aquí el código de la cuenta, p. ej. 'mueblescarrascosa'.
   // Mientras esté vacío no se carga nada y la web no cuenta visitas.
-  goatcounter: '',
+  goatcounter: 'mueblescarrascosa',
   horario: [
     ['Lunes a jueves', '8:30 – 14:00 y 16:00 – 19:00'],
     ['Viernes', '8:30 – 14:00'],
