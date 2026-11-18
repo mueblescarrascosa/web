@@ -102,7 +102,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
         <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
         <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándasela al taller</a>
       </div>
-      <p class="aviso-colores">Los colores son orientativos: la pantalla no reproduce bien la madera ni las texturas. En el taller te enseñamos las muestras reales.</p>
+      <p class="aviso-colores">Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. Los colores son orientativos: la pantalla no reproduce bien la madera ni las texturas. En el taller te enseñamos las muestras reales.</p>
     </div>
   </section>
 
@@ -142,6 +142,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     import { LISTAS, INICIAL, PROPUESTAS, puntuar, variables, estiloVars, precioOrientativo } from '../../datos/combina.js';
     import { svgCocina, VISTA } from '../../scripts/cocina-dibujo.js';
     import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
+    import { guardarEnProyecto, dibujoActual } from '../../scripts/proyecto.js';
     const listas = LISTAS();
     const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
     const svg = $('svg.cocina'), raiz = $('#combina');
@@ -182,6 +183,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       $('.motivos').innerHTML = [...n.bien.map((t) => `<li class="bien">${t}</li>`), ...n.ojo.map((t) => `<li class="ojo">${t}</li>`)].join('');
       if (animar && !quieto) { raiz.classList.remove('cambio'); void raiz.offsetWidth; raiz.classList.add('cambio'); }
       $('[data-accion="whatsapp"]').href = 'https://wa.me/34653451270?text=' + encodeURIComponent(`Hola, he combinado mi cocina en vuestra web y me gusta así:\n${resumen(e)}\n(${n.puntos}/100, estilo ${n.estilo})\n${location.href}`);
+      guardarEnProyecto('cocina', { titulo: 'Tu cocina', resumen: `${resumen(e)} · ${n.puntos}/100, estilo ${n.estilo}`, enlace: location.href, svg: dibujoActual(svg) });
       return n;
     }
 

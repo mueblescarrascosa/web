@@ -58,6 +58,7 @@ const PREGUNTAS = [
   <script>
     import { LISTAS, INICIAL, PROPUESTAS, puntuar, estiloVars } from '../../datos/combina.js';
     import { svgCocina, VISTA } from '../../scripts/cocina-dibujo.js';
+    import { guardarEnProyecto } from '../../scripts/proyecto.js';
     const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
     const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const base = (document.querySelector('link[rel=icon]')?.getAttribute('href') || '/favicon.png').replace(/\/favicon\.png$/, '');
@@ -123,7 +124,8 @@ const PREGUNTAS = [
       $('#q-juego').href = `${base}/combina-tu-cocina/#${new URLSearchParams(estado).toString()}`;
       $('#q-wa').href = 'https://wa.me/34653451270?text=' + encodeURIComponent(`Hola, he hecho el quiz de vuestra web y me sale: ${prop.nombre}, ${nombreDist}. ${location.origin}${base}/combina-tu-cocina/#${new URLSearchParams(estado).toString()}`);
       preguntas.forEach((p) => (p.hidden = true)); $('.quiz-paso').hidden = true; $('.quiz-progreso i').style.transform = 'scaleX(1)';
-      const res = $('.quiz-resultado'); res.hidden = false;
+      guardarEnProyecto('quiz', { titulo: '¿Qué cocina va contigo?', resumen: `${prop.nombre}, ${nombreDist}`, enlace: location.origin + $('#q-juego').getAttribute('href'), svg: $('.quiz-dibujo').innerHTML });
+      const res = $('.quiz-resultado'); res.hidden = false; window.medir?.('quiz/resultado/' + dist);
       if (!quieto) res.animate([{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'none' }], { duration: 500, easing: 'cubic-bezier(.2,.75,.2,1)' });
       res.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'start' });
     }

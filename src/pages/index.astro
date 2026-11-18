@@ -10,10 +10,15 @@ const servicios = [
   [1619, '/muebles-de-bano-a-medida/', 'Baños', 'A la medida exacta del hueco y con materiales que aguantan la humedad.'],
   [542, '/puertas/', 'Puertas', 'De paso y de entrada, fabricadas y restauradas en el taller.'],
 ];
+// Pasos 01 y 03 con fotos de archivo CC0 (dominio público) de rawpixel, mientras no haya fotos propias de medir y del taller:
+// https://www.rawpixel.com/image/5907222 y https://www.rawpixel.com/image/3304149
+const ARCHIVO_MEDIR = { src: '/img/archivo-medir.webp', alt: 'Cinta métrica para tomar medidas' };
+const ARCHIVO_TALLER = { src: '/img/archivo-taller.webp', alt: 'Carpintero trabajando la madera en el taller' };
+const fotoDe = (x) => (typeof x === 'object' ? x : f(x));
 const pasos = [
-  ['01', 'Vamos a tu casa y medimos', 'Tomamos las medidas reales y vemos contigo cómo vives el espacio: qué guardas, cómo cocinas, qué te sobra y qué te falta.', null],
+  ['01', 'Vamos a tu casa y medimos', 'Tomamos las medidas reales y vemos contigo cómo vives el espacio: qué guardas, cómo cocinas, qué te sobra y qué te falta.', ARCHIVO_MEDIR],
   ['02', 'Lo ves en 3D antes de fabricar', 'Te enseñamos cómo quedará, con sus colores y materiales, y lo cambiamos las veces que haga falta.', 1679],
-  ['03', 'Lo fabricamos en nuestro taller', 'Pieza a pieza, en Villanueva del Arzobispo. Nada de catálogo ni de muebles en serie.', null],
+  ['03', 'Lo fabricamos en nuestro taller', 'Pieza a pieza, en Villanueva del Arzobispo. Nada de catálogo ni de muebles en serie.', ARCHIVO_TALLER],
   ['04', 'Lo montamos y lo dejamos limpio', 'Nuestro propio equipo lo instala, lo ajusta y no se va hasta que está terminado.', 618],
 ];
 const trabajos = [620, 609, 608, 536, 611, 589, 606, 572, 587, 588];
@@ -104,7 +109,7 @@ const schema = {
             <span class="etiqueta">Paso {n}</span>
             <h3>{t}</h3>
             <p>{d}{n === '02' && <> <a class="enlace" href={r('/disenos-3d/')}>Ver diseños en 3D</a></>}</p>
-            {foto && <img src={r(peq(f(foto).src))} alt={f(foto).alt} loading="lazy" width="800" height="500" />}
+            {foto && <img src={r(peq(fotoDe(foto).src))} alt={fotoDe(foto).alt} loading="lazy" width="800" height="500" />}
           </li>
         ))}
       </ol>

@@ -1,0 +1,102 @@
+---
+// Juego «Combina tu baño»: mueble suspendido o al suelo, frentes, lavabo, espejo, colores y grifería, con consejos del taller.
+import Base from '../../layouts/Base.astro';
+import { r, EMPRESA } from '../../lib/sitio.js';
+import { B_TIPOS, B_FRENTES, B_LAVABOS, B_ESPEJOS, B_COLORES, B_ENCIMERAS, GRIFOS, B_PAREDES, B_INICIAL, consejosBano } from '../../datos/bano-puerta.js';
+import { bano, DEFS_BANO } from '../../scripts/bano-dibujo.js';
+
+const e0 = { ...B_INICIAL };
+const d0 = bano({ ...e0, senos: +e0.senos, columna: e0.columna === '1' });
+const c0 = consejosBano(e0);
+const busca = (l, k) => l.find((x) => x.clave === k);
+const col = busca(B_COLORES, e0.color), enc = busca(B_ENCIMERAS, e0.encimera), gr = busca(GRIFOS, e0.grifo), pa = busca(B_PAREDES, e0.pared);
+const vars0 = `--frente:${col.hex};--enc:${enc.hex};--grifo:${gr.hex};--pared:${pa.hex};--suelo:#d9d4ca;--v-frente:${col.dibujo === 'veta' ? 1 : 0};--m-enc:${enc.dibujo === 'marmol' ? 1 : 0};--v-azulejo:${pa.azulejo}`;
+const chips = (nombre, l) => l.map((x) => `<label><input type="radio" name="${nombre}" value="${x.clave}" ${String(e0[nombre]) === x.clave ? 'checked' : ''} /><span>${x.nombre}</span></label>`).join('');
+const colores = (nombre, l) => l.map((x) => `<label title="${x.nombre}"><input type="radio" name="${nombre}" value="${x.clave}" ${e0[nombre] === x.clave ? 'checked' : ''} /><span class="muestra ${x.dibujo || ''}" style="--c:${x.hex}"></span><span class="nombre-muestra">${x.nombre}</span></label>`).join('');
+const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Combina tu baño', applicationCategory: 'DesignApplication', operatingSystem: 'Navegador web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' }, provider: { '@type': 'Organization', name: EMPRESA.nombre } };
+---
+<Base titulo="Combina tu mueble de baño" descripcion="Juega a diseñar tu mueble de baño a medida: suspendido o al suelo, cajones o puertas, uno o dos senos, espejo, colores y grifería, con consejos del taller. Muebles Carrascosa, Jaén." schema={schema}>
+  <header class="cabeza-pagina ancho" data-entra>
+    <span class="etiqueta">Juego · Combina tu baño</span>
+    <h1>Tu mueble de baño, a tu medida.</h1>
+    <p class="entradilla">Elige el ancho, si va suspendido o al suelo, el lavabo, el espejo y los colores. Lo verás al momento, con los consejos que damos en el taller.</p>
+  </header>
+
+  <section class="ancho combina" id="combina">
+    <div class="combina-vista">
+      <div class="lienzo">
+        <svg class="bano" id="dibujo" viewBox={d0.vista} role="img" aria-label="Dibujo del mueble de baño" style={vars0} set:html={DEFS_BANO + d0.s} />
+      </div>
+      <ul class="motivos" id="motivos">{c0.bien.map((t) => <li class="bien">{t}</li>)}{c0.ojo.map((t) => <li class="ojo">{t}</li>)}</ul>
+    </div>
+    <div class="combina-mandos">
+      <fieldset class="muestras"><legend>Ancho <span class="elegido" id="ancho-v">{e0.ancho} cm</span></legend>
+        <div class="calc-mandos"><input id="ancho" type="range" min="50" max="180" step="5" value={e0.ancho} aria-label="Ancho del mueble" /></div>
+      </fieldset>
+      <fieldset class="muestras chips" data-g="tipo"><legend>Mueble</legend><Fragment set:html={chips('tipo', B_TIPOS)} /></fieldset>
+      <fieldset class="muestras chips" data-g="frente"><legend>Frentes</legend><Fragment set:html={chips('frente', B_FRENTES)} /></fieldset>
+      <fieldset class="muestras chips" data-g="lavabo"><legend>Lavabo</legend><Fragment set:html={chips('lavabo', B_LAVABOS)} /></fieldset>
+      <fieldset class="muestras chips" data-g="senos"><legend>Senos</legend><Fragment set:html={chips('senos', [{ clave: '1', nombre: 'Uno' }, { clave: '2', nombre: 'Dos' }])} /></fieldset>
+      <fieldset class="muestras chips" data-g="espejo"><legend>Espejo</legend><Fragment set:html={chips('espejo', B_ESPEJOS)} /></fieldset>
+      <fieldset class="muestras chips" data-g="columna"><legend>Columna</legend><Fragment set:html={chips('columna', [{ clave: '0', nombre: 'Sin columna' }, { clave: '1', nombre: 'Con columna' }])} /></fieldset>
+      <fieldset class="muestras" data-g="color"><legend>Color del mueble <span class="elegido">{col.nombre}</span></legend><div class="lista-muestras" set:html={colores('color', B_COLORES)} /></fieldset>
+      <fieldset class="muestras" data-g="encimera"><legend>Encimera <span class="elegido">{enc.nombre}</span></legend><div class="lista-muestras" set:html={colores('encimera', B_ENCIMERAS)} /></fieldset>
+      <fieldset class="muestras" data-g="grifo"><legend>Grifería y tiradores <span class="elegido">{gr.nombre}</span></legend><div class="lista-muestras" set:html={colores('grifo', GRIFOS)} /></fieldset>
+      <fieldset class="muestras" data-g="pared"><legend>Pared <span class="elegido">{pa.nombre}</span></legend><div class="lista-muestras" set:html={colores('pared', B_PAREDES)} /></fieldset>
+      <div class="botones combina-botones">
+        <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
+        <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
+        <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándaselo al taller</a>
+      </div>
+      <p class="aviso-colores">Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. Dibujo y colores orientativos: el mueble se hace a la medida exacta del hueco.</p>
+    </div>
+  </section>
+
+  <section class="seccion claro cierre">
+    <div class="ancho">
+      <span class="etiqueta">¿Te gusta tu baño?</span><br />
+      <a class="frase" href={r('/contacto/')}>Hablemos <span aria-hidden="true">→</span></a>
+      <div class="botones"><a class="boton" href={r('/muebles-de-bano-a-medida/')}>Ver muebles de baño</a><a class="boton contorno" href={r('/contacto/')}>Pide presupuesto</a></div>
+    </div>
+  </section>
+
+  <script>
+    import { B_COLORES, B_ENCIMERAS, GRIFOS, B_PAREDES, B_INICIAL, consejosBano, B_TIPOS, B_FRENTES, B_LAVABOS, B_ESPEJOS } from '../../datos/bano-puerta.js';
+    import { bano, DEFS_BANO } from '../../scripts/bano-dibujo.js';
+    import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
+    import { guardarEnProyecto, dibujoActual } from '../../scripts/proyecto.js';
+    const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+    const svg = $('#dibujo'), colores = { color: B_COLORES, encimera: B_ENCIMERAS, grifo: GRIFOS, pared: B_PAREDES };
+    const textos = { tipo: B_TIPOS, frente: B_FRENTES, lavabo: B_LAVABOS, espejo: B_ESPEJOS };
+    let e = { ...B_INICIAL };
+    const p = new URLSearchParams(location.hash.slice(1)); Object.keys(e).forEach((k) => { if (p.get(k)) e[k] = k === 'ancho' ? Math.min(180, Math.max(50, +p.get(k))) : p.get(k); });
+    const busca = (k) => colores[k].find((x) => x.clave === e[k]) || colores[k][0];
+    const nombre = (k) => (textos[k] || []).find((x) => x.clave === e[k])?.nombre || e[k];
+    const resumen = () => [`Mueble ${nombre('tipo').toLowerCase()} de ${e.ancho} cm`, nombre('frente').toLowerCase(), `lavabo ${nombre('lavabo').toLowerCase()}`, +e.senos === 2 ? 'dos senos' : 'un seno', `espejo ${nombre('espejo').toLowerCase()}`, e.columna === '1' ? 'con columna' : '', `color ${busca('color').nombre.toLowerCase()}`, `encimera ${busca('encimera').nombre.toLowerCase()}`, `grifería ${busca('grifo').nombre.toLowerCase()}`].filter(Boolean);
+    function pintar() {
+      if (e.ancho < 100 && e.senos === '2') e.senos = '1';
+      const d = bano({ ...e, senos: +e.senos, columna: e.columna === '1' });
+      svg.setAttribute('viewBox', d.vista); svg.innerHTML = DEFS_BANO + d.s;
+      const c = busca('color'), en = busca('encimera'), g = busca('grifo'), pa = busca('pared');
+      [['--frente', c.hex], ['--enc', en.hex], ['--grifo', g.hex], ['--pared', pa.hex], ['--v-frente', c.dibujo === 'veta' ? 1 : 0], ['--m-enc', en.dibujo === 'marmol' ? 1 : 0], ['--v-azulejo', pa.azulejo]].forEach(([k, v]) => svg.style.setProperty(k, v));
+      $('#ancho-v').textContent = e.ancho + ' cm'; $('#ancho').value = e.ancho;
+      $$('input[type=radio]').forEach((i) => (i.checked = String(e[i.name]) === i.value));
+      $('input[name=senos][value="2"]').disabled = e.ancho < 100; $('input[name=senos][value="2"]').closest('label').style.opacity = e.ancho < 100 ? '.4' : '';
+      $$('fieldset[data-g]').forEach((f) => { const k = f.dataset.g, el = $('.elegido', f); if (el && colores[k]) el.textContent = busca(k).nombre; });
+      const co = consejosBano(e);
+      $('#motivos').innerHTML = [...co.bien.map((t) => `<li class="bien">${t}</li>`), ...co.ojo.map((t) => `<li class="ojo">${t}</li>`)].join('');
+      history.replaceState(null, '', '#' + new URLSearchParams(e).toString());
+      $('[data-accion="whatsapp"]').href = 'https://wa.me/34653451270?text=' + encodeURIComponent(`Hola, he diseñado mi mueble de baño en vuestra web:\n${resumen().join(' · ')}\n${location.href}`);
+      guardarEnProyecto('bano', { titulo: 'Tu baño', resumen: resumen().join(' · '), enlace: location.href, svg: dibujoActual(svg) });
+    }
+    document.addEventListener('change', (ev) => { const i = ev.target; if (i.type === 'radio' && i.name in e) { e[i.name] = i.value; pintar(); } });
+    $('#ancho').addEventListener('input', (ev) => { e.ancho = +ev.target.value; pintar(); });
+    const avisar = (b, t, o) => { b.textContent = t; setTimeout(() => (b.textContent = o), 2000); };
+    $('[data-accion="compartir"]').addEventListener('click', async (ev) => { try { if (navigator.share) await navigator.share({ title: 'Mi baño', url: location.href }); else { await navigator.clipboard.writeText(location.href); avisar(ev.currentTarget, 'Enlace copiado ✓', 'Compartir enlace'); } } catch (er) {} });
+    $('[data-accion="descargar"]').addEventListener('click', async (ev) => {
+      const b = ev.currentTarget; b.textContent = 'Preparando…';
+      try { const blob = await imagenConMarca(svg, { titulo: 'Mi mueble de baño', lineas: resumen() }); await descargarOCompartir(blob, 'mi-bano-carrascosa.png', 'Mi baño'); avisar(b, 'Imagen lista ✓', 'Descargar imagen'); } catch (er) { avisar(b, 'No se pudo crear la imagen', 'Descargar imagen'); }
+    });
+    pintar();
+  </script>
+</Base>

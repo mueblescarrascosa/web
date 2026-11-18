@@ -1,6 +1,16 @@
 // Comportamiento de la web: menú, cabecera de la portada, visor de fotos, antes/después y formulario.
+// Cuenta lo que se hace en la web (sin cookies, con GoatCounter). Si no hay código configurado, no hace nada.
+window.medir = (nombre) => { try { window.goatcounter?.count?.({ path: 'evento/' + nombre, title: nombre, event: true }); } catch (e) {} };
 (() => {
   const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+  const pagina = () => location.pathname.replace(/^\/web/, '').replace(/\/$/, '').replace(/^\//, '') || 'portada';
+  // Cualquier botón de juego (data-accion), enlace a WhatsApp o llamada
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-accion], a[href*="wa.me"], a[href^="tel:"], a[href^="mailto:"], .boton-luz, .quiz-op');
+    if (!b) return;
+    const que = b.dataset.accion || (b.href?.includes('wa.me') ? 'whatsapp' : b.href?.startsWith('tel:') ? 'llamar' : b.href?.startsWith('mailto:') ? 'correo' : b.classList.contains('boton-luz') ? 'luz-o-puertas' : 'quiz-respuesta');
+    window.medir(pagina() + '/' + que);
+  }, true);
 
   // Menú del móvil
   const boton = $('.menu-boton'), menu = $('#menu');
@@ -174,6 +184,7 @@
     cita.addEventListener('submit', e => {
       e.preventDefault();
       if (!cita.reportValidity() || !revisar()) return;
+      window.medir('contacto/cita');
       const d = new FormData(cita), fecha = new Date(d.get('dia') + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
       const texto = `Hola, soy ${d.get('nombre')}. Quiero pedir cita para medir: ${d.get('que').toLowerCase()}.\nDía: ${fecha}, por la ${d.get('franja')}.\nDónde: ${d.get('donde')}\nMi teléfono: ${d.get('telefono')}`;
       location.href = e.submitter?.value === 'correo'
@@ -187,6 +198,7 @@
   if (form) form.addEventListener('submit', e => {
     e.preventDefault();
     if (!form.reportValidity()) return;
+    window.medir('contacto/presupuesto');
     const d = new FormData(form);
     const texto = `Hola, soy ${d.get('nombre')}. Me interesa: ${d.get('tipo')}.${d.get('pueblo') ? ' Pueblo: ' + d.get('pueblo') + '.' : ''}\n${d.get('mensaje')}${d.get('telefono') ? '\nMi teléfono: ' + d.get('telefono') : ''}`;
     const via = e.submitter?.value || 'whatsapp';

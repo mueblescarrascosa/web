@@ -38,7 +38,7 @@ export const PROPUESTAS_A = [
   { nombre: 'Vestidor en L de roble', ancho: 320, alto: 260, puertas: 'vestidor', forma: 'L', lado: 200, ext: 'roble-claro', int: 'roble-claro', tir: 'negro', mods: 'largo,zapatero,cajones,doble', modsI: 'pantExtra,accesorios' },
   { nombre: 'Vestidor en C con isla', ancho: 360, alto: 260, puertas: 'vestidor', forma: 'isla', led: '1', lado: 220, ext: 'negro', int: 'nogal', tir: 'negro', mods: 'largo,accesorios,doble,largo', modsI: 'doble,pantDoble,cajones', modsD: 'zapatero,zapatero,baldas' },
   { nombre: 'Clásico lacado', ancho: 200, alto: 240, puertas: 'abatibles', modelo: 'moldura', ext: 'blanco-roto', int: 'blanco', tir: 'oro', mods: 'largo,cajones' },
-  { nombre: 'Vitrina con cruz', ancho: 240, alto: 250, puertas: 'abatibles', modelo: 'cruz', cristal: 'mate', ext: 'salvia', int: 'blanco', tir: 'oro', mods: 'baldas,doble,accesorios' },
+  { nombre: 'Vitrina con aspa', ancho: 240, alto: 250, puertas: 'abatibles', modelo: 'cruz', cristal: 'mate', ext: 'salvia', int: 'blanco', tir: 'oro', mods: 'baldas,doble,accesorios' },
   { nombre: 'Japandi', ancho: 240, alto: 250, puertas: 'correderas', modelo: 'rayas', perfil: 'blanco', ext: 'cachemir', int: 'roble-claro', tir: 'negro', mods: 'doble,baldas,largo' },
   { nombre: 'Cristal ahumado', ancho: 300, alto: 260, puertas: 'correderas', modelo: 'cristal', cristal: 'ahumado', perfil: 'negro', led: '1', ext: 'negro', int: 'roble', tir: 'negro', mods: 'largo,cajones,pantalonero' },
   { nombre: 'Vestidor en C blanco', ancho: 300, alto: 250, puertas: 'vestidor', forma: 'C', lado: 180, ext: 'blanco', int: 'blanco', tir: 'negro', mods: 'largo,cajones,doble', modsI: 'zapatero,accesorios', modsD: 'pantalonero,doble' },

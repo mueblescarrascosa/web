@@ -39,6 +39,18 @@ const schema = tipo === 'entrada' ? { '@context': 'https://schema.org', '@type':
       <a class="boton" href={r('/combina-tu-cocina/')}>Combina tu cocina <span class="flecha" aria-hidden="true">→</span></a>
     </section>
   )}
+  {item.slug === 'muebles-de-bano-a-medida' && (
+    <section class="ancho aviso-juego">
+      <div><span class="etiqueta">Juego</span><h2>Diseña tu mueble de baño</h2><p class="suave">Ancho, lavabo, espejo y colores: míralo al momento, con nuestros consejos.</p></div>
+      <a class="boton" href={r('/combina-tu-bano/')}>Combina tu baño <span class="flecha" aria-hidden="true">→</span></a>
+    </section>
+  )}
+  {item.slug === 'puertas' && (
+    <section class="ancho aviso-juego">
+      <div><span class="etiqueta">Juego</span><h2>Configura tu puerta</h2><p class="suave">Abatible o corredera, modelo, color y manilla, con la medida de tu hueco.</p></div>
+      <a class="boton" href={r('/configura-tu-puerta/')}>Configura tu puerta <span class="flecha" aria-hidden="true">→</span></a>
+    </section>
+  )}
   {item.slug === 'armarios' && (
     <section class="ancho aviso-juego">
       <div>

@@ -1,0 +1,108 @@
+---
+// Juego «Configura tu puerta»: puerta de paso abatible, corredera de granero o empotrada, con modelo, color, manilla y medidas.
+import Base from '../../layouts/Base.astro';
+import { r, EMPRESA } from '../../lib/sitio.js';
+import { P_TIPOS, P_MODELOS, P_COLORES, MANILLAS, P_INICIAL, consejosPuerta } from '../../datos/bano-puerta.js';
+import { puerta, DEFS_PUERTA } from '../../scripts/puerta-dibujo.js';
+
+const e0 = { ...P_INICIAL };
+const d0 = puerta(e0), c0 = consejosPuerta(e0, d0.hoja);
+const busca = (l, k) => l.find((x) => x.clave === k);
+const col = busca(P_COLORES, e0.color), ma = busca(MANILLAS, e0.manilla);
+const vars0 = `--hoja:${col.hex};--manilla:${ma.hex};--pared:#e9e6df;--suelo:#c8ad87;--v-hoja:${col.dibujo === 'veta' ? 1 : 0}`;
+const chips = (nombre, l) => l.map((x) => `<label><input type="radio" name="${nombre}" value="${x.clave}" ${e0[nombre] === x.clave ? 'checked' : ''} /><span>${x.nombre}</span></label>`).join('');
+const colores = (nombre, l) => l.map((x) => `<label title="${x.nombre}"><input type="radio" name="${nombre}" value="${x.clave}" ${e0[nombre] === x.clave ? 'checked' : ''} /><span class="muestra ${x.dibujo || ''}" style="--c:${x.hex}"></span><span class="nombre-muestra">${x.nombre}</span></label>`).join('');
+const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Configura tu puerta', applicationCategory: 'DesignApplication', operatingSystem: 'Navegador web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' }, provider: { '@type': 'Organization', name: EMPRESA.nombre } };
+---
+<Base titulo="Configura tu puerta de paso" descripcion="Juega a configurar tu puerta de paso: abatible, corredera de granero o empotrada, modelo, color, manilla y medidas del hueco, con consejos del taller. Muebles Carrascosa, Jaén." schema={schema}>
+  <header class="cabeza-pagina ancho" data-entra>
+    <span class="etiqueta">Juego · Configura tu puerta</span>
+    <h1>Tu puerta, a tu medida.</h1>
+    <p class="entradilla">Pon la medida del hueco, elige cómo abre, el modelo y el color, y pulsa la puerta para abrirla. Te decimos qué hoja lleva y qué tener en cuenta.</p>
+  </header>
+
+  <section class="ancho combina" id="combina">
+    <div class="combina-vista">
+      <div class="lienzo">
+        <svg class="puerta-paso" id="dibujo" viewBox={d0.vista} role="img" aria-label="Dibujo de la puerta de paso" style={vars0} data-abierta="0" set:html={DEFS_PUERTA + d0.s} />
+        <button class="boton-luz boton-abrir-puerta" type="button" aria-pressed="false"><span>Abrir</span></button>
+      </div>
+      <p class="dato-grande"><b id="hoja">{String(d0.hoja).replace('.', ',')}</b><span id="hoja-t">× 203 cm de hoja</span></p>
+      <ul class="motivos" id="motivos">{c0.bien.map((t) => <li class="bien">{t}</li>)}{c0.ojo.map((t) => <li class="ojo">{t}</li>)}</ul>
+    </div>
+    <div class="combina-mandos">
+      <fieldset class="muestras"><legend>Medidas del hueco <span class="elegido" id="medidas-v">{e0.hueco} × {e0.alto} × {e0.galce} cm</span></legend>
+        <div class="calc-mandos">
+          <label>Ancho <output id="hueco-v">{e0.hueco} cm</output><input id="hueco" type="range" min="65" max="110" step="1" value={e0.hueco} /></label>
+          <label>Alto <output id="alto-v">{e0.alto} cm</output><input id="alto" type="range" min="200" max="240" step="1" value={e0.alto} /></label>
+          <label>Galce (grueso de la pared) <output id="galce-v">{e0.galce} cm</output><input id="galce" type="range" min="5" max="30" step="0.5" value={e0.galce} /></label>
+        </div>
+      </fieldset>
+      <fieldset class="muestras chips" data-g="tipo"><legend>Cómo abre</legend><Fragment set:html={chips('tipo', P_TIPOS)} /></fieldset>
+      <fieldset class="muestras chips" data-g="abre" data-solo="abatible"><legend>Abre hacia</legend><Fragment set:html={chips('abre', [{ clave: 'der', nombre: 'Bisagras a la derecha' }, { clave: 'izq', nombre: 'Bisagras a la izquierda' }])} /></fieldset>
+      <fieldset class="muestras chips" data-g="modelo"><legend>Modelo</legend><Fragment set:html={chips('modelo', P_MODELOS)} /></fieldset>
+      <fieldset class="muestras" data-g="color"><legend>Color <span class="elegido">{col.nombre}</span></legend><div class="lista-muestras" set:html={colores('color', P_COLORES)} /></fieldset>
+      <fieldset class="muestras" data-g="manilla"><legend>Manilla y herrajes <span class="elegido">{ma.nombre}</span></legend><div class="lista-muestras" set:html={colores('manilla', MANILLAS)} /></fieldset>
+      <div class="botones combina-botones">
+        <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
+        <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
+        <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándasela al taller</a>
+      </div>
+      <p class="aviso-colores">Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. Medidas orientativas: el hueco lo medimos nosotros en casa.</p>
+    </div>
+  </section>
+
+  <section class="seccion claro cierre">
+    <div class="ancho">
+      <span class="etiqueta">¿Hablamos de tus puertas?</span><br />
+      <a class="frase" href={r('/contacto/')}>Hablemos <span aria-hidden="true">→</span></a>
+      <div class="botones"><a class="boton" href={r('/puertas/')}>Ver puertas</a><a class="boton contorno" href={r('/contacto/')}>Pide presupuesto</a></div>
+    </div>
+  </section>
+
+  <script>
+    import { P_TIPOS, P_MODELOS, P_COLORES, MANILLAS, P_INICIAL, consejosPuerta } from '../../datos/bano-puerta.js';
+    import { puerta, DEFS_PUERTA } from '../../scripts/puerta-dibujo.js';
+    import { imagenConMarca, descargarOCompartir } from '../../scripts/exportar.js';
+    import { guardarEnProyecto, dibujoActual } from '../../scripts/proyecto.js';
+    const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+    const svg = $('#dibujo'), colores = { color: P_COLORES, manilla: MANILLAS };
+    let e = { ...P_INICIAL }, abierta = false, ultima = null;
+    const p = new URLSearchParams(location.hash.slice(1)); Object.keys(e).forEach((k) => { if (p.get(k)) e[k] = ['hueco', 'alto', 'galce'].includes(k) ? +p.get(k) : p.get(k); });
+    const busca = (k) => colores[k].find((x) => x.clave === e[k]) || colores[k][0];
+    const nombre = (l, k) => l.find((x) => x.clave === e[k])?.nombre || e[k];
+    let hoja = 0;
+    const resumen = () => [`Puerta ${nombre(P_TIPOS, 'tipo').toLowerCase()}`, `modelo ${nombre(P_MODELOS, 'modelo').toLowerCase()}`, `hueco de ${e.hueco} × ${e.alto} cm (hoja de ${String(hoja).replace('.', ',')})`, `galce de ${String(e.galce).replace('.', ',')} cm`, `color ${busca('color').nombre.toLowerCase()}`, `manilla ${busca('manilla').nombre.toLowerCase()}`];
+    function pintar() {
+      const d = puerta(e); hoja = d.hoja;
+      svg.setAttribute('viewBox', d.vista); svg.innerHTML = DEFS_PUERTA + d.s;
+      const c = busca('color'), m = busca('manilla');
+      [['--hoja', c.hex], ['--manilla', m.hex], ['--v-hoja', c.dibujo === 'veta' ? 1 : 0]].forEach(([k, v]) => svg.style.setProperty(k, v));
+      svg.dataset.abierta = abierta ? '1' : '0';
+      $('#hoja').textContent = String(d.hoja).replace('.', ','); $('#hoja-t').textContent = `× ${d.altoHoja} cm de hoja`;
+      $('#hueco-v').textContent = e.hueco + ' cm'; $('#alto-v').textContent = e.alto + ' cm'; $('#galce-v').textContent = String(e.galce).replace('.', ',') + ' cm'; $('#galce').value = e.galce; $('#hueco').value = e.hueco; $('#alto').value = e.alto;
+      $('#medidas-v').textContent = `${e.hueco} × ${e.alto} × ${String(e.galce).replace('.', ',')} cm`;
+      $$('input[type=radio]').forEach((i) => (i.checked = String(e[i.name]) === i.value));
+      $$('fieldset[data-solo]').forEach((f) => (f.hidden = e.tipo !== f.dataset.solo));
+      $$('fieldset[data-g]').forEach((f) => { const k = f.dataset.g, el = $('.elegido', f); if (el && colores[k]) el.textContent = busca(k).nombre; });
+      const b = $('.boton-abrir-puerta'); $('span', b).textContent = abierta ? 'Cerrar' : 'Abrir'; b.setAttribute('aria-pressed', String(abierta));
+      const co = consejosPuerta(e, d.hoja);
+      $('#motivos').innerHTML = [...co.bien.map((t) => `<li class="bien">${t}</li>`), ...co.ojo.map((t) => `<li class="ojo">${t}</li>`)].join('');
+      history.replaceState(null, '', '#' + new URLSearchParams(e).toString());
+      $('[data-accion="whatsapp"]').href = 'https://wa.me/34653451270?text=' + encodeURIComponent(`Hola, he configurado una puerta en vuestra web:\n${resumen().join(' · ')}\n${location.href}`);
+      guardarEnProyecto('puerta', { titulo: 'Tu puerta', resumen: resumen().join(' · '), enlace: location.href, svg: dibujoActual(svg) });
+    }
+    const alternar = () => { abierta = !abierta; svg.dataset.abierta = abierta ? '1' : '0'; const b = $('.boton-abrir-puerta'); $('span', b).textContent = abierta ? 'Cerrar' : 'Abrir'; b.setAttribute('aria-pressed', String(abierta)); };
+    document.addEventListener('change', (ev) => { const i = ev.target; if (i.type === 'radio' && i.name in e) { e[i.name] = i.value; abierta = false; pintar(); } });
+    ['hueco', 'alto', 'galce'].forEach((k) => $('#' + k).addEventListener('input', (ev) => { e[k] = +ev.target.value; pintar(); }));
+    $('.boton-abrir-puerta').addEventListener('click', alternar);
+    svg.addEventListener('click', alternar);
+    const avisar = (b, t, o) => { b.textContent = t; setTimeout(() => (b.textContent = o), 2000); };
+    $('[data-accion="compartir"]').addEventListener('click', async (ev) => { try { if (navigator.share) await navigator.share({ title: 'Mi puerta', url: location.href }); else { await navigator.clipboard.writeText(location.href); avisar(ev.currentTarget, 'Enlace copiado ✓', 'Compartir enlace'); } } catch (er) {} });
+    $('[data-accion="descargar"]').addEventListener('click', async (ev) => {
+      const b = ev.currentTarget; b.textContent = 'Preparando…';
+      try { const blob = await imagenConMarca(svg, { titulo: 'Mi puerta', lineas: resumen() }); await descargarOCompartir(blob, 'mi-puerta-carrascosa.png', 'Mi puerta'); avisar(b, 'Imagen lista ✓', 'Descargar imagen'); } catch (er) { avisar(b, 'No se pudo crear la imagen', 'Descargar imagen'); }
+    });
+    pintar();
+  </script>
+</Base>

@@ -8,7 +8,7 @@ export const TIPOS = {
   largo: 'Colgar largo', doble: 'Dos barras', baldas: 'Baldas', cajones: 'Cajones y barra', zapatero: 'Zapatero y baldas',
   pantalonero: 'Pantalonero de colgar', pantExtra: 'Pantalonero extraíble', pantDoble: 'Pantalonero extraíble doble', accesorios: 'Bandejas y baldas',
 };
-export const MODELOS = { lisa: 'Lisa', japonesa3: 'Japonesa 3 paneles', japonesa: 'Japonesa 4 paneles', rayas: 'Cuatro paneles', moldura: 'Con moldura', cristal: 'Cristal', cruz: 'Cristal con cruz' };
+export const MODELOS = { lisa: 'Lisa', japonesa3: 'Japonesa 3 paneles', japonesa: 'Japonesa 4 paneles', rayas: 'Cuatro paneles', moldura: 'Con moldura', cristal: 'Cristal', cruz: 'Aspa (madera y cristal)' };
 export const CRISTALES = { claro: { nombre: 'Transparente', hex: '#cfe0e6', op: 0.2 }, mate: { nombre: 'Mate', hex: '#f3f3f1', op: 0.82 }, ahumado: { nombre: 'Ahumado', hex: '#2c3035', op: 0.6 } };
 const ROPA = ['#3b4a5e', '#a9b4c2', '#e7e2d6', '#7a5c48', '#c6a77d', '#2f2f33', '#8e9c86', '#b46a55', '#d9d4ca', '#556b7a', '#efe9dc', '#6b5a7a'];
 const PANT = ['#2f3b52', '#4a5a72', '#c9b79a', '#3a3a3a', '#6b6f73', '#8a7356', '#1f2a3a', '#7d8a9a'];
@@ -153,7 +153,7 @@ export function armario({ ancho = 240, alto = 250, puertas = 'correderas', mods 
   s += c.s;
 
   // Puertas con su modelo
-  const H = alto - 8, cristal = modelo === 'cristal' || modelo === 'cruz';
+  const H = alto - 8, cristal = modelo === 'cristal';
   const hoja = (x, wh, extra = '') => {
     let t = '';
     if (cristal) {
@@ -172,6 +172,15 @@ export function armario({ ancho = 240, alto = 250, puertas = 'correderas', mods 
         bandas.slice(1, -1).forEach((y) => (t += R(x, y - 0.7, wh, 1.4, 'style="fill:var(--perfil)" class="pieza"'))); }
       if (modelo === 'rayas') [0.25, 0.5, 0.75].forEach((v) => (t += R(x, v * H - 0.5, wh, 1, 'fill="#000" opacity=".3"')));
       if (modelo === 'moldura') t += R(x + 7, 7, wh - 14, H - 14, 'fill="none" stroke="#fff" stroke-opacity=".4" stroke-width=".6"') + R(x + 8, 8, wh - 15, H - 15, 'fill="none" stroke="#000" stroke-opacity=".2" stroke-width=".5"');
+      if (modelo === 'cruz') {
+        // Madera arriba y abajo, cristal en medio; dentro del cristal un aspa de madera con un círculo en el centro
+        const m = 6, y1 = H * 0.3, y2 = H * 0.7, cx = x + wh / 2, cy = (y1 + y2) / 2, ancho_ = wh - 2 * m, alto_ = y2 - y1;
+        t += R(x + m, y1, ancho_, alto_, 'fill="#e9e6df"');
+        t += `<rect x="${f(x + m)}" y="${f(y1)}" width="${f(ancho_)}" height="${f(alto_)}" class="cristal" style="fill:var(--cristal);opacity:var(--cristal-op)"/>`;
+        t += R(x + m, y1, ancho_, alto_, 'fill="url(#reflejo)"') + R(x + m, y1, ancho_, alto_, 'fill="none" stroke="#000" stroke-opacity=".3" stroke-width=".5"');
+        t += `<path d="M${f(x + m)} ${f(y1)}L${f(x + wh - m)} ${f(y2)}M${f(x + wh - m)} ${f(y1)}L${f(x + m)} ${f(y2)}" style="stroke:var(--ext)" stroke-width="2.6" class="pieza"/>`;
+        t += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(Math.min(ancho_, alto_) * 0.17)}" style="fill:var(--ext)" class="pieza" stroke="#000" stroke-opacity=".25" stroke-width=".4"/>`;
+      }
       t += R(x, 0, wh, H, 'fill="url(#brilloPuerta)"');
     }
     return t + extra;
