@@ -344,6 +344,7 @@ export function montarCasa(seccion) {
     let out = `<polygon points="${pts(somb)}" fill="rgba(110,80,45,.1)"/><polygon points="${pts(somb)}" fill="url(#casa-rayado)"/>`;
     out += caja(-0.6, -0.6, -0.32, W + 1.2, Dtot + 1.1, 0.32, '#d9c4a2', { tapa: '#e8dcc4' });
     let etiquetas = '';
+    const numeros = {};
     const orden = plano.slice().sort((a, b) => (!!SALAS[a[0]].ext - !!SALAS[b[0]].ext) || a[2] - b[2] || a[1] - b[1]);
     orden.forEach(([id, x, y, w, d, alto], i) => {
       const sala = SALAS[id], ext = !!sala.ext;
@@ -602,9 +603,11 @@ export function montarCasa(seccion) {
         if (x + w === W) g += caja(x + w, y, 0, 0.15, d, 0.35, '#e6e0d5', { tapa: corte });
       }
       // etiqueta
-      const [lx, ly] = P(x + w / 2, y + d / 2, ext ? 0.9 : 1.6), [bx, by] = P(x + w / 2, y + d / 2, 0);
-      const num = String(i + 1).padStart(2, '0'), tw = sala.n.length * (movil ? 8.9 : 6.8) + (movil ? 42 : 36), th = movil ? 30 : 25, tx = movil ? 34 : 29;
-      etiquetas += `<g class="etq" data-id="${id}" style="--i:${i}"><line x1="${f1(bx)}" y1="${f1(by)}" x2="${f1(lx)}" y2="${f1(ly + th / 2)}"/><circle class="anillo" cx="${f1(bx)}" cy="${f1(by)}" r="2.8"/><circle cx="${f1(bx)}" cy="${f1(by)}" r="2.8"/><g transform="translate(${f1(lx)},${f1(ly)})"><rect x="${-tw / 2}" y="${-th / 2}" width="${tw}" height="${th}" rx="3"/><text class="num" x="${-tw / 2 + 10}" y="${movil ? 5 : 4}">${num}</text><text x="${-tw / 2 + tx}" y="${movil ? 5 : 4}">${sala.n}</text></g></g>`;
+      // etiqueta: solo un sello pequeño con el número; el nombre sale al pasar o tocar (y está en la leyenda de abajo)
+      const [px, py] = P(x + w / 2, y + d / 2, ext ? 0.25 : 0.4), num = String(i + 1);
+      const R = movil ? 8.5 : 7.5, tw = sala.n.length * (movil ? 8.4 : 6.9) + 20, th = movil ? 26 : 23;
+      etiquetas += `<g class="etq" data-id="${id}" style="--i:${i}" transform="translate(${f1(px)},${f1(py)})"><circle class="anillo" r="${R}"/><circle class="pin" r="${R}"/><text class="num" y="${movil ? 3.6 : 3.3}">${num}</text><g class="nombre" transform="translate(0,${-R - th / 2 - 5})"><rect x="${-tw / 2}" y="${-th / 2}" width="${tw}" height="${th}" rx="3"/><text y="${movil ? 4.5 : 4}">${sala.n}</text></g></g>`;
+      numeros[id] = num;
       svgSalas.push(`<g class="room" data-id="${id}" role="button" tabindex="0" aria-label="${sala.n}: ${sala.k}" style="--i:${i}">${g}</g>`);
       const H = ext ? 1.8 : 2.6, esq = [P(x, y, H), P(x + w, y, 0), P(x + w, y + d, 0), P(x, y + d, 0), P(x, y, 0), P(x + w, y, H), P(x, y + d, H)];
       const xs = esq.map((p) => p[0]), ys = esq.map((p) => p[1]);
@@ -622,6 +625,11 @@ export function montarCasa(seccion) {
       ['mouseleave', 'blur'].forEach((e) => el.addEventListener(e, () => etq.classList.remove('sobre')));
       el.addEventListener('click', (ev) => { ev.stopPropagation(); entrar(el.dataset.id); });
       el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); entrar(el.dataset.id, true); } });
+    });
+    // leyenda: los botones de abajo llevan el mismo número y van en el mismo orden
+    const lista = seccion.querySelector('.casa-ir ul');
+    [...lista.children].sort((a, b) => numeros[a.firstElementChild.dataset.sala] - numeros[b.firstElementChild.dataset.sala]).forEach((li) => {
+      const bt = li.firstElementChild; bt.dataset.num = numeros[bt.dataset.sala]; lista.appendChild(li);
     });
     actual = null; seccion.classList.remove('zoom'); cerrarPanel();
   }
@@ -679,6 +687,9 @@ export function montarCasa(seccion) {
   panel.querySelector('.casa-cerrar').addEventListener('click', salir);
   addEventListener('keydown', (e) => { if (e.key === 'Escape') salir(); });
   svg.addEventListener('click', (e) => { if (!e.target.closest('.room')) salir(); });
+  seccion.querySelectorAll('[data-sala]').forEach((b) => ['mouseenter', 'mouseleave', 'focus', 'blur'].forEach((e) => b.addEventListener(e, () => {
+    svg.querySelector(`.etq[data-id="${b.dataset.sala}"]`)?.classList.toggle('sobre', e === 'mouseenter' || e === 'focus');
+  })));
   seccion.querySelectorAll('[data-sala]').forEach((b) => b.addEventListener('click', () => {
     if (movil) entrar(b.dataset.sala, true);
     else { desplazar(svg.getBoundingClientRect().top + scrollY - 90); setTimeout(() => entrar(b.dataset.sala, true), reducido ? 0 : 450); }
