@@ -233,7 +233,7 @@ const HAB = {
   entrada(c) {
     const p = c.puerta;
     c.forma(`M${p - 0.45} 0H${p + 0.45}C${p + 0.5} 1 ${p - 0.2} 1.7 ${p - 0.3} 2.8H${p - 1.5}C${p - 1.4} 1.6 ${p - 0.5} 1 ${p - 0.45} 0Z`, 0.008, 'url(#p-chino)', true);
-    c.tapia(0, p - 1.55); c.tapia(p - 0.25, c.w); c.portadaFrente(p - 1.55, 1.3);
+    c.tapia(0, p - 1.89); c.tapia(p + 0.09, c.w); c.portadaFrente(p - 1.55, 1.3); // la tapia acaba donde empiezan los pilares del arco
     c.poste(p + 0.75, 0.45);
     c.maceta(p + 0.75, 0.95, 0, 0.8, '#d8463a'); c.maceta(p - 1.0, 0.4, 0, 0.8, '#e2557a');
     c.buzon(p + 0.25, 2.35);
