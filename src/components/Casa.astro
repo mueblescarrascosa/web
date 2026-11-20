@@ -41,6 +41,7 @@ const dentro = Object.entries(salas).filter(([, s]) => !('ext' in s));
 const fuera = Object.entries(salas).filter(([, s]) => 'ext' in s);
 ---
 <section class="casa" id="servicios" aria-labelledby="casa-titulo">
+  <div class="casa-campo" aria-hidden="true"></div>
   <div class="ancho casa-cabeza">
     <div>
       <span class="etiqueta">Lo que hacemos</span>
@@ -191,7 +192,24 @@ const fuera = Object.entries(salas).filter(([, s]) => 'ext' in s);
   .casa-servicios { grid-template-columns: 1fr; }
   .casa-servicios a { padding: 1rem 0; }
 }
+/* animales del campo: andar, aletear y parpadear */
+@keyframes casa-trote { 50% { transform: translateY(-.9px); } }
+@keyframes casa-aleteo { 50% { transform: scaleY(-.35); } }
+@keyframes casa-parpadeo { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
+.casa .trote { animation: casa-trote .5s ease-in-out infinite; }
+.casa .vuela .ala { transform-box: fill-box; transform-origin: center bottom; animation: casa-aleteo .22s linear infinite; }
+.casa .ojos { transform-box: fill-box; transform-origin: center; animation: casa-parpadeo 4.5s infinite; }
+.casa .campo-delante { pointer-events: none; }
+.casa-campo { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.casa-campo .bicho { position: absolute; left: 0; top: 0; opacity: 0; will-change: transform, opacity; }
+.casa-campo svg { display: block; overflow: visible; }
+@keyframes casa-mece { 0%, 100% { transform: rotate(-.9deg); } 50% { transform: rotate(.9deg); } }
+@keyframes casa-gira { to { transform: rotate(360deg); } }
+.casa .mece { transform-box: fill-box; transform-origin: 50% 100%; animation: casa-mece 7s ease-in-out infinite; }
+.casa .mece.lento { animation-duration: 11s; }
+.casa .rueda { transform-box: fill-box; transform-origin: center; animation: casa-gira 3s linear infinite; }
 @media (prefers-reduced-motion: reduce) {
+  .casa .trote, .casa .vuela .ala, .casa .ojos, .casa .mece, .casa .rueda { animation: none !important; }
   .casa .room, .casa .etiquetas, .casa .etq .anillo, .casa-panel, .casa-foto img { animation: none !important; transition: none !important; }
 }
 </style>
