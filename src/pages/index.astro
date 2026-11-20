@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Casa from '../components/Casa.astro';
 import { r, peq, EMPRESA, entradasVisibles } from '../lib/sitio.js';
 import medios from '../datos/medios.json';
 
@@ -60,22 +61,7 @@ const schema = {
     </div>
   </section>
 
-  <section class="seccion" id="servicios">
-    <div class="ancho">
-      <span class="etiqueta">Lo que hacemos</span>
-      <h2>Todo a medida.<br /><span class="suave">Nada de catálogo.</span></h2>
-      <ul class="servicios">
-        {servicios.map(([id, h, t, d], i) => (
-          <li><a href={r(h)}>
-            <span class="num">0{i + 1}</span>
-            <span class="nombre">{t}</span>
-            <span class="desc">{d}</span>
-            <span class="foto"><img src={r(peq(f(id).src))} alt="" loading="lazy" width="800" height="1000" /></span>
-          </a></li>
-        ))}
-      </ul>
-    </div>
-  </section>
+  <Casa servicios={servicios.map(([, h, t, d]) => [h, t, d])} />
 
   <section class="escena-3d" aria-label="Del diseño en 3D a la cocina terminada">
     <div class="escena-3d-in">
