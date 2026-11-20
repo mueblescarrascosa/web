@@ -93,13 +93,13 @@ export function consejosPuerta(e, hoja, d = {}) {
   // ── Alto ──
   const nv = d.nivel;
   if (e.tipo === 'abatible') {
-    if (nv === 'bajo') ojo.push(`Con ${e.alto} cm de alto la hoja de 203 no entra sin obra: hay que subir el hueco o hacer una hoja más baja, a medida.`);
+    if (nv === 'bajo') ojo.push(`Con ${e.alto} cm de alto la hoja normal de 203 no entra: va una hoja a medida de ${altoHoja} cm (o se sube el hueco con obra).`);
     if (nv === 'especial') ojo.push(`Con ${e.alto} cm de alto va una puerta de altura especial, de 211 (la normal, de 203, es para huecos de 206 a 213).`);
     if (nv === 'superior') ojo.push(`Con ${e.alto} cm de alto se pasa de la altura especial de 211: hoja de altura especial superior, a medida, o la de 211 con un fijo arriba.`);
     if (nv === 'fijo') ojo.push(`Con ${e.alto} cm de alto: hoja de 211 y un fijo arriba de unos ${Math.round(d.fijo)} cm, del mismo acabado.`);
   }
   if (e.tipo === 'empotrada') {
-    if (nv === 'bajo') ojo.push(`Con ${e.alto} cm de alto la hoja de 203 no entra en el casoneto sin obra: hay que subir el hueco.`);
+    if (nv === 'bajo') ojo.push(`Con ${e.alto} cm de alto la hoja de 203 no entra en el casoneto: va una hoja a medida de ${altoHoja} cm (o se sube el hueco con obra).`);
     if (nv === 'sin-casoneto') ojo.push(`Con ${e.alto} cm de alto no conocemos casoneto de serie: llegan a huecos de 205–206 (hoja de 203). Habría que bajar el hueco con un dintel o un fijo arriba de unos ${Math.round(d.fijo)} cm, o elegir otra puerta (abatible o de granero).`);
   }
   if (e.tipo === 'granero') {

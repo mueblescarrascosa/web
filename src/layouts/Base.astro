@@ -29,6 +29,19 @@ const og = imagen ? new URL(r(imagen), Astro.site).href : new URL(r('/img/imagen
   <meta property="og:url" content={canonica} />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="theme-color" content="#f4efe5" />
+  <script is:inline>
+    // Tema claro u oscuro: el que se eligió con el botón o, si no, el del móvil u ordenador
+    (function () {
+      var guardado = null; try { guardado = localStorage.getItem('tema'); } catch (e) {}
+      var oscuro = guardado ? guardado === 'oscuro' : matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.tema = oscuro ? 'oscuro' : 'claro';
+      var m = document.querySelector('meta[name=theme-color]'); if (m) m.content = oscuro ? '#17140f' : '#f4efe5';
+      matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (ev) {
+        var g = null; try { g = localStorage.getItem('tema'); } catch (e) {}
+        if (!g) { document.documentElement.dataset.tema = ev.matches ? 'oscuro' : 'claro'; if (m) m.content = ev.matches ? '#17140f' : '#f4efe5'; dispatchEvent(new Event('cambio-tema')); }
+      });
+    })();
+  </script>
   <link rel="icon" href={r('/favicon.png')} type="image/png" />
   {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
 </head>

@@ -39,7 +39,7 @@ export function repartoAncho(hueco, tipo, ancha = 'fijo') {
     const h = hojaPara(hueco, tipo);
     return { forma: 'una', piezas: [{ w: h, clase: 'hoja' }], principal: h, paso: h, aMedida: false, conObra: conObra(hueco, h, tipo) };
   }
-  const total = hueco - HOLGURA;   // lo que queda dentro del marco para hojas y fijos
+  const total = tipo === 'empotrada' ? hueco - HOLGURA : hueco;   // abatible: las hojas se reparten el hueco (185 = 92,5 + 92,5)
   if (tipo === 'empotrada') {
     const std = HOJAS.filter((h) => 2 * h <= hueco - 2 * HOLGURA_OBRA).pop();
     const w = std && 2 * std >= total - 8 ? std : medio(total / 2);
@@ -58,9 +58,9 @@ export function repartoAncho(hueco, tipo, ancha = 'fijo') {
 }
 
 // ── Alto ──
-//   abatible: menos de 206, la de 203 no entra sin obra · 206–213, la normal de 203 · 214–221, altura especial de 211 ·
+//   abatible: menos de 206, la de 203 no entra: hoja a medida, 3 cm más baja que el hueco · 206–213, la normal de 203 · 214–221, altura especial de 211 ·
 //             más de 221, altura especial superior (a medida) o la de 211 con un fijo arriba.
-//   empotrada: los casonetos conocidos llegan a huecos de 205–206 (hoja de 203); por encima, dintel o fijo arriba.
+//   empotrada: los casonetos conocidos llegan a huecos de 205–206 (hoja de 203; con menos, hoja a medida 2 cm más baja); por encima, dintel o fijo arriba.
 //   granero: la hoja tapa el hueco y 5 cm más; más de 203 es altura especial y más de 240 no se hace.
 export const ALTO_NORMAL = 203, ALTO_ESPECIAL = 211, ALTO_GRANERO_MAX = 240, ALTO_CASONETO = 206;
 export function altoPara(alto, tipo, alta = 'medida') {
@@ -70,11 +70,11 @@ export function altoPara(alto, tipo, alta = 'medida') {
     return { altoHoja: h, nivel: h > ALTO_NORMAL ? 'granero-especial' : 'granero', fijo: 0 };
   }
   if (tipo === 'empotrada') {
-    if (alto < 205) return { altoHoja: ALTO_NORMAL, nivel: 'bajo', fijo: 0 };
+    if (alto < 205) return { altoHoja: alto - 2, nivel: 'bajo', fijo: 0 };
     if (alto <= ALTO_CASONETO) return { altoHoja: ALTO_NORMAL, nivel: 'normal', fijo: 0 };
     return { altoHoja: ALTO_NORMAL, nivel: 'sin-casoneto', fijo: alto - ALTO_CASONETO };
   }
-  if (alto < 206) return { altoHoja: ALTO_NORMAL, nivel: 'bajo', fijo: 0 };
+  if (alto < 206) return { altoHoja: alto - 3, nivel: 'bajo', fijo: 0 };
   if (alto <= 213) return { altoHoja: ALTO_NORMAL, nivel: 'normal', fijo: 0 };
   if (alto <= 221) return { altoHoja: ALTO_ESPECIAL, nivel: 'especial', fijo: 0 };
   if (alta === 'fijo') return { altoHoja: ALTO_ESPECIAL, nivel: 'fijo', fijo: alto - ALTO_ESPECIAL - 7 };

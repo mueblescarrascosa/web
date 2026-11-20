@@ -14,6 +14,23 @@ const activo = (p) => ruta.endsWith(p) ? 'page' : undefined;
     <a class="logo" href={r('/')} aria-label="Muebles Carrascosa, inicio">
       <img src={r('/img/carrascosa-horizontal-blanco-4096-800.webp')} alt="Carrascosa, madera de diseño" width="176" height="32" />
     </a>
+    <button class="tema-boton" type="button" aria-label="Cambiar a modo oscuro" title="Modo claro u oscuro">
+      <svg class="t-luna" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="currentColor"/></svg>
+      <svg class="t-sol" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <script is:inline>
+      (function () {
+        var b = document.currentScript.previousElementSibling, h = document.documentElement;
+        var poner = function () { var o = h.dataset.tema === 'oscuro'; b.setAttribute('aria-label', o ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'); };
+        poner(); addEventListener('cambio-tema', poner);
+        b.addEventListener('click', function () {
+          var o = h.dataset.tema !== 'oscuro'; h.dataset.tema = o ? 'oscuro' : 'claro';
+          try { localStorage.setItem('tema', o ? 'oscuro' : 'claro'); } catch (e) {}
+          var m = document.querySelector('meta[name=theme-color]'); if (m) m.content = o ? '#17140f' : '#f4efe5';
+          poner(); dispatchEvent(new Event('cambio-tema'));
+        });
+      })();
+    </script>
     <button class="menu-boton" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir el menú"><span></span><span></span><span></span></button>
     <nav id="menu" class="menu" aria-label="Principal">
       <ul>

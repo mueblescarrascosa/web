@@ -837,3 +837,36 @@ svg .cota.cambia path, svg .cota.cambia circle { animation: cota-luz 1.4s var(--
 svg .cota.cambia rect { animation: cota-fondo 1.4s var(--t); }
 @keyframes cota-luz { 0%, 40% { stroke: #c0623e; fill: #c0623e; stroke-width: 1.8; } }
 @keyframes cota-fondo { 0%, 40% { fill: #f6d9c9; stroke: #c0623e; } }
+
+/* ── Botón de modo claro / oscuro en la cabecera ── */
+.tema-boton { order: 3; flex: none; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--linea); background: transparent; color: var(--fuerte); cursor: pointer; transition: background .2s, transform .25s var(--t); }
+.tema-boton:hover { background: rgb(128 100 70 / .12); transform: rotate(-12deg); }
+.tema-boton .t-sol { display: none; }
+html[data-tema="oscuro"] .tema-boton .t-sol { display: block; } html[data-tema="oscuro"] .tema-boton .t-luna { display: none; }
+.cabecera-in > .menu { order: 2; margin-left: auto; }
+@media (max-width: 980px) { .tema-boton { order: 1; margin-left: auto; } .menu-boton { order: 2; } }
+
+/* ── Modo oscuro: la misma casa de campo, de noche ── */
+html[data-tema="oscuro"] {
+  --fondo: #17140f; --fondo-2: #1f1b15; --fondo-3: #29231c; --linea: #3b3229;
+  --texto: #e9e1d4; --suave: #b2a694; --fuerte: #fbf5ea; --madera: #dba675; --olivo: #a3b072;
+  --azul: #b9583a; --azul-vivo: #d27250; --azul-claro: #eaa27f;
+  color-scheme: dark;
+}
+html[data-tema="oscuro"] .cabecera.solida, html[data-tema="oscuro"] body:not(.es-portada) .cabecera { background: rgb(23 20 15 / .86); }
+html[data-tema="oscuro"] .logo img, html[data-tema="oscuro"] .pie-in > div:first-child img { filter: none; }
+html[data-tema="oscuro"] .boton.contorno { color: #fbf5ea !important; --fuerte: #fbf5ea; border-color: rgb(251 245 234 / .3); }
+html[data-tema="oscuro"] .boton.contorno:hover { background: rgb(251 245 234 / .06); }
+html[data-tema="oscuro"] .anio-gigante { -webkit-text-stroke-color: rgb(251 245 234 / .16); }
+html[data-tema="oscuro"] .desplegable > ul a:hover { background: rgb(251 245 234 / .06); }
+html[data-tema="oscuro"] .resena, html[data-tema="oscuro"] .calc, html[data-tema="oscuro"] .respuesta, html[data-tema="oscuro"] .formulario,
+html[data-tema="oscuro"] .favorita, html[data-tema="oscuro"] .quiz-op, html[data-tema="oscuro"] .encimera-tarjeta, html[data-tema="oscuro"] .compara-lado,
+html[data-tema="oscuro"] .tarjeta-proyecto { box-shadow: 0 18px 40px -30px rgb(0 0 0 / .7); }
+html[data-tema="oscuro"] .muestra { box-shadow: inset 0 0 0 1px rgb(251 245 234 / .14); }
+html[data-tema="oscuro"] .barra-nota i { background: linear-gradient(90deg, var(--madera) calc(var(--n) * 20%), rgb(251 245 234 / .1) 0); }
+html[data-tema="oscuro"] .buscador input::placeholder { color: #8d8272; }
+html[data-tema="oscuro"] .mapa { background: radial-gradient(circle at 50% 55%, rgb(185 88 58 / .22), transparent 45%), var(--fondo-2); }
+html[data-tema="oscuro"] .mapa iframe { filter: invert(.9) hue-rotate(180deg) saturate(.6) contrast(.9); }
+html[data-tema="oscuro"] .tiras .paso { background: #4a4037; }
+html[data-tema="oscuro"] .escala-frigo span { background: #3b3229; }
+html[data-tema="oscuro"] .quiz-armario iframe { background: #29231c; }

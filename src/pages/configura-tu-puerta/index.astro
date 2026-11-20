@@ -33,7 +33,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     <div class="combina-mandos">
       <fieldset class="muestras"><legend>Medidas del hueco <span class="elegido" id="medidas-v">{e0.hueco} × {e0.alto} × {e0.galce} cm</span></legend>
         <div class="calc-mandos">
-          <label>Ancho <output id="hueco-v">{e0.hueco} cm</output><input id="hueco" type="range" min="60" max="200" step="1" value={e0.hueco} /></label>
+          <label>Ancho <output id="hueco-v">{e0.hueco} cm</output><input id="hueco" type="range" min="60" max="185" step="1" value={e0.hueco} /></label>
           <label>Alto <output id="alto-v">{e0.alto} cm</output><input id="alto" type="range" min="195" max="260" step="1" value={e0.alto} /></label>
           <label>Galce (grueso de la pared) <output id="galce-v">{e0.galce} cm</output><input id="galce" type="range" min="5" max="30" step="0.5" value={e0.galce} /></label>
         </div>
