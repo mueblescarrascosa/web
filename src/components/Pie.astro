@@ -23,6 +23,7 @@ import { r, EMPRESA } from '../lib/sitio.js';
     </div>
   </div>
   <div class="ancho pie-legal">
-    <a href={r('/aviso-legal/')}>Aviso legal</a> · <a href={r('/politica-de-privacidad/')}>Privacidad</a> · <a href={r('/politica-de-cookies/')}>Cookies</a> · © {new Date().getFullYear()} {EMPRESA.razon}
+    <nav aria-label="Legal"><a href={r('/aviso-legal/')}>Aviso legal</a><a href={r('/politica-de-privacidad/')}>Privacidad</a><a href={r('/politica-de-cookies/')}>Cookies</a></nav>
+    <span>© {new Date().getFullYear()} {EMPRESA.razon}</span>
   </div>
 </footer>

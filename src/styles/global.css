@@ -780,7 +780,7 @@ html.solo, html.solo body { overflow: hidden; } html.solo #contenido { padding: 
 
 /* ── Tema de campo: zonas que siguen sobre foto, botón o fondo oscuro (texto claro) ── */
 .boton, .wp-block-button__link, .saltar, .comparar, .visor, .escenario, .escena-3d .rotulo, .wa-flotante, .boton-luz, .heroe-sello, .zoom-textos,
-.cabeza-foto, .wp-block-gallery figcaption, .wp-block-image figcaption, .tiras, .escala-frigo .si, .chips input:checked + span, .etiquetas a:hover,
+.cabeza-foto, .wp-block-gallery figcaption, .contenido .wp-block-group:has(> h3 + figure) > .wp-block-image figcaption, .tiras, .escala-frigo .si, .chips input:checked + span, .etiquetas a:hover,
 .etiquetas a[aria-current], .encimera-tarjeta.primera .encaje, .plano-vestidor, .casa-cerrar {
   --fuerte: #fff; --texto: #f1ece4; --suave: #d9d1c4; --madera: #e2b78f; }
 ::selection { background: var(--azul); color: #fff; }
@@ -870,3 +870,17 @@ html[data-tema="oscuro"] .mapa iframe { filter: invert(.9) hue-rotate(180deg) sa
 html[data-tema="oscuro"] .tiras .paso { background: #4a4037; }
 html[data-tema="oscuro"] .escala-frigo span { background: #3b3229; }
 html[data-tema="oscuro"] .quiz-armario iframe { background: #29231c; }
+
+/* Repaso de contraste */
+.formas-vestidor li[data-v="no"] em { color: #a3402a; background: rgb(201 90 60 / .16); }
+html[data-tema="oscuro"] .formas-vestidor li[data-v="no"] em { color: #f0a08a; }
+.escala-frigo span.no { background: #ead6cb; color: #8e4027; opacity: 1; }
+html[data-tema="oscuro"] .escala-frigo span.no { background: #4a2a22; color: #f0b49c; }
+/* Pie: enlaces legales juntos a la izquierda y el © a la derecha, sin que lo tape el botón de WhatsApp */
+.pie-legal { align-items: center; padding-right: 4.5rem; }
+.pie-legal nav { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; }
+@media (max-width: 600px) { .pie-legal { padding-right: 0; padding-bottom: 4.5rem; } }
+/* Lista del blog en cuadrícula (antes cada entrada ocupaba todo el ancho, con la foto enorme) */
+.lista-entradas { display: grid; gap: clamp(1.5rem, 3vw, 2.5rem); grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); margin-top: 1rem; }
+.lista-entradas .tarjeta h3 { font-size: clamp(1.2rem, 1.8vw, 1.45rem); }
+@media (min-width: 900px) { .lista-entradas .tarjeta:first-child { grid-column: span 2; } .lista-entradas .tarjeta:first-child .foto { aspect-ratio: 16 / 9; } .lista-entradas .tarjeta:first-child h3 { font-size: clamp(1.6rem, 2.6vw, 2.2rem); } }
