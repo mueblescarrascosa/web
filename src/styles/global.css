@@ -884,3 +884,15 @@ html[data-tema="oscuro"] .escala-frigo span.no { background: #4a2a22; color: #f0
 .lista-entradas { display: grid; gap: clamp(1.5rem, 3vw, 2.5rem); grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); margin-top: 1rem; }
 .lista-entradas .tarjeta h3 { font-size: clamp(1.2rem, 1.8vw, 1.45rem); }
 @media (min-width: 900px) { .lista-entradas .tarjeta:first-child { grid-column: span 2; } .lista-entradas .tarjeta:first-child .foto { aspect-ratio: 16 / 9; } .lista-entradas .tarjeta:first-child h3 { font-size: clamp(1.6rem, 2.6vw, 2.2rem); } }
+/* «Más opciones» de los juegos: descargar, compartir y comparar, plegados para no recargar */
+.mas-opciones { flex-basis: 100%; }
+.mas-opciones summary { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; cursor: pointer; color: var(--suave); font: 500 .95rem var(--sans); list-style: none; }
+.mas-opciones summary::-webkit-details-marker { display: none; }
+.mas-opciones summary::after { content: '+'; font-size: 1.2rem; color: var(--madera); transition: transform .3s var(--t); }
+.mas-opciones[open] summary::after { transform: rotate(45deg); }
+.mas-opciones > div { display: flex; flex-wrap: wrap; gap: .5rem; padding-top: .4rem; }
+.mas-op { min-height: 44px; padding: .5rem 1rem; border-radius: 99px; border: 1px solid var(--linea); background: transparent; color: var(--texto); font: 500 .92rem var(--sans); cursor: pointer; transition: border-color .2s, background .2s; }
+.mas-op:hover { border-color: var(--madera); background: rgb(128 100 70 / .08); }
+/* Fácil para todas las edades: deslizadores más fáciles de coger con el dedo y rótulos pequeños legibles */
+.calc-mandos input[type="range"], .combina-mandos input[type="range"], .medida-precio input[type="range"] { height: 32px; cursor: pointer; }
+@media (max-width: 600px) { .tiras span { font-size: .7rem; } .tiras b { font-size: .9rem; } }

@@ -50,11 +50,9 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       <fieldset class="muestras chips" data-g="zocalo"><legend>Zócalo</legend><Fragment set:html={chips('zocalo', ZOCALOS)} /></fieldset>
       <fieldset class="muestras" data-g="zcolor"><legend>Color del zócalo <span class="elegido">{zc.nombre}</span></legend><div class="lista-muestras" set:html={colores('zcolor', P_ZOCALO_COLORES)} /></fieldset>
       <div class="botones combina-botones">
-        <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
-        <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
         <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándasela al taller</a>
         <a class="boton contorno" data-accion="cita" href={r('/contacto/#cita')}>Pide cita para medirlo</a>
-        <button class="boton contorno" type="button" data-accion="comparar">⇄ Comparar dos versiones</button>
+        <details class="mas-opciones"><summary>Más opciones</summary><div><button class="mas-op" type="button" data-accion="descargar">Descargar imagen</button><button class="mas-op" type="button" data-accion="compartir">Compartir enlace</button><button class="mas-op" type="button" data-accion="comparar">⇄ Comparar dos versiones</button></div></details>
       </div>
       <p class="aviso-colores">Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. <b>Las medidas y la hoja son estimaciones:</b> siempre hay que verlo en obra, y el hueco lo medimos nosotros en casa.</p>
     </div>
@@ -64,7 +62,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     <div class="ancho">
       <span class="etiqueta">¿Hablamos de tus puertas?</span><br />
       <a class="frase" href={r('/contacto/')}>Hablemos <span aria-hidden="true">→</span></a>
-      <div class="botones"><a class="boton" href={r('/puertas/')}>Ver puertas</a><a class="boton contorno" href={r('/contacto/')}>Pide presupuesto</a></div>
+      <div class="botones"><a class="boton contorno" href={r('/puertas/')}>Ver puertas</a></div>
     </div>
   </section>
 

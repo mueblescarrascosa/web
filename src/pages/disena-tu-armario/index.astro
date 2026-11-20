@@ -132,12 +132,10 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
         <p class="precio-nota"><strong>IVA incluido.</strong> Mueble de suelo a techo con interior básico y montaje; luz LED, pantaloneros extraíbles y otros extras, aparte. Es una orientación: el precio exacto te lo damos en tu presupuesto, sin compromiso.</p>
       </section>
       <div class="botones combina-botones">
-        <button class="boton contorno" type="button" data-accion="inspirame">✦ Inspírame</button>
-        <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
-        <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
         <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándaselo al taller</a>
         <a class="boton contorno" data-accion="cita" href={r('/contacto/#cita')}>Pide cita para medirlo</a>
-        <button class="boton contorno" type="button" data-accion="comparar">⇄ Comparar dos versiones</button>
+        <button class="boton contorno" type="button" data-accion="inspirame">✦ Inspírame</button>
+        <details class="mas-opciones"><summary>Más opciones</summary><div><button class="mas-op" type="button" data-accion="descargar">Descargar imagen</button><button class="mas-op" type="button" data-accion="compartir">Compartir enlace</button><button class="mas-op" type="button" data-accion="comparar">⇄ Comparar dos versiones</button></div></details>
       </div>
       <p class="aviso-colores">Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. Dibujo orientativo: el interior lo decidimos contigo según lo que guardas, y en el taller te enseñamos las muestras reales.</p>
     </div>
@@ -174,7 +172,6 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     <div class="ancho">
       <span class="etiqueta">¿Te gusta tu armario?</span><br />
       <a class="frase" href={r('/contacto/')}>Hablemos <span aria-hidden="true">→</span></a>
-      <div class="botones"><a class="boton" href={r('/contacto/')}>Pide presupuesto</a><a class="boton contorno" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Escríbenos por WhatsApp</a></div>
     </div>
   </section>
 

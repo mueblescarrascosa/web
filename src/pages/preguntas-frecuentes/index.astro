@@ -280,7 +280,7 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
     <div class="ancho">
       <span class="etiqueta">¿No está tu duda?</span><br />
       <a class="frase" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Pregúntanos <span aria-hidden="true">→</span></a>
-      <div class="botones"><a class="boton" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Escríbenos por WhatsApp</a><a class="boton contorno" href={`tel:${EMPRESA.tel}`}>Llamar al {EMPRESA.telefono}</a></div>
+      <p>O llámanos al <a class="enlace" href={`tel:${EMPRESA.tel}`}>{EMPRESA.telefono}</a>.</p>
     </div>
   </section>
 

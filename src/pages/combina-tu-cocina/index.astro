@@ -97,13 +97,11 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
         <p class="precio-nota"><strong>IVA incluido.</strong> Muebles y montaje; la encimera y los electrodomésticos, aparte. Es una orientación a partir de una cocina tipo: el precio exacto te lo damos en tu presupuesto, sin compromiso.</p>
       </section>
       <div class="botones combina-botones">
-        <button class="boton contorno" type="button" data-accion="inspirame">✦ Inspírame</button>
-        <button class="boton contorno" type="button" data-accion="guardar">♡ Guardar</button>
-        <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
-        <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
         <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándasela al taller</a>
         <a class="boton contorno" data-accion="cita" href={r('/contacto/#cita')}>Pide cita para medirlo</a>
-        <button class="boton contorno" type="button" data-accion="comparar">⇄ Comparar dos versiones</button>
+        <button class="boton contorno" type="button" data-accion="inspirame">✦ Inspírame</button>
+        <button class="boton contorno" type="button" data-accion="guardar">♡ Guardar</button>
+        <details class="mas-opciones"><summary>Más opciones</summary><div><button class="mas-op" type="button" data-accion="descargar">Descargar imagen</button><button class="mas-op" type="button" data-accion="compartir">Compartir enlace</button><button class="mas-op" type="button" data-accion="comparar">⇄ Comparar dos versiones</button></div></details>
       </div>
       <p class="aviso-colores">¿Dudas con el material de la encimera? <a class="enlace" href={r('/elige-tu-encimera/')}>Compáralas aquí</a>. Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. Los colores son orientativos: la pantalla no reproduce bien la madera ni las texturas. En el taller te enseñamos las muestras reales.</p>
     </div>
@@ -149,7 +147,6 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     <div class="ancho">
       <span class="etiqueta">¿Te gusta tu combinación?</span><br />
       <a class="frase" href={r('/contacto/')}>Hablemos <span aria-hidden="true">→</span></a>
-      <div class="botones"><a class="boton" href={r('/contacto/')}>Pide presupuesto</a><a class="boton contorno" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Escríbenos por WhatsApp</a></div>
     </div>
   </section>
 

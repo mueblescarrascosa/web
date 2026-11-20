@@ -72,7 +72,7 @@ const schema = tipo === 'entrada' ? { '@context': 'https://schema.org', '@type':
       <div class="ancho">
         <span class="etiqueta">{tipo === 'entrada' ? '¿Lo hablamos para tu casa?' : '¿Empezamos?'}</span><br />
         <a class="frase" href={r('/contacto/')}>Hablemos <span aria-hidden="true">→</span></a>
-        <div class="botones"><a class="boton" href={r('/contacto/')}>Pide presupuesto</a><a class="boton contorno" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Escríbenos por WhatsApp</a></div>
+        <p>Llámanos al <a class="enlace" href={`tel:${EMPRESA.tel}`}>{EMPRESA.telefono}</a> o escríbenos por <a class="enlace" href={EMPRESA.whatsapp} target="_blank" rel="noopener">WhatsApp</a>.</p>
       </div>
     </section>
   )}

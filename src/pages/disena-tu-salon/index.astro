@@ -52,11 +52,9 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       <fieldset class="muestras" data-g="panelColor"><legend>Panel de listones <span class="elegido">{pan.nombre}</span></legend><div class="lista-muestras" set:html={colores('panelColor', S_PANELES)} /></fieldset>
       <fieldset class="muestras" data-g="pared"><legend>Pared <span class="elegido">{pa.nombre}</span></legend><div class="lista-muestras" set:html={colores('pared', S_PAREDES)} /></fieldset>
       <div class="botones combina-botones">
-        <button class="boton contorno" type="button" data-accion="descargar">Descargar imagen</button>
-        <button class="boton contorno" type="button" data-accion="compartir">Compartir enlace</button>
         <a class="boton" data-accion="whatsapp" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Mándaselo al taller</a>
         <a class="boton contorno" data-accion="cita" href={r('/contacto/#cita')}>Pide cita para medirlo</a>
-        <button class="boton contorno" type="button" data-accion="comparar">⇄ Comparar dos versiones</button>
+        <details class="mas-opciones"><summary>Más opciones</summary><div><button class="mas-op" type="button" data-accion="descargar">Descargar imagen</button><button class="mas-op" type="button" data-accion="compartir">Compartir enlace</button><button class="mas-op" type="button" data-accion="comparar">⇄ Comparar dos versiones</button></div></details>
       </div>
       <p class="aviso-colores">Se guarda solo en <a class="enlace" href={r('/mi-proyecto/')}>tu proyecto</a>. <b>Medidas y colores orientativos:</b> siempre hay que verlo en obra, y la pared la medimos nosotros en casa.</p>
     </div>
@@ -66,7 +64,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     <div class="ancho">
       <span class="etiqueta">¿Te gusta tu salón?</span><br />
       <a class="frase" href={r('/contacto/')}>Hablemos <span aria-hidden="true">→</span></a>
-      <div class="botones"><a class="boton" href={r('/miscelanea/')}>Ver muebles a medida</a><a class="boton contorno" href={r('/contacto/')}>Pide presupuesto</a></div>
+      <div class="botones"><a class="boton contorno" href={r('/miscelanea/')}>Ver muebles a medida</a></div>
     </div>
   </section>
 
