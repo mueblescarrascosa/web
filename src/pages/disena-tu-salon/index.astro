@@ -84,9 +84,11 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     const nombre = (l, k) => l.find((x) => x.clave === e[k])?.nombre || e[k];
     const si = (k, t) => (e[k] === '1' ? t : '');
     const resumen = () => [`Pared de ${e.ancho} × ${e.alto} cm`, `tele de ${e.tv}" con el centro a ${e.tvAltura} cm`, `bajo con ${nombre(S_FRENTES, 'frente').toLowerCase()}`, nombre(S_TIRADORES, 'tirador').toLowerCase(), si('columnas', 'columnas a los lados'), si('puente', 'puente arriba'), si('panel', `panel de listones ${busca('panelColor').nombre.toLowerCase()}`), si('estantes', 'estantes flotantes'), si('chimenea', 'chimenea eléctrica'), si('led', 'LED indirecto'), `color ${busca('color').nombre.toLowerCase()}`, `pared ${busca('pared').nombre.toLowerCase()}`].filter(Boolean);
+    let antes = null;
     function pintar() {
       const d = salon(e);
       svg.setAttribute('viewBox', d.vista); svg.innerHTML = DEFS_SALON + d.s;
+      ['ancho', 'alto', 'tvAltura'].forEach((k) => { if (antes && antes[k] !== e[k]) svg.querySelector('#cota-' + k)?.classList.add('cambia'); }); antes = { ...e };
       const c = busca('color'), pn = busca('panelColor');
       [['--frente', c.hex], ['--panel', pn.hex], ['--pared', busca('pared').hex], ['--v-frente', c.dibujo === 'veta' ? 1 : 0], ['--v-panel', pn.dibujo === 'veta' ? 1 : 0]].forEach(([k, v]) => svg.style.setProperty(k, v));
       NUM.filter((k) => k !== 'tv').forEach((k) => { $('#' + k).value = e[k]; $('#' + k + '-v').textContent = String(e[k]).replace('.', ',') + (k === 'sofa' ? ' m' : ' cm'); });
@@ -114,4 +116,5 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     mq.addEventListener('change', colocar); colocar();
     pintar();
   </script>
+  <script>import '../../scripts/noche.js';</script>
 </Base>

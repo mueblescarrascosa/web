@@ -103,7 +103,7 @@ const HAB = {
     c.b(2.05, 0, 1.5, 1.25, 0.36, 0.75, BLA, { fy: 2, tir: '#4a4a4a', tirZ: 0.12 });
     c.b(1.35, 0, 1.55, 0.65, 0.46, 0.12, '#b6b9bd'); c.b(1.52, 0, 1.67, 0.3, 0.22, 0.83, CAL);
     c.b(3.38, 0, 0, 0.72, 0.66, 2.1, '#e3e0da', { fy: 1, caj: [0.42], tir: '#8b8f94', tirZ: 0.55 });
-    c.maceta(0.3, 2.45, 0.91, 0.55, '#d8463a'); c.persona(1.05, 2.55, { ropa: '#b65a3c' });
+    c.maceta(0.3, 2.45, 0.91, 0.55, '#d8463a'); c.persona(1.6, 0.98, { quien: 'mujer', ropa: '#b65a3c', pelo: '#4a2f1f', remueve: true });
     c.b(1.5, 2.1, 0, 1.8, 0.8, 0.86, ROB, { fy: 3, tir: '#3a3a3a', tirZ: 0.9 });
     c.b(1.45, 2.05, 0.86, 1.9, 0.9, 0.05, '#f6f3ee');
     c.disco(2.4, 2.5, 0.92, 0.2, '#e8e2d6', '#3d2f25'); c.disco(2.36, 2.47, 0.95, 0.06, '#e8892c'); c.disco(2.46, 2.55, 0.95, 0.06, '#e8892c');
@@ -118,7 +118,7 @@ const HAB = {
     c.cil(1.9, 1.7, 0, 0.55, 0.62, '#c9a27a', '#9c3f33');
     c.disco(1.85, 1.65, 0.63, 0.1, '#f1eee8');
     c.b(0.62, 1.48, 0, 0.42, 0.42, 0.45, MAD); c.b(0.62, 1.48, 0.45, 0.06, 0.42, 0.5, MAD);
-    c.lampPie(3.85, 0.45); c.persona(3.2, 2.1, { ropa: '#5f6b3d', pelo: '#6b5444' });
+    c.lampPie(3.85, 0.45); c.persona(3.2, 1.6, { quien: 'hombre', ropa: '#5f6b3d', pelo: '#2e241c', va: [3.3, 2.6], dur: 18 });
     c.b(0.3, 2.95, 0, 2.8, 0.8, 0.25, '#8e8a84', { blando: 3 });
     for (let i = 0; i < 3; i++) c.b(0.45 + i * 0.85, 2.97, 0.25, 0.8, 0.55, 0.14, '#aaa59e', { blando: 3 });
     c.b(0.3, 3.5, 0.25, 2.8, 0.28, 0.5, '#8e8a84', { blando: 3 });
@@ -149,7 +149,7 @@ const HAB = {
   },
   taller(c, F) {
     c.cuadro('n', 0.25, 1.3, 0.8, 1, F.abuelo); c.cuadro('n', 1.2, 1.45, 1.5, 0.85, F.fachada);
-    c.tablero('n', 2.85, 1.2, 0.65, 0.85); c.ven('n', 3.65, 0.95, 0.75, 1.15); c.cochera('o', 0.6, 2.2, 2.05);
+    c.tablero('n', 2.85, 1.2, 0.65, 0.85); c.ven('n', 3.65, 0.95, 0.75, 1.15); c.cochera('o', 1.15, 2.15, 2.05);
     c.b(0.2, 0.05, 0, 3.4, 0.8, 0.82, '#7a5c40', { fy: 3, caj: [0.35], tir: '#2a2a2a', tirZ: 0.2 });
     c.b(0.15, 0, 0.82, 3.5, 0.9, 0.08, '#dcbb90');
     c.b(0.35, 0.2, 0.9, 0.28, 0.32, 0.18, '#4a4f57'); c.b(1.5, 0.3, 0.9, 1.3, 0.26, 0.04, '#e6c79e'); c.b(2.95, 0.35, 0.9, 0.35, 0.22, 0.12, '#c94f3d');
@@ -157,8 +157,8 @@ const HAB = {
     c.b(1.7, 2, 0, 1.4, 1, 0.8, '#4a4f57', { fy: 1, caj: [0.6] });
     c.b(1.65, 1.95, 0.8, 1.5, 1.1, 0.05, '#aab0b7'); c.b(2.35, 2.2, 0.85, 0.08, 0.5, 0.14, '#c94f3d');
     c.b(3.9, 1.2, 0, 0.5, 2.4, 0.3, '#d9b48b'); c.b(3.95, 1.3, 0.3, 0.4, 2.2, 0.12, '#c49a6c');
-    c.cil(0.75, 2.4, 0, 0.2, 0.62, '#c9a27a', '#a8835c');
-    c.b(0.4, 3.1, 0, 0.6, 0.35, 0.2, MAD); c.b(0.5, 3.45, 0, 0.35, 0.3, 0.14, MADO);
+    c.cil(3.75, 0.55, 0, 0.2, 0.62, '#c9a27a', '#a8835c');
+    c.b(2.4, 3.3, 0, 0.6, 0.35, 0.2, MAD); c.b(2.55, 3.62, 0, 0.35, 0.3, 0.14, MADO);
   },
   // El patio: el centro de la casa andaluza. Galería de arcos con las fotos de trabajos, fuente, naranjo y macetas.
   galeria(c, F) {
@@ -166,7 +166,7 @@ const HAB = {
     const n = Math.max(3, Math.round((c.w - 0.4) / 1.35)), paso = (c.w - 0.4) / n;
     c.arcada(0.2, 0.55, c.w - 0.4, n);
     [F.g1, F.g2, F.g3].forEach((src, i) => c.cuadro('n', 0.2 + paso * i + 0.18, 0.38, paso - 0.36, 0.72, src, 0.45));
-    c.fuente(c.w / 2, 2.35); c.persona(c.w / 2 + 0.95, 2.0, { alto: 0.62, ropa: '#e2b34a', pierna: '#3d5a8c', pelo: '#8a5a2e' });
+    c.fuente(c.w / 2, 2.35); c.persona(c.w / 2 - 0.9, 3.25, { quien: 'nino', ropa: '#e2b34a', pierna: '#3d5a8c', pelo: '#8a5a2e', va: [c.w / 2 + 0.9, 3.25], dur: 12 });
     c.olivo(c.w - 0.9, c.d - 0.85, 0.8);
     c.maceta(0.35, 1.3, 0, 0.8, '#d8463a'); c.maceta(0.35, 1.85, 0, 0.7, '#e2557a'); c.maceta(0.35, 3.5, 0, 0.9, '#d8463a');
     c.maceta(c.w / 2 - 1.3, 3.55, 0, 0.7, '#e2557a'); c.maceta(c.w / 2 + 1.1, 3.55, 0, 0.7, '#d8463a');
@@ -198,16 +198,20 @@ const HAB = {
   },
   ocio(c) {
     c.ven('o', 1.2, 0.9, 1.1, 1.2); c.buganvilla('o', 2.5, 3.8);
-    c.forma('M.2 .3H3.3V3.7H.2Z', 0.008, '#8796ab');
-    c.b(0.45, 0.7, 0, 2.3, 1.3, 0.72, '#6b4f38');
-    c.b(0.55, 0.8, 0.72, 2.1, 1.1, 0.05, '#3f7a5a'); c.persona(1.7, 2.45, { alto: 0.66, ropa: '#3d5a8c', pierna: '#2f2f33' });
-    [[1.1, 1.1, '#f1eee8'], [1.9, 1.4, '#c94f3d'], [2.1, 1.0, '#e0b84a'], [1.5, 1.6, '#2f2f33']].forEach(([a, b, k]) => c.disco(a, b, 0.78, 0.05, k));
-    c.cil(0.6, 3.05, 0, 0.36, 0.28, '#c94f3d', '#a63f30');
-    c.cil(1.45, 3.25, 0, 0.32, 0.26, '#e0b84a', '#bf9a37');
-    c.b(2.95, 2.6, 0, 0.62, 0.7, 1.7, '#2f45c8', { blando: 2 });
-    c.pantalla(3.02, 3.3, 1.05, 0.48, 0.42);
-    c.b(2.95, 3.3, 0.85, 0.62, 0.15, 0.06, '#1e2a80');
-    c.maceta(4.1, 0.5, 0, 1, null);
+    // mesa de billar en el centro de la sala, con su alfombra, patas, banda, troneras y bolas
+    const tw = 2.5, td = 1.4, mx = (c.w - tw) / 2 + 0.15, my = (c.d - td) / 2, VE = '#3f7a5a';
+    c.forma(`M${mx - 0.6} ${my - 0.55}H${mx + tw + 0.6}V${my + td + 0.55}H${mx - 0.6}Z`, 0.008, '#8796ab');
+    c.forma(`M${mx - 0.45} ${my - 0.4}H${mx + tw + 0.45}V${my + td + 0.4}H${mx - 0.45}Z`, 0.009, 'none', '#6c7d95');
+    [[0.12, 0.12], [tw - 0.3, 0.12], [0.12, td - 0.3], [tw - 0.3, td - 0.3]].forEach(([a, b]) => c.b(mx + a, my + b, 0, 0.18, 0.18, 0.6, '#5a3f2c'));
+    c.b(mx, my, 0.6, tw, td, 0.14, '#6b4f38');
+    c.b(mx + 0.11, my + 0.11, 0.74, tw - 0.22, td - 0.22, 0.012, VE, { sinTinta: true });
+    [[0.13, 0.13], [tw / 2, 0.11], [tw - 0.13, 0.13], [0.13, td - 0.13], [tw / 2, td - 0.11], [tw - 0.13, td - 0.13]].forEach(([a, b]) => c.disco(mx + a, my + b, 0.755, 0.065, '#151515'));
+    const bx = mx + tw * 0.68, by = my + td / 2, bolas = ['#e0b84a', '#c94f3d', '#2f45c8', '#2f2f33', '#7a3b8f', '#e07a2e'];
+    [[0, 0], [0.09, -0.05], [0.09, 0.05], [0.18, -0.1], [0.18, 0], [0.18, 0.1]].forEach(([a, b], i) => c.disco(bx + a, by + b, 0.775, 0.045, bolas[i], '#3d2f25', 0.5));
+    c.disco(mx + tw * 0.27, by, 0.775, 0.045, '#f6f3ec', '#3d2f25', 0.5);
+    c.b(mx + 0.35, my + td * 0.3, 0.79, 1.35, 0.025, 0.025, '#d9b48b', { sinTinta: true });
+    c.cil(0.55, c.d - 0.45, 0, 0.3, 0.28, '#c94f3d', '#a63f30');
+    c.maceta(c.w - 0.6, 0.5, 0, 1, null);
   },
   despacho(c) {
     c.ven('o', 0.3, 1.5, 0.9, 0.8);
@@ -229,7 +233,7 @@ const HAB = {
   entrada(c) {
     const p = c.puerta;
     c.forma(`M${p - 0.45} 0H${p + 0.45}C${p + 0.5} 1 ${p - 0.2} 1.7 ${p - 0.3} 2.8H${p - 1.5}C${p - 1.4} 1.6 ${p - 0.5} 1 ${p - 0.45} 0Z`, 0.008, 'url(#p-chino)', true);
-    c.tapia(0, p - 1.55); c.tapia(p - 0.25, c.w);
+    c.tapia(0, p - 1.55); c.tapia(p - 0.25, c.w); c.portadaFrente(p - 1.55, 1.3);
     c.poste(p + 0.75, 0.45);
     c.maceta(p + 0.75, 0.95, 0, 0.8, '#d8463a'); c.maceta(p - 1.0, 0.4, 0, 0.8, '#e2557a');
     c.buzon(p + 0.25, 2.35);
@@ -241,7 +245,7 @@ const HAB = {
   },
   // El olivar: tierra labrada, olivos en hilera, un pozo y el indicador hacia el taller.
   jardin(c) {
-    c.tapia(0, c.w); c.portada(0.7, 1.2);
+    c.tapia(0, c.w);
     if (c.w > 5) {
       c.olivo(1.2, 1.35); c.olivo(3.5, 1.9, 0.95); c.olivo(5.6, 1.4);
       c.pozo(2.4, 0.75); c.indicador(4.7, 0.7); c.chumbera(6.1, 2.2);
@@ -363,6 +367,7 @@ const BICHOS = {
   tractor: `<g transform="scale(-1,1)"><path d="M-12 -9H2V-16H9L10 -9H13L14 -4H-12Z" fill="#b8382c" ${TI}/><path d="M3.2 -15H8.2L8.8 -10H3.2Z" fill="#cfe0e6" stroke="#3d2f25" stroke-width=".5"/>
     <path d="M-9 -9V-15" stroke="#2b2622" stroke-width="1.2"/><g class="rueda"><circle cx="6" cy="-6.5" r="6.5" fill="#2b2622"/><circle cx="6" cy="-6.5" r="2.6" fill="#d9a65a"/><path d="M6 -12.5V-.5M0 -6.5H12" stroke="#4a3f36" stroke-width=".8"/></g>
     <g class="rueda"><circle cx="-8.5" cy="-3.6" r="3.6" fill="#2b2622"/><circle cx="-8.5" cy="-3.6" r="1.4" fill="#d9a65a"/></g></g>`,
+  mochueloVuela: `<path class="ala" d="M-1 -4Q-6 -10 -11 -7Q-6 -5 -1 -3ZM1 -4Q6 -10 11 -7Q6 -5 1 -3Z" fill="#7a634c" stroke="#3d2f25" stroke-width=".5"/><ellipse cx="0" cy="-3.6" rx="2.6" ry="3.2" fill="#8a7158" stroke="#3d2f25" stroke-width=".6"/><circle cx="0" cy="-7" r="2.3" fill="#8a7158" stroke="#3d2f25" stroke-width=".6"/><circle cx="-.9" cy="-7.2" r=".8" fill="#f2c53d"/><circle cx=".9" cy="-7.2" r=".8" fill="#f2c53d"/>`,
   gorrion: `<ellipse cx="0" cy="0" rx="2.6" ry="1.5" fill="#8a6a4c"/><circle cx="2.4" cy="-.8" r="1.1" fill="#6b4f38"/>
     <path class="ala" d="M-.6 -.3Q-1.6 -4.2 -4.4 -4.6Q-2.4 -1.8 -.6 -.3ZM.6 -.3Q1.6 -3.8 3.2 -4.6Q2 -1.6 .6 -.3Z" fill="#5d4532"/>`,
 };
@@ -673,17 +678,41 @@ export function montarCasa(seccion) {
           c.b(a, d - 0.18, 0, b - a, 0.18, 0.5, CAL, { tapa: CAL });
           pon(caja(x + a - 0.03, y + d - 0.22, 0.5, b - a + 0.06, 0.26, 0.06, TEJA, { tapa: '#cf8058' }), a, d - 0.22, 0.5, b, d, 0.56);
         },
-        // una persona de la familia, de pie (alto 1 = adulto)
-        persona(mx, my, { ropa = '#5d6b7d', pierna = '#3a3f4a', pelo = '#3a2a1e', piel = '#e0b08a', alto = 1 } = {}) {
+        // la familia: mujer, hombre o niño; «va» = otro punto del suelo al que pasea (ida y vuelta, con pausas); «remueve» = mueve la mano
+        persona(mx, my, { quien = 'hombre', ropa = '#5d6b7d', pierna = '#3a3f4a', pelo = '#3a2a1e', piel = '#e0b08a', va = null, dur = 16, remueve = false } = {}) {
           if (mx >= w - 0.1 || my >= d - 0.05) return;
+          const alto = quien === 'nino' ? 0.64 : quien === 'mujer' ? 0.95 : 1;
           sombra(mx, my, 0.2 * alto);
-          const [bx, by] = P(x + mx, y + my, 0), h = U * 1.62 * alto, pi = h * 0.46, cu = h * 0.36, an = 4.6 * alto;
+          const [bx, by] = P(x + mx, y + my, 0), h = U * 1.66 * alto, pi = h * 0.46, cu = h * 0.36, an = (quien === 'hombre' ? 5 : 4.4) * alto;
           let s = `<path d="M${f1(bx - 1.6 * alto)} ${f1(by)}V${f1(by - pi)}M${f1(bx + 1.6 * alto)} ${f1(by)}V${f1(by - pi)}" stroke="${pierna}" stroke-width="${f1(2.8 * alto)}" stroke-linecap="round"/>`;
+          if (quien === 'mujer') s += `<path d="M${f1(bx - an - 1.5)} ${f1(by - pi * 0.35)}L${f1(bx - an + 0.5)} ${f1(by - pi - cu + 3)}H${f1(bx + an - 0.5)}L${f1(bx + an + 1.5)} ${f1(by - pi * 0.35)}Z" fill="${ropa}" class="tinta-f"/>`;
           s += `<path d="M${f1(bx - an)} ${f1(by - pi + 1)}Q${f1(bx - an - 0.6)} ${f1(by - pi - cu + 2)} ${f1(bx)} ${f1(by - pi - cu)}Q${f1(bx + an + 0.6)} ${f1(by - pi - cu + 2)} ${f1(bx + an)} ${f1(by - pi + 1)}Z" fill="${ropa}" class="tinta-f"/>`;
-          s += `<path d="M${f1(bx - an + 0.6)} ${f1(by - pi - cu + 3)}l-1.2 ${f1(cu * 0.75)}M${f1(bx + an - 0.6)} ${f1(by - pi - cu + 3)}l1.2 ${f1(cu * 0.75)}" stroke="${ropa}" stroke-width="${f1(2.2 * alto)}" stroke-linecap="round"/>`;
-          const hy = by - pi - cu - 3.6 * alto;
-          s += `<circle cx="${f1(bx)}" cy="${f1(hy)}" r="${f1(3.6 * alto)}" fill="${piel}" class="tinta-f"/><path d="M${f1(bx - 3.7 * alto)} ${f1(hy)}Q${f1(bx)} ${f1(hy - 6 * alto)} ${f1(bx + 3.7 * alto)} ${f1(hy)}Q${f1(bx)} ${f1(hy - 2.2 * alto)} ${f1(bx - 3.7 * alto)} ${f1(hy)}Z" fill="${pelo}"/>`;
-          pon(s, mx - 0.15, my - 0.15, 0, mx + 0.15, my + 0.15, 1.7 * alto);
+          s += `<path d="M${f1(bx - an + 0.6)} ${f1(by - pi - cu + 3)}l-1.2 ${f1(cu * 0.75)}" stroke="${ropa}" stroke-width="${f1(2.2 * alto)}" stroke-linecap="round"/>`;
+          s += `<path class="${remueve ? 'remueve' : ''}" d="M${f1(bx + an - 0.6)} ${f1(by - pi - cu + 3)}l${remueve ? '3.4 ' + f1(cu * 0.45) : '1.2 ' + f1(cu * 0.75)}" stroke="${ropa}" stroke-width="${f1(2.2 * alto)}" stroke-linecap="round"/>`;
+          const hy = by - pi - cu - 3.6 * alto, r = 3.6 * alto;
+          s += `<circle cx="${f1(bx)}" cy="${f1(hy)}" r="${f1(r)}" fill="${piel}" class="tinta-f"/>`;
+          s += quien === 'mujer'
+            ? `<path d="M${f1(bx - r - 0.4)} ${f1(hy + r + 3)}Q${f1(bx - r - 1)} ${f1(hy - r - 2)} ${f1(bx)} ${f1(hy - r - 0.6)}Q${f1(bx + r + 1)} ${f1(hy - r - 2)} ${f1(bx + r + 0.4)} ${f1(hy + r + 3)}Q${f1(bx + r - 1)} ${f1(hy - 1)} ${f1(bx)} ${f1(hy - r + 1.4)}Q${f1(bx - r + 1)} ${f1(hy - 1)} ${f1(bx - r - 0.4)} ${f1(hy + r + 3)}Z" fill="${pelo}"/>`
+            : `<path d="M${f1(bx - r - 0.1)} ${f1(hy)}Q${f1(bx)} ${f1(hy - r * 1.7)} ${f1(bx + r + 0.1)} ${f1(hy)}Q${f1(bx)} ${f1(hy - r * 0.6)} ${f1(bx - r - 0.1)} ${f1(hy)}Z" fill="${pelo}"/>`;
+          if (va && !reducido) {
+            const [qx, qy] = P(x + va[0], y + va[1], 0), dx = qx - bx, dy = qy - by;
+            s = `<g>${s}<animateMotion dur="${dur}s" repeatCount="indefinite" path="M0 0L${f1(dx)} ${f1(dy)}L0 0" keyPoints="0;0;.5;.5;1;1" keyTimes="0;.15;.45;.6;.9;1" calcMode="linear"/></g>`;
+          }
+          const vx = va ? va[0] : mx, vy = va ? va[1] : my;
+          pon(s, Math.min(mx, vx) - 0.15, Math.min(my, vy) - 0.15, 0, Math.max(mx, vx) + 0.15, Math.max(my, vy) + 0.15, 1.7 * alto);
+        },
+        // arco de cortijo con cancela de forja en la tapia delantera
+        portadaFrente(a, L) {
+          const pil = 0.34, H = 1.5, yc = y + d - 0.09, T = L + 2 * pil;
+          c.b(a - pil, d - 0.27, 0, pil, 0.27, H, CAL, { tapa: CAL }); c.b(a + L, d - 0.27, 0, pil, 0.27, H, CAL, { tapa: CAL });
+          const m = mMuro('n', x + a - pil, yc, 0);
+          let s = `<path d="M0 ${H + 0.5}H${f1(T)}V${H}H${f1(pil + L)}Q${f1(pil + L / 2)} ${H + 0.85} ${f1(pil)} ${H}H0Z" fill="${CAL}" class="tinta-f" vector-effect="non-scaling-stroke" transform="${m}"/>`;
+          let rj = '';
+          for (let k = 1; k < 8; k++) { const u = pil + (L * k) / 8, top = H - 0.08 + Math.sin((Math.PI * k) / 8) * 0.3; rj += `M${f1(u)} .04V${top.toFixed(2)}`; }
+          rj += `M${f1(pil)} .35H${f1(pil + L)}M${f1(pil)} ${H - 0.12}H${f1(pil + L)}M${f1(pil + L / 2)} .04V${H + 0.2}`;
+          s += `<path d="${rj}" stroke="#2b2622" stroke-width="1.4" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke" transform="${m}"/>`;
+          s += caja(x + a - pil - 0.05, yc - 0.18, H + 0.5, T + 0.1, 0.36, 0.08, TEJA, { tapa: '#cf8058' });
+          pon(s, a - pil, d - 0.2, 0, a + L + pil, d, H + 0.6);
         },
         portada(a, L) {
           const pil = 0.32, H = 1.5, xc = x + 0.12;
@@ -873,6 +902,31 @@ export function montarCasa(seccion) {
     ir('zorro', ex + ew * 0.86, ey + eh * 0.66, 150, -150 * s, { dur: 100, retraso: 35 });
     ir('ciervo', ex + ew * 0.85, ey + eh * 0.2, 110, 110 * s, { dur: 160, retraso: 18, escala: 1.15 });
     ir('tractor', ex + ew * 0.17, ey + eh * 0.74, -220, 220 * s, { dur: 180, retraso: 60, escala: 1.3 });
+    // dos mochuelos, cada uno entre dos olivos del campo: posados un buen rato y un vuelo corto de uno a otro
+    const olivoCampo = (cx, cy, t) => {
+      const el = document.createElement('div'); el.className = 'bicho olivo-campo'; const tam = 74 * k * t;
+      el.style.cssText = `opacity:.9;width:${tam}px;height:${tam}px;transform:translate(${(cx - tam / 2).toFixed(1)}px,${(cy - tam * 0.92).toFixed(1)}px)`;
+      el.innerHTML = `<svg viewBox="-60 -110 120 120" width="${tam}" height="${tam}">${dibujaOlivo(0, 0, 1.6, 20)}</svg>`;
+      capa.appendChild(el);
+      return [cx, cy - tam * 0.62];   // dónde se posa: arriba de la copa
+    };
+    const mochuelo = (pA, pB, dur, retraso) => {
+      const el = document.createElement("div"); el.className = "bicho"; const t = 24 * k;
+      el.innerHTML = `<svg viewBox="-12 -14 24 16" width="${t}" height="${t * 0.67}"><g class="posado">${BICHOS.mochuelo}</g><g class="volando">${BICHOS.mochueloVuela}</g></svg>`;
+      capa.appendChild(el);
+      const p = ([x, y]) => `translate(${(x - t / 2).toFixed(1)}px,${(y - t * 0.55).toFixed(1)}px)`;
+      const alto = (a, b) => [(a[0] + b[0]) / 2, Math.min(a[1], b[1]) - 60 * k];
+      const ruta = [{ transform: p(pA), offset: 0 }, { transform: p(pA), offset: 0.42 }, { transform: p(alto(pA, pB)), offset: 0.46 }, { transform: p(pB), offset: 0.5 },
+        { transform: p(pB), offset: 0.92 }, { transform: p(alto(pB, pA)), offset: 0.96 }, { transform: p(pA), offset: 1 }];
+      const op = { duration: dur * 1000, delay: retraso * 1000, iterations: Infinity, fill: 'both' };
+      el.style.opacity = 1; el.animate(ruta, op);
+      const volar = [{ opacity: 0, offset: 0 }, { opacity: 0, offset: 0.419 }, { opacity: 1, offset: 0.42 }, { opacity: 1, offset: 0.499 }, { opacity: 0, offset: 0.5 }, { opacity: 0, offset: 0.919 }, { opacity: 1, offset: 0.92 }, { opacity: 1, offset: 0.999 }, { opacity: 0, offset: 1 }];
+      el.querySelector('.volando').animate(volar, op);
+      el.querySelector('.posado').animate(volar.map((f) => ({ ...f, opacity: 1 - f.opacity })), op);
+    };
+    const o1 = olivoCampo(ex + ew * 0.04, ey + eh * 0.62, 1), o2 = olivoCampo(ex + ew * 0.13, ey + eh * 0.16, 0.9);
+    const o3 = olivoCampo(ex + ew * 0.95, ey + eh * 0.36, 1), o4 = olivoCampo(ex + ew * 0.86, ey + eh * 0.86, 0.95);
+    mochuelo(o1, o2, 50, 8); mochuelo(o3, o4, 64, 30);
     // gorriones cruzando por arriba
     for (let n = 0; n < 3; n++) {
       const el = document.createElement('div'); el.className = 'bicho'; const t = 30 * k;

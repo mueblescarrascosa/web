@@ -23,6 +23,10 @@ export function salon({ ancho = 320, alto = 260, tv = 65, tvAltura = 105, frente
   let s = '';
   // Pared, rodapié y suelo (más anchos que la pared, para rellenar los lados del dibujo)
   s += R(-200, -60, ancho + 400, alto + 60, 'style="fill:var(--pared)" class="pieza"') + R(-200, alto - 7, ancho + 400, 7, 'fill="#f3f2ee"') + R(-200, alto, ancho + 400, 60, 'style="fill:var(--suelo)" class="pieza"') + R(-200, alto, ancho + 400, 60, 'fill="url(#tablasS)"');
+  // Techo y vueltas de las paredes de los lados (más oscuras): el ancho y el alto de la pared se ven de verdad
+  s += R(-400, -400, ancho + 800, 400, 'fill="#ebe6dc"') + R(-400, -3, ancho + 800, 3, 'fill="#d6cfc1"');
+  [[-400, 400], [ancho, 400]].forEach(([x, w]) => (s += R(x, 0, w, alto - 7, 'style="fill:var(--pared)" class="pieza"') + R(x, 0, w, alto - 7, 'fill="#3a2c1e" opacity=".12"')));
+  s += R(-1, 0, 1.4, alto, 'fill="#000" opacity=".18"') + R(ancho - 0.4, 0, 1.4, alto, 'fill="#000" opacity=".18"');
   // LED: luz que baña la pared bajo el bajo y alrededor del panel
   if (led === '1') s += `<ellipse cx="${f(ancho / 2)}" cy="${f(Y(sueloBajo) + 2)}" rx="${f(bajo / 2 + 6)}" ry="${sueloBajo - 4}" fill="url(#luzSuave)"/>`;
   // Panel de listones detrás de la tele
@@ -75,8 +79,16 @@ export function salon({ ancho = 320, alto = 260, tv = 65, tvAltura = 105, frente
   // La tele, colgada en la pared
   const yt = Y(centro + t.alto / 2);
   s += R(xt + 3, yt + 3, t.ancho, t.alto, 'rx="1.5" fill="#000" opacity=".25"') + R(xt, yt, t.ancho, t.alto, 'rx="1.5" fill="#121314"') + R(xt + 1.2, yt + 1.2, t.ancho - 2.4, t.alto - 2.4, 'fill="url(#pantalla)"');
+  // Cotas: ancho y alto de la pared, altura del centro de la tele y la altura de los ojos sentado en el sofá
+  const et = (x, y, txt) => `<rect x="${f(x - txt.length * 3.1 - 4)}" y="${f(y - 8)}" width="${f(txt.length * 6.2 + 8)}" height="14" rx="3" fill="#fbf7ee" stroke="#3d2f25" stroke-width=".6"/><text x="${f(x)}" y="${f(y + 2.6)}" text-anchor="middle">${txt}</text>`;
+  const lin = (x1, y1, x2, y2) => `<path d="M${f(x1)} ${f(y1)}L${f(x2)} ${f(y2)}"/>`;
+  s += `<g class="cota" id="cota-ancho">${lin(0, alto + 18, ancho, alto + 18)}${lin(0, alto + 12, 0, alto + 24)}${lin(ancho, alto + 12, ancho, alto + 24)}${et(ancho / 2, alto + 18, ancho + ' cm')}</g>`;
+  s += `<g class="cota" id="cota-alto">${lin(ancho + 14, 0, ancho + 14, alto)}${lin(ancho + 8, 0, ancho + 20, 0)}${lin(ancho + 8, alto, ancho + 20, alto)}${et(ancho + 14, alto / 2, alto + ' cm')}</g>`;
+  s += `<g class="cota" id="cota-tvAltura">${lin(xt - 12, Y(centro), xt - 12, alto)}<circle cx="${f(xt - 12)}" cy="${f(Y(centro))}" r="2.2"/>${lin(xt - 12, Y(centro), xt, Y(centro))}${et(xt - 12, Y(centro / 2), Math.round(centro) + ' cm')}</g>`;
+  s += `<g class="cota ojos">${lin(xt - 30, Y(110), xt + t.ancho + 30, Y(110))}<text x="${f(xt + t.ancho + 32)}" y="${f(Y(110) + 3)}">ojos, sentado</text></g>`;
   const libre = interior - t.ancho - 10;
-  const vista = `-15 -10 ${ancho + 30} ${alto + 35}`;
+  // Encuadre fijo (para la pared más grande): al cambiar las medidas, el dibujo cambia de tamaño de verdad
+  const vista = `${f(ancho / 2 - 280)} ${f(alto - 335)} 560 395`;
   return { vista, s, bajo: Math.round(bajo), libre, tvBaja, centro: Math.round(centro), tv: t };
 }
 

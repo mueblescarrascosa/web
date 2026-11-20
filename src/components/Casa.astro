@@ -193,10 +193,13 @@ const fuera = Object.entries(salas).filter(([, s]) => 'ext' in s);
   .casa-servicios a { padding: 1rem 0; }
 }
 /* animales del campo: andar, aletear y parpadear */
-@keyframes casa-trote { 50% { transform: translateY(-.9px); } }
+@keyframes casa-trote { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-.35px); } }
 @keyframes casa-aleteo { 50% { transform: scaleY(-.35); } }
 @keyframes casa-parpadeo { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
-.casa .trote { animation: casa-trote .5s ease-in-out infinite; }
+.casa .trote { animation: casa-trote 1.1s ease-in-out infinite; }
+@keyframes casa-remueve { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-28deg); } }
+.casa .remueve { transform-box: fill-box; transform-origin: 0 0; animation: casa-remueve 1.6s ease-in-out infinite; }
+.casa-campo .volando .ala { transform-box: fill-box; transform-origin: center bottom; animation: casa-aleteo .3s linear infinite; }
 .casa .vuela .ala { transform-box: fill-box; transform-origin: center bottom; animation: casa-aleteo .22s linear infinite; }
 .casa .ojos { transform-box: fill-box; transform-origin: center; animation: casa-parpadeo 4.5s infinite; }
 .casa .campo-delante { pointer-events: none; }
@@ -207,9 +210,9 @@ const fuera = Object.entries(salas).filter(([, s]) => 'ext' in s);
 @keyframes casa-gira { to { transform: rotate(360deg); } }
 .casa .mece { transform-box: fill-box; transform-origin: 50% 100%; animation: casa-mece 7s ease-in-out infinite; }
 .casa .mece.lento { animation-duration: 11s; }
-.casa .rueda { transform-box: fill-box; transform-origin: center; animation: casa-gira 3s linear infinite; }
+.casa .rueda { transform-box: fill-box; transform-origin: center; animation: casa-gira 3s linear infinite reverse; }
 @media (prefers-reduced-motion: reduce) {
-  .casa .trote, .casa .vuela .ala, .casa .ojos, .casa .mece, .casa .rueda { animation: none !important; }
+  .casa .trote, .casa .vuela .ala, .casa .ojos, .casa .mece, .casa .rueda, .casa .remueve { animation: none !important; }
   .casa .room, .casa .etiquetas, .casa .etq .anillo, .casa-panel, .casa-foto img { animation: none !important; transition: none !important; }
 }
 </style>

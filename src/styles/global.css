@@ -819,3 +819,21 @@ input[type="range"], input[type="checkbox"], input[type="radio"] { accent-color:
 .categoria .todas { padding-block: 0 clamp(2rem, 5vw, 3.5rem); }
 .categoria .tema:first-child { margin-top: 0; }
 .quiz-armario iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: var(--radio); background: #e9e6df; box-shadow: 0 30px 60px -36px rgb(60 40 20 / .55); }
+/* Modo noche de los juegos (armario, baño, puerta, salón): la habitación se oscurece y queda la luz de una lámpara */
+.boton-noche { right: auto; left: .8rem; }
+.lienzo::before, .lienzo::after { content: ''; position: absolute; inset: 0; border-radius: var(--radio); pointer-events: none; opacity: 0; transition: opacity 1.1s var(--t); z-index: 1; }
+.lienzo::before { background: radial-gradient(ellipse 60% 65% at 50% 32%, rgb(40 30 60 / .15), rgb(10 12 30 / .62) 70%, rgb(6 7 20 / .78)); mix-blend-mode: multiply; }
+.lienzo::after { background: radial-gradient(ellipse 34% 30% at 50% 26%, rgb(255 205 140 / .38), transparent 70%); mix-blend-mode: screen; }
+.lienzo.de-noche::before, .lienzo.de-noche::after { opacity: 1; }
+.lienzo .boton-luz { z-index: 2; }
+@media (max-width: 900px) { .boton-noche { left: .5rem; } }
+/* Cotas de los dibujos de los juegos: medidas a la vista, y se encienden al cambiarlas */
+svg .cota path { stroke: #3d2f25; stroke-width: .8; fill: none; }
+svg .cota circle { fill: #3d2f25; }
+svg .cota text { font: 600 9.5px var(--sans); fill: #2a211a; }
+svg .cota.ojos path { stroke-dasharray: 4 3; stroke-opacity: .55; }
+svg .cota.ojos text { font-size: 8px; fill: #6f6354; }
+svg .cota.cambia path, svg .cota.cambia circle { animation: cota-luz 1.4s var(--t); }
+svg .cota.cambia rect { animation: cota-fondo 1.4s var(--t); }
+@keyframes cota-luz { 0%, 40% { stroke: #c0623e; fill: #c0623e; stroke-width: 1.8; } }
+@keyframes cota-fondo { 0%, 40% { fill: #f6d9c9; stroke: #c0623e; } }
