@@ -20,7 +20,7 @@ const salas = {
     l: L([['Armarios y vestidores', '/armarios/'], ['Diseña tu armario', '/disena-tu-armario/'], ['Compara dos diseños', '/compara/']]) },
   taller: { n: 'El taller', k: 'Nosotros · desde 1969', d: 'Tres generaciones de carpinteros en Villanueva del Arzobispo. Aquí se corta, se monta y se repasa cada mueble antes de llegar a tu casa.', foto: img('img-20210815-113601'), alt: 'Puertas de madera en el taller',
     l: L([['Quiénes somos', '/acerca-de/'], ['Carpintería a medida en Jaén', '/destacado/']]) },
-  galeria: { n: 'Galería', k: 'Trabajos hechos', d: 'Cocinas, armarios y puertas que ya están en casa de nuestros clientes.', foto: img('pxl-20241128-172237679'), alt: 'Cocina negra con isla de mármol',
+  galeria: { n: 'Galería', k: 'En el patio · trabajos hechos', d: 'Bajo los arcos del patio colgamos lo que ya está en casa de nuestros clientes: cocinas, armarios y puertas.', foto: img('pxl-20241128-172237679'), alt: 'Cocina negra con isla de mármol',
     l: L([['Cocinas', '/cocinas/'], ['Armarios y vestidores', '/armarios/'], ['Puertas', '/puertas/'], ['Otros trabajos', '/miscelanea/'], ['Diseños 3D', '/disenos-3d/']]) },
   bano: { n: 'Baño', k: 'Agua y orden', d: 'Muebles que aguantan la humedad y aprovechan cada centímetro.', foto: img('ana-y-david-bano'), alt: 'Diseño de baño con mueble de dos senos',
     l: L([['Muebles de baño a medida', '/muebles-de-bano-a-medida/'], ['Combina tu baño', '/combina-tu-bano/']]) },
@@ -89,11 +89,15 @@ const fuera = Object.entries(salas).filter(([, s]) => 'ext' in s);
   position: relative; overflow: hidden; color: var(--tinta);
   padding-block: clamp(4rem, 8vw, 7rem) clamp(3rem, 6vw, 5rem);
   background:
-    radial-gradient(70% 60% at 50% 55%, rgba(255, 252, 245, .75), transparent 70%),
-    linear-gradient(rgba(90, 70, 45, .07) 1px, transparent 1px) 0 0 / 34px 34px,
-    linear-gradient(90deg, rgba(90, 70, 45, .07) 1px, transparent 1px) 0 0 / 34px 34px,
+    radial-gradient(70% 60% at 50% 55%, rgba(255, 252, 245, .7), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .26 0 0 0 0 .16 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"),
     var(--papel);
 }
+/* grano de papel también encima del dibujo, para que parezca acuarela sobre papel */
+.casa-escena::after { content: ''; position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply; opacity: .55;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .14 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.casa .tinta { fill: none; stroke: #3d2f25; stroke-width: .85; stroke-linecap: round; stroke-opacity: .82; }
+.casa .tinta-f { stroke: #3d2f25; stroke-width: .8; stroke-opacity: .8; stroke-linejoin: round; }
 .casa .etiqueta { color: #8a6a4c; }
 .casa h2 { color: var(--tinta); margin: 0; }
 .casa-suave { color: #9a8f81; }
@@ -114,18 +118,18 @@ const fuera = Object.entries(salas).filter(([, s]) => 'ext' in s);
 .casa.vista .etiquetas { animation: casa-aparece .6s 1.1s backwards; }
 .casa .etiquetas { pointer-events: none; transition: opacity .35s; }
 .casa.zoom .etiquetas { opacity: 0; }
-.casa .etq line { stroke: rgba(29, 27, 24, .45); stroke-width: 1; }
-.casa .etq circle { fill: var(--tinta); }
-.casa .etq rect { fill: var(--tinta); transition: fill .25s; }
-.casa .etq text { fill: #f3efe8; font: 600 11.5px var(--sans); }
-.casa .etq .num { fill: var(--madera); font: 700 10px var(--display); }
-.casa .etq.sobre rect, .casa .etq.sobre circle { fill: var(--azul); }
-.casa .etq.sobre .num { fill: #b9c3ff; }
+.casa .etq line { stroke: #3d2f25; stroke-width: 1; stroke-dasharray: 2 2.5; }
+.casa .etq circle { fill: #3d2f25; }
+.casa .etq rect { fill: #fbf7ee; stroke: #3d2f25; stroke-width: 1.1; transition: fill .25s; filter: drop-shadow(1.5px 2px 0 rgba(61, 47, 37, .25)); }
+.casa .etq text { fill: #2a211a; font: 600 11.5px var(--sans); }
+.casa .etq .num { fill: #b65a3c; font: 700 10px var(--display); }
+.casa .etq.sobre rect { fill: #3d2f25; } .casa .etq.sobre circle { fill: #b65a3c; }
+.casa .etq.sobre text { fill: #fbf7ee; } .casa .etq.sobre .num { fill: #f0b49c; }
 .casa.es-movil .etq text { font-size: 15px; } .casa.es-movil .etq .num { font-size: 12px; }
 .casa .etq .anillo { fill: none; stroke: var(--tinta); stroke-width: 1.2; transform-box: fill-box; transform-origin: center; opacity: 0; }
 @keyframes casa-pulso { 0% { transform: scale(1); opacity: .7; } 70%, 100% { transform: scale(3.4); opacity: 0; } }
 .casa.vista:not(.usada) .etq .anillo { animation: casa-pulso 2.6s ease-out infinite; animation-delay: calc(1.6s + var(--i) * .22s); }
-.casa .etq.sobre .anillo { stroke: var(--azul); }
+.casa .etq.sobre .anillo { stroke: #b65a3c; }
 
 .casa-panel { position: absolute; z-index: 5; right: clamp(1rem, 3vw, 2.5rem); top: 50%; width: min(370px, calc(100% - 2rem));
   max-height: calc(100% - 1rem); overflow-y: auto; background: var(--fondo-2); color: var(--texto); border: 1px solid var(--linea); border-radius: 16px;
