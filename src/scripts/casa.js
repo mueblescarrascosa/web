@@ -170,6 +170,7 @@ const HAB = {
     c.olivo(c.w - 0.9, c.d - 0.85, 0.8);
     c.maceta(0.35, 1.3, 0, 0.8, '#d8463a'); c.maceta(0.35, 1.85, 0, 0.7, '#e2557a'); c.maceta(0.35, 3.5, 0, 0.9, '#d8463a');
     c.maceta(c.w / 2 - 1.3, 3.55, 0, 0.7, '#e2557a'); c.maceta(c.w / 2 + 1.1, 3.55, 0, 0.7, '#d8463a');
+    c.granado(c.w > 7 ? 3.1 : 1.15, 2.85);
     if (c.w > 7) { c.naranjo(1.3, 2.6); c.maceta(c.w - 2.4, 1.3, 0, 0.8, '#d8463a'); }
   },
   bano(c) {
@@ -280,6 +281,7 @@ function patron(id, [tipo, base]) {
     hidraulico: [0.6, 0.6, `<rect width=".6" height=".6" fill="${base}"/><path d="M.3 .07L.53 .3L.3 .53L.07 .3Z" fill="none" stroke="#5b7aa8" stroke-width=".03"/><circle cx=".3" cy=".3" r=".07" fill="#b65a3c"/><path d="M0 .09A.09 .09 0 0 0 .09 0M.51 0A.09 .09 0 0 0 .6 .09M.6 .51A.09 .09 0 0 0 .51 .6M.09 .6A.09 .09 0 0 0 0 .51" fill="none" stroke="#5b7aa8" stroke-width=".025"/><path d="M0 0H.6M0 0V.6" stroke="${tono(base, 0.84)}" stroke-width=".012"/>`],
     tierra: [1, 0.6, `<rect width="1" height=".6" fill="${base}"/><path d="M0 .3C.3 .26 .7 .34 1 .3" stroke="${tono(base, 0.86)}" stroke-width=".03" fill="none"/><circle cx=".2" cy=".12" r=".02" fill="${tono(base, 0.75)}"/><circle cx=".7" cy=".48" r=".018" fill="${Cl}"/>`],
     chino: [0.3, 0.3, `<rect width=".3" height=".3" fill="${base}"/><ellipse cx=".07" cy=".08" rx=".05" ry=".035" fill="#8f8574"/><ellipse cx=".22" cy=".1" rx=".045" ry=".03" fill="#efe9dc"/><ellipse cx=".12" cy=".22" rx=".05" ry=".03" fill="#efe9dc"/><ellipse cx=".26" cy=".25" rx=".035" ry=".03" fill="#8f8574"/>`],
+    surcos: [1.6, 0.5, `<rect width="1.6" height=".5" fill="${base}"/><path d="M0 .36C.3 .33 .55 .39 .8 .35S1.3 .33 1.6 .36" stroke="${tono(base, 0.88)}" stroke-width=".07" fill="none" stroke-linecap="round"/><path d="M0 .4C.4 .38 .9 .42 1.6 .4" stroke="${tono(base, 0.8)}" stroke-width=".012" fill="none"/><circle cx=".2" cy=".12" r=".025" fill="${tono(base, 0.8)}"/><circle cx=".62" cy=".2" r=".018" fill="${tono(base, 1.07)}"/><circle cx="1.1" cy=".1" r=".02" fill="${tono(base, 0.84)}"/><circle cx="1.4" cy=".24" r=".015" fill="${tono(base, 0.78)}"/><ellipse cx="1.25" cy=".44" rx=".05" ry=".02" fill="${tono(base, 0.86)}"/>`],
     hormigon: [1.5, 1.5, `<rect width="1.5" height="1.5" fill="${base}"/><circle cx=".3" cy=".4" r=".02" fill="${L}"/><circle cx="1.1" cy=".9" r=".025" fill="${Cl}"/><path d="M0 0H1.5M0 0V1.5" stroke="${tono(base, 0.9)}" stroke-width=".015"/>`],
   }[tipo];
   return `<pattern id="p-${id}" patternUnits="userSpaceOnUse" width="${t[0]}" height="${t[1]}" patternTransform="${m}">${t[2]}</pattern>`;
@@ -311,6 +313,26 @@ function ordenar(items) {
   return out.join('');
 }
 
+// Olivo: tronco retorcido y copa plateada a manchas (X, Y en el plano; t, tamaño; n, mechones de la copa)
+function dibujaOlivo(X, Y, t = 1, n = 26) {
+  const r = azar(X, Y);
+  const [bx, by] = P(X, Y, 0), [tx, ty] = P(X, Y, 1.1 * t);
+  const tr = `M${f1(bx - 3 * t)} ${f1(by)}C${f1(bx + 6 * t)} ${f1(by - 9 * t)} ${f1(tx - 8 * t)} ${f1(ty + 12 * t)} ${f1(tx - 2 * t)} ${f1(ty)}M${f1(bx + 2 * t)} ${f1(by - 2 * t)}C${f1(bx + 10 * t)} ${f1(by - 14 * t)} ${f1(tx + 12 * t)} ${f1(ty + 9 * t)} ${f1(tx + 9 * t)} ${f1(ty - 3 * t)}M${f1(tx)} ${f1(ty + 6 * t)}C${f1(tx - 6 * t)} ${f1(ty + 2 * t)} ${f1(tx - 12 * t)} ${f1(ty)} ${f1(tx - 15 * t)} ${f1(ty - 5 * t)}`;
+  let s = `<path d="${tr}" stroke="#3d2f25" stroke-width="${f1(6 * t)}" stroke-linecap="round" fill="none"/><path d="${tr}" stroke="#7a6350" stroke-width="${f1(4.2 * t)}" stroke-linecap="round" fill="none"/>`;
+  // copa: una masa irregular de mechones pequeños, oscuros abajo y plateados arriba
+  const cy0 = ty - 12 * t, mech = [];
+  for (let k = 0; k < n; k++) { const a = r() * Math.PI * 2, q = Math.sqrt(r()); mech.push([Math.cos(a) * q * 30 * t, Math.sin(a) * q * 15 * t + (r() - 0.5) * 4 * t]); }
+  mech.sort((a, b) => b[1] - a[1]);
+  s += mancha(tx, cy0 + 2 * t, 33 * t, 17 * t, '#6f7c52', true, 0.3);
+  mech.forEach(([dx, dy]) => {
+    const alto = 1 - (dy / (15 * t) + 1) / 2;
+    s += mancha(tx + dx, cy0 + dy, (6 + r() * 4) * t, (4 + r() * 2.5) * t, OLIVO[Math.max(0, Math.min(4, Math.floor(alto * 4.2 + r() * 0.8)))], false, 0.35);
+  });
+  for (let k = 0; k < 18; k++) { const px = tx + (r() - 0.5) * 54 * t, py = cy0 + (r() - 0.5) * 24 * t, a = (r() - 0.5) * 1.4; s += `<path d="M${f1(px)} ${f1(py)}l${f1(Math.cos(a) * 3.5 * t)} ${f1(Math.sin(a) * 3.5 * t)}" stroke="#55623d" stroke-width=".9" stroke-linecap="round" stroke-opacity=".7"/>`; }
+  for (let k = 0; k < 5; k++) s += `<circle cx="${f1(tx + (r() - 0.5) * 44 * t)}" cy="${f1(cy0 + (r() - 0.3) * 18 * t)}" r="1.1" fill="#3a3a2a"/>`;
+  return s;
+}
+
 // ---------- Montaje ----------
 const VERDES = ['#4f6b3d', '#5f7d48', '#6f8f55', '#3f5a33', '#7c9a5f'];
 const OLIVO = ['#76845a', '#859268', '#97a37b', '#a9b38f', '#bdc4a6'];
@@ -338,11 +360,32 @@ export function montarCasa(seccion) {
     let defs = `<radialGradient id="casa-brillo"><stop offset="0" stop-color="#ffe2a8" stop-opacity=".75"/><stop offset="1" stop-color="#ffe2a8" stop-opacity="0"/></radialGradient>
       <linearGradient id="casa-cristal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3eef4"/><stop offset="1" stop-color="#9db7c8"/></linearGradient>
       <pattern id="casa-rayado" patternUnits="userSpaceOnUse" width="3.4" height="3.4" patternTransform="rotate(32)"><path d="M0 0V3.4" stroke="#4a3626" stroke-width=".7" stroke-opacity=".3"/></pattern>
-      ${azul(EX)}${azul(EY)}${patron('chino', ['chino', '#c9bea8'])}`;
+      ${azul(EX)}${azul(EY)}${patron('chino', ['chino', '#c9bea8'])}${patron('surcos', ['surcos', '#d4b07c'])}`;
+    // la casa está en medio del olivar: márgenes de campo alrededor (más por detrás, donde los árboles no tapan la casa)
+    const [MO, MN, ME, MS] = movil ? [1.7, 3.9, 0.8, 0.9] : [5.2, 5.2, 1.9, 1.7];
+    const x0 = -MO - 0.3, y0 = -MN - 0.3, x1 = W + ME + 0.3, y1 = Dtot + MS + 0.3;
     // tablero de la maqueta y su sombra rayada sobre la mesa
-    const somb = [[-0.3, -0.3, -0.32], [W + 0.9, -0.3, -0.32], [W + 0.9, Dtot + 0.9, -0.32], [-0.3, Dtot + 0.9, -0.32]];
+    const somb = [[x0 + 0.3, y0 + 0.3, -0.32], [x1 + 0.6, y0 + 0.3, -0.32], [x1 + 0.6, y1 + 0.6, -0.32], [x0 + 0.3, y1 + 0.6, -0.32]];
     let out = `<polygon points="${pts(somb)}" fill="rgba(110,80,45,.1)"/><polygon points="${pts(somb)}" fill="url(#casa-rayado)"/>`;
-    out += caja(-0.6, -0.6, -0.32, W + 1.2, Dtot + 1.1, 0.32, '#d9c4a2', { tapa: '#e8dcc4' });
+    out += caja(x0, y0, -0.32, x1 - x0, y1 - y0, 0.32, '#c9ab7c', { tapa: '#d6b98a' });
+    out += `<polygon points="${pts([[-MO, -MN, 0], [W + ME, -MN, 0], [W + ME, Dtot + MS, 0], [-MO, Dtot + MS, 0]])}" fill="url(#p-surcos)"/>`;
+    // hileras de olivos (detrás y a la izquierda de la casa) y plantones jóvenes delante
+    const arboles = [], somArb = [], jovenes = [];
+    for (let gy = -MN + 0.85; gy < Dtot + MS - 0.3; gy += 1.75) for (let gx = -MO + 0.85; gx < W + ME - 0.3; gx += 1.85) {
+      const r = azar(gx + 11, gy + 7), X = gx + (r() - 0.5) * 0.3, Y = gy + (r() - 0.5) * 0.3;
+      if (gy < -1 || gx < -1) { arboles.push([X, Y, 0.72 + r() * 0.12, 15]); somArb.push(sombraDisco(X + 0.25, Y + 0.22, 0.7)); }
+    }
+    const joven = (X, Y, lista) => { lista.push([X, Y, 0.36, 9]); somArb.push(sombraDisco(X + 0.12, Y + 0.12, 0.33)); };
+    if (movil) for (let gy = 0.6; gy < Dtot; gy += 1.6) joven(-0.85, gy, arboles);
+    else {
+      for (let gy = 0.7; gy < Dtot + 0.5; gy += 1.75) joven(W + 0.95, gy, jovenes);
+      for (let gx = 0.7; gx < W; gx += 1.85) joven(gx, Dtot + 0.85, jovenes);
+    }
+    out += `<g fill="rgba(110,80,45,.12)">${somArb.join('')}</g><g fill="url(#casa-rayado)">${somArb.join('')}</g>`;
+    arboles.sort((a, b) => (a[0] * EX[1] + a[1] * EY[1]) - (b[0] * EX[1] + b[1] * EY[1]));
+    out += arboles.map(([X, Y, t, n]) => dibujaOlivo(X, Y, t, n)).join('');
+    jovenes.sort((a, b) => (a[0] * EX[1] + a[1] * EY[1]) - (b[0] * EX[1] + b[1] * EY[1]));
+    const delante = jovenes.map(([X, Y, t, n]) => dibujaOlivo(X, Y, t, n)).join('');
     let etiquetas = '';
     const numeros = {};
     const orden = plano.slice().sort((a, b) => (!!SALAS[a[0]].ext - !!SALAS[b[0]].ext) || a[2] - b[2] || a[1] - b[1]);
@@ -465,22 +508,23 @@ export function montarCasa(seccion) {
         // olivo: tronco retorcido y copa plateada a manchas
         olivo(mx, my, t = 1) {
           if (mx >= w - 0.3) return;
-          const r = azar(mx + x, my + y);
           sombras += sombraDisco(x + mx + 0.35 * t, y + my + 0.3 * t, 0.95 * t);
-          const [bx, by] = P(x + mx, y + my, 0), [tx, ty] = P(x + mx, y + my, 1.1 * t);
-          const tr = `M${f1(bx - 3 * t)} ${f1(by)}C${f1(bx + 6 * t)} ${f1(by - 9 * t)} ${f1(tx - 8 * t)} ${f1(ty + 12 * t)} ${f1(tx - 2 * t)} ${f1(ty)}M${f1(bx + 2 * t)} ${f1(by - 2 * t)}C${f1(bx + 10 * t)} ${f1(by - 14 * t)} ${f1(tx + 12 * t)} ${f1(ty + 9 * t)} ${f1(tx + 9 * t)} ${f1(ty - 3 * t)}M${f1(tx)} ${f1(ty + 6 * t)}C${f1(tx - 6 * t)} ${f1(ty + 2 * t)} ${f1(tx - 12 * t)} ${f1(ty)} ${f1(tx - 15 * t)} ${f1(ty - 5 * t)}`;
-          let s = `<path d="${tr}" stroke="#3d2f25" stroke-width="${f1(6 * t)}" stroke-linecap="round" fill="none"/><path d="${tr}" stroke="#7a6350" stroke-width="${f1(4.2 * t)}" stroke-linecap="round" fill="none"/>`;
-          // copa: una masa irregular de mechones pequeños, oscuros abajo y plateados arriba
-          const cy0 = ty - 12 * t, mech = [];
-          for (let k = 0; k < 26; k++) { const a = r() * Math.PI * 2, q = Math.sqrt(r()); mech.push([Math.cos(a) * q * 30 * t, Math.sin(a) * q * 15 * t + (r() - 0.5) * 4 * t]); }
-          mech.sort((a, b) => b[1] - a[1]);
-          s += mancha(tx, cy0 + 2 * t, 33 * t, 17 * t, '#6f7c52', true, 0.3);
-          mech.forEach(([dx, dy]) => {
-            const alto = 1 - (dy / (15 * t) + 1) / 2;
-            s += mancha(tx + dx, cy0 + dy, (6 + r() * 4) * t, (4 + r() * 2.5) * t, OLIVO[Math.max(0, Math.min(4, Math.floor(alto * 4.2 + r() * 0.8)))], false, 0.35);
-          });
-          for (let k = 0; k < 18; k++) { const px = tx + (r() - 0.5) * 54 * t, py = cy0 + (r() - 0.5) * 24 * t, a = (r() - 0.5) * 1.4; s += `<path d="M${f1(px)} ${f1(py)}l${f1(Math.cos(a) * 3.5 * t)} ${f1(Math.sin(a) * 3.5 * t)}" stroke="#55623d" stroke-width=".9" stroke-linecap="round" stroke-opacity=".7"/>`; }
-          for (let k = 0; k < 5; k++) s += `<circle cx="${f1(tx + (r() - 0.5) * 44 * t)}" cy="${f1(cy0 + (r() - 0.3) * 18 * t)}" r="1.1" fill="#3a3a2a"/>`;
+          pon(dibujaOlivo(x + mx, y + my, t), mx - 0.3, my - 0.3, 0, mx + 0.3, my + 0.3, 2);
+        },
+        // granado (por Granada): tronco de varios pies, copa verde oscura y granadas rojas con su corona
+        granado(mx, my) {
+          if (mx >= w - 0.3) return;
+          const r = azar(mx + 4, my + 3);
+          sombra(mx, my, 0.6);
+          const [bx, by] = P(x + mx, y + my, 0), [tx, ty] = P(x + mx, y + my, 1.05);
+          let s = '';
+          [[-7, 2], [0, -2], [7, 3]].forEach(([dx, cx]) => { const d0 = `M${f1(bx + dx * 0.25)} ${f1(by)}Q${f1(bx + cx)} ${f1((by + ty) / 2)} ${f1(tx + dx)} ${f1(ty + 4)}`; s += `<path d="${d0}" stroke="#3d2f25" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="${d0}" stroke="#806552" stroke-width="2" fill="none" stroke-linecap="round"/>`; });
+          s += mancha(tx, ty - 8, 22, 15, '#3f5f2c');
+          for (let k = 0; k < 14; k++) s += mancha(tx + (r() - 0.5) * 36, ty - 8 + (r() - 0.5) * 22, 4 + r() * 3, 3 + r() * 2, ['#4f7436', '#5d8540', '#36552a'][k % 3], false, 0.3);
+          for (let k = 0; k < 9; k++) {
+            const gx = tx + (r() - 0.5) * 34, gy = ty - 6 + (r() - 0.4) * 20;
+            s += `<circle cx="${f1(gx)}" cy="${f1(gy)}" r="2.6" fill="#b8232f" stroke="#3d2f25" stroke-width=".5"/><path d="M${f1(gx - 0.9)} ${f1(gy - 2.4)}l.9 -1.3l.9 1.3" stroke="#6e1a20" stroke-width=".7" fill="none"/><circle cx="${f1(gx - 0.8)}" cy="${f1(gy - 0.8)}" r=".7" fill="#e86a6f"/>`;
+          }
           pon(s, mx - 0.3, my - 0.3, 0, mx + 0.3, my + 0.3, 2);
         },
         naranjo(mx, my) {
@@ -613,11 +657,11 @@ export function montarCasa(seccion) {
       const xs = esq.map((p) => p[0]), ys = esq.map((p) => p[1]);
       cajasSala[id] = [Math.min(...xs), Math.min(...ys), Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)];
     });
-    const todo = [P(-0.6, -0.6, 2.8), P(W + 0.6, -0.6, 2.8), P(-0.6, Dtot + 0.5, 2), P(W + 0.9, Dtot + 0.9, -0.4), P(-0.6, Dtot + 0.9, -0.4), P(W + 0.9, -0.6, -0.4)];
+    const todo = [P(x0, y0, 2.4), P(x1, y0, 2.4), P(x0, y1, 0.5), P(x1, y1, -0.4), P(x0, y1, -0.4), P(x1, y0, -0.4), P(-0.6, -0.6, 2.9)];
     const xs = todo.map((p) => p[0]), ys = todo.map((p) => p[1]), m = 16;
     vbCasa = [Math.min(...xs) - m, Math.min(...ys) - m - 16, Math.max(...xs) - Math.min(...xs) + 2 * m, Math.max(...ys) - Math.min(...ys) + 2 * m + 26];
     svg.setAttribute('viewBox', vbCasa.join(' '));
-    svg.innerHTML = `<defs>${defs}</defs>${out}${svgSalas.join('')}<g class="etiquetas">${etiquetas}</g>`;
+    svg.innerHTML = `<defs>${defs}</defs>${out}${svgSalas.join('')}<g class="campo-delante">${delante}</g><g class="etiquetas">${etiquetas}</g>`;
     svgSalas.length = 0;
     svg.querySelectorAll('.room').forEach((el) => {
       const etq = svg.querySelector(`.etq[data-id="${el.dataset.id}"]`);
