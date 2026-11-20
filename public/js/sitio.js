@@ -205,6 +205,11 @@ window.medir = (nombre) => { try { window.goatcounter?.count?.({ path: 'evento/'
 
   // Formulario de contacto: prepara el mensaje y lo abre en WhatsApp (o en el correo)
   const form = $('#pide-presupuesto');
+  const entradaFotos = form?.querySelector('input[name=fotos]');
+  if (entradaFotos) entradaFotos.addEventListener('change', () => {
+    const n = entradaFotos.files.length;
+    form.querySelector('.fotos-lista').textContent = n ? `${n} ${n === 1 ? 'archivo elegido' : 'archivos elegidos'}: ${[...entradaFotos.files].map((f) => f.name).join(', ')}` : '';
+  });
   if (form) form.addEventListener('submit', e => {
     e.preventDefault();
     if (!form.reportValidity()) return;
@@ -212,8 +217,15 @@ window.medir = (nombre) => { try { window.goatcounter?.count?.({ path: 'evento/'
     const d = new FormData(form);
     const texto = `Hola, soy ${d.get('nombre')}. Me interesa: ${d.get('tipo')}.${d.get('pueblo') ? ' Pueblo: ' + d.get('pueblo') + '.' : ''}\n${d.get('mensaje')}${d.get('telefono') ? '\nMi teléfono: ' + d.get('telefono') : ''}`;
     const via = e.submitter?.value || 'whatsapp';
-    location.href = via === 'correo'
+    const fotos = [...(form.querySelector('input[name=fotos]')?.files || [])];
+    if (fotos.length && matchMedia('(pointer: coarse)').matches && navigator.canShare && navigator.canShare({ files: fotos })) {
+      navigator.share({ files: fotos, text: texto, title: 'Presupuesto: ' + d.get('tipo') }).catch(() => {});
+      return;
+    }
+    if (fotos.length) { const av = form.querySelector('.fotos-aviso'); av.hidden = false; av.textContent = via === 'correo' ? 'Recuerda adjuntar tus fotos en el correo que se abre.' : 'Recuerda adjuntar tus fotos en el chat de WhatsApp que se abre (el clip 📎).'; }
+    const destino = via === 'correo'
       ? `mailto:carrascosamuebles@gmail.com?subject=${encodeURIComponent('Presupuesto: ' + d.get('tipo'))}&body=${encodeURIComponent(texto)}`
       : `https://wa.me/34653451270?text=${encodeURIComponent(texto)}`;
+    setTimeout(() => { location.href = destino; }, fotos.length ? 2200 : 0);
   });
 })();

@@ -896,3 +896,9 @@ html[data-tema="oscuro"] .escala-frigo span.no { background: #4a2a22; color: #f0
 /* Fácil para todas las edades: deslizadores más fáciles de coger con el dedo y rótulos pequeños legibles */
 .calc-mandos input[type="range"], .combina-mandos input[type="range"], .medida-precio input[type="range"] { height: 32px; cursor: pointer; }
 @media (max-width: 600px) { .tiras span { font-size: .7rem; } .tiras b { font-size: .9rem; } }
+/* Contacto: añadir fotos o el plano */
+.fotos-caja { position: relative; display: flex; align-items: center; justify-content: center; min-height: 64px; padding: .8rem 1rem; border: 1.5px dashed var(--linea); border-radius: 10px; background: var(--fondo); color: var(--texto); font-weight: 500; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; }
+.fotos-caja:hover, .fotos-caja:focus-within { border-color: var(--madera); background: rgb(128 100 70 / .06); }
+.fotos-caja input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.fotos-lista:empty, .fotos-aviso[hidden] { display: none; }
+.fotos-aviso { color: var(--madera) !important; font-weight: 600; }

@@ -31,11 +31,16 @@ const schema = {
       </div>
       <label>Pueblo (opcional)<input name="pueblo" autocomplete="address-level2" /></label>
       <label>Cuéntanos tu proyecto<textarea name="mensaje" required placeholder="Medidas aproximadas, colores que te gustan, cuándo lo necesitas…"></textarea></label>
+      <label class="fotos-campo">Fotos o plano (opcional)
+        <span class="fotos-caja"><input name="fotos" type="file" accept="image/*,application/pdf" multiple /><span class="fotos-texto">📷 Añadir fotos de la cocina, del hueco o del plano</span></span>
+        <span class="nota fotos-lista" aria-live="polite"></span>
+      </label>
       <div class="botones" style="margin:.5rem 0 0">
         <button class="boton" type="submit" value="whatsapp">Enviar por WhatsApp</button>
         <button class="boton contorno" type="submit" value="correo">Enviar por correo</button>
       </div>
-      <p class="nota">Al enviar se abre WhatsApp o tu correo con el mensaje ya escrito. Usamos tus datos solo para responderte. <a href={r('/politica-de-privacidad/')}>Política de privacidad</a>.</p>
+      <p class="nota fotos-aviso" hidden></p>
+      <p class="nota">Al enviar se abre WhatsApp o tu correo con el mensaje ya escrito (y, en el móvil, con tus fotos). Usamos tus datos solo para responderte. <a href={r('/politica-de-privacidad/')}>Política de privacidad</a>.</p>
     </form>
     <aside class="ficha">
       <h2>El taller</h2>

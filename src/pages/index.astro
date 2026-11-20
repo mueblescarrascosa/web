@@ -53,14 +53,6 @@ const schema = {
     </div>
   </section>
 
-  <section class="escena-zoom" aria-label="Hecho a mano en nuestro taller">
-    <div class="zoom-foto"><img src={r(f(609).src)} alt={f(609).alt} loading="lazy" width="1600" height="1200" /></div>
-    <div class="zoom-textos ancho">
-      <p class="zoom-a">Cada pieza,<br />a mano.</p>
-      <p class="zoom-b">Y toda la cocina,<br /><em>a tu medida.</em></p>
-    </div>
-  </section>
-
   <Casa servicios={servicios.map(([, h, t, d]) => [h, t, d])} />
 
   <section class="escena-3d" aria-label="Del diseño en 3D a la cocina terminada">
