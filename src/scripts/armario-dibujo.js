@@ -145,12 +145,18 @@ function cuerpo(ancho, alto, mods, clave, semBase = 3, nombre = 'Hueco', nCuerpo
 const sumar = (a, b) => Object.keys(b).forEach((k) => (a[k] = (a[k] || 0) + b[k]));
 
 // ── Armario con puertas, de frente ──
+
+// Cotas: líneas de medida con su etiqueta (se encienden al cambiar la medida: clase «cambia» desde la página)
+const etC = (x, y, txt) => `<rect x="${f(x - txt.length * 3.1 - 4)}" y="${f(y - 8)}" width="${f(txt.length * 6.2 + 8)}" height="14" rx="3" fill="#fbf7ee" stroke="#3d2f25" stroke-width=".6"/><text x="${f(x)}" y="${f(y + 2.6)}" text-anchor="middle">${txt}</text>`;
+const linC = (x1, y1, x2, y2) => `<path d="M${f(x1)} ${f(y1)}L${f(x2)} ${f(y2)}"/>`;
+const cotaH = (id, x1, x2, y, txt) => `<g class="cota" id="cota-${id}">${linC(x1, y, x2, y)}${linC(x1, y - 6, x1, y + 6)}${linC(x2, y - 6, x2, y + 6)}${etC((x1 + x2) / 2, y, txt)}</g>`;
+const cotaV = (id, x, y1, y2, txt) => `<g class="cota" id="cota-${id}">${linC(x, y1, x, y2)}${linC(x - 6, y1, x + 6, y1)}${linC(x - 6, y2, x + 6, y2)}${etC(x, (y1 + y2) / 2, txt)}</g>`;
 export function armario({ ancho = 240, alto = 250, puertas = 'correderas', mods = [], modelo = 'lisa' }) {
   const n = cuerposPara(ancho, alto, puertas), w = ancho / n;
   const R = (x, y, an, al, a = '') => `<rect x="${f(x)}" y="${f(y)}" width="${f(an)}" height="${f(al)}" ${a}/>`;
   let s = '';
-  s += R(-60, -40, ancho + 120, alto + 40, 'fill="#e9e6df"') + R(-60, alto, ancho + 120, 40, 'fill="#c8ad87"');
-  for (let x = -60; x < ancho + 60; x += 14) s += `<line x1="${x}" y1="${alto}" x2="${x - 6}" y2="${alto + 40}" stroke="#7a5c40" stroke-opacity=".25" stroke-width=".3"/>`;
+  s += R(-300, -400, ancho + 600, alto + 400, 'fill="#e9e6df"') + R(-300, alto, ancho + 600, 60, 'fill="#c8ad87"');
+  for (let x = -300; x < ancho + 300; x += 14) s += `<line x1="${x}" y1="${alto}" x2="${x - 6}" y2="${alto + 40}" stroke="#7a5c40" stroke-opacity=".25" stroke-width=".3"/>`;
   s += R(-60, alto, ancho + 120, 3, 'fill="#000" opacity=".12"');
   const c = cuerpo(ancho, alto, mods, 'f', 3, 'Hueco', n);
   s += c.s;
@@ -208,7 +214,9 @@ export function armario({ ancho = 240, alto = 250, puertas = 'correderas', mods 
     }
   }
   const cuenta = { ...c.cuenta, altillo: !!c.altillo };
-  return { vista: `${-30} ${-25} ${ancho + 60} ${alto + 55}`, s: s + `<g class="puertas">${p}</g>`, datos: { ...c.tot, perchas: c.tot.perchas + c.tot.pantalones, n, altillo: !!c.altillo, cuenta, huecos: [['f', n]] } };
+  const cotas = cotaH('ancho', 0, ancho, alto + 22, ancho + ' cm') + cotaV('alto', ancho + 16, 0, alto, alto + ' cm');
+  // encuadre fijo (el del armario más grande): al cambiar ancho o alto, el dibujo cambia de tamaño de verdad
+  return { vista: `${f(ancho / 2 - 255)} ${f(alto - 300)} 510 345`, s: s + `<g class="puertas">${p}</g>` + cotas, datos: { ...c.tot, perchas: c.tot.perchas + c.tot.pantalones, n, altillo: !!c.altillo, cuenta, huecos: [['f', n]] } };
 }
 
 // ── Vestidor «de maqueta»: el fondo de frente y los laterales abiertos hacia los lados, con el mismo dibujo que de frente ──

@@ -9,6 +9,12 @@ export function medidasBano({ tipo = 'suspendido', lavabo = 'integrado' }) {
   return { encTop, base, borde: sobre ? encTop + 13 : encTop };
 }
 
+
+// Cotas: líneas de medida con su etiqueta (se encienden al cambiar la medida: clase «cambia» desde la página)
+const etC = (x, y, txt) => `<rect x="${f(x - txt.length * 3.1 - 4)}" y="${f(y - 8)}" width="${f(txt.length * 6.2 + 8)}" height="14" rx="3" fill="#fbf7ee" stroke="#3d2f25" stroke-width=".6"/><text x="${f(x)}" y="${f(y + 2.6)}" text-anchor="middle">${txt}</text>`;
+const linC = (x1, y1, x2, y2) => `<path d="M${f(x1)} ${f(y1)}L${f(x2)} ${f(y2)}"/>`;
+const cotaH = (id, x1, x2, y, txt) => `<g class="cota" id="cota-${id}">${linC(x1, y, x2, y)}${linC(x1, y - 6, x1, y + 6)}${linC(x2, y - 6, x2, y + 6)}${etC((x1 + x2) / 2, y, txt)}</g>`;
+const cotaV = (id, x, y1, y2, txt) => `<g class="cota" id="cota-${id}">${linC(x, y1, x, y2)}${linC(x - 6, y1, x + 6, y1)}${linC(x - 6, y2, x + 6, y2)}${etC(x, (y1 + y2) / 2, txt)}</g>`;
 export function bano({ ancho = 100, tipo = 'suspendido', frente = 'cajones', senos = 1, lavabo = 'integrado', espejo = 'rect', columna = false }) {
   const m = medidasBano({ tipo, lavabo }), W = 260, x0 = (W - ancho - (columna ? 45 : 0)) / 2, cuerpoArriba = m.encTop - 2;
   let s = '';
@@ -56,6 +62,7 @@ export function bano({ ancho = 100, tipo = 'suspendido', frente = 'cajones', sen
     if (lavabo === 'sobre') s += `<path d="M${f(c - 22)} ${Y(m.encTop)}c0-8 2-13 6-13h32c4 0 6 5 6 13z" fill="#f6f5f1" stroke="#cfcdc8" stroke-width=".6"/>`;
     else s += R(c - 20, Y(m.encTop) - 0.6, 40, 0.8, 'fill="#000" opacity=".2"');
   });
+  s += cotaH('ancho', x0, x0 + ancho, H + 17, ancho + ' cm') + cotaV('encimera', x0 - 12, Y(m.encTop), H, m.encTop + ' cm');
   return { vista: `0 0 ${W} ${H + 30}`, s };
 }
 

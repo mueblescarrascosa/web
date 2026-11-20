@@ -78,7 +78,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
     function pintar() {
       if (e.ancho < 100 && e.senos === '2') e.senos = '1';
       const d = bano({ ...e, senos: +e.senos, columna: e.columna === '1' });
-      svg.setAttribute('viewBox', d.vista); svg.innerHTML = DEFS_BANO + d.s;
+      svg.setAttribute('viewBox', d.vista); svg.innerHTML = DEFS_BANO + d.s; ["ancho"].forEach((k) => { if (window.__antes && window.__antes[k] !== e[k]) svg.querySelector('#cota-' + k)?.classList.add('cambia'); }); window.__antes = { ...e };
       const c = busca('color'), en = busca('encimera'), g = busca('grifo'), pa = busca('pared');
       [['--frente', c.hex], ['--enc', en.hex], ['--grifo', g.hex], ['--pared', pa.hex], ['--v-frente', c.dibujo === 'veta' ? 1 : 0], ['--m-enc', en.dibujo === 'marmol' ? 1 : 0], ['--v-azulejo', pa.azulejo]].forEach(([k, v]) => svg.style.setProperty(k, v));
       $('#ancho-v').textContent = e.ancho + ' cm'; $('#ancho').value = e.ancho;

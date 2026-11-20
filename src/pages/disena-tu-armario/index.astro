@@ -224,7 +224,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
       const clave = JSON.stringify([vest, e.ancho, e.alto, e.lado, e.puertas, e.forma, e.modelo, e.mods, e.modsI, e.modsD]);
       if (clave !== dibujado) {
         const antes = {}; $$('[data-dato]').forEach((b) => (antes[b.dataset.dato] = +b.textContent));
-        svg.setAttribute('viewBox', d.vista); svg.innerHTML = DEFS_ARMARIO + d.s; dibujado = clave; svg.dataset.modo = vest ? 'vestidor' : 'frente';
+        svg.setAttribute('viewBox', d.vista); svg.innerHTML = DEFS_ARMARIO + d.s; ["ancho","alto"].forEach((k) => { if (window.__antes && window.__antes[k] !== e[k]) svg.querySelector('#cota-' + k)?.classList.add('cambia'); }); window.__antes = { ...e }; dibujado = clave; svg.dataset.modo = vest ? 'vestidor' : 'frente';
         Object.entries(d.datos).forEach(([k, v]) => { const b = $(`[data-dato="${k}"]`); if (b) contar(b, antes[k], v); });
       }
       datosActuales = d.datos;
