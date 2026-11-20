@@ -809,3 +809,12 @@ h1 em, .heroe h1 em, .zoom-textos em { color: var(--madera); }
   html:not(.solo) .combina-vista .nota { margin-top: .9rem; }
 }
 input[type="range"], input[type="checkbox"], input[type="radio"] { accent-color: var(--azul); }
+/* Dudas por categorías: cada una con sus calculadoras y sus preguntas juntas */
+.cat-nav { margin-top: .5rem; }
+.categoria { padding-top: clamp(3rem, 7vw, 5rem); scroll-margin-top: 90px; }
+.categoria + .categoria { border-top: 1px solid var(--linea); }
+.categoria-cabeza h2 { font-size: clamp(2.2rem, 5vw, 3.8rem); margin-bottom: .3rem; }
+.categoria-cabeza p { max-width: 60ch; margin: 0; }
+.categoria .calculadoras { padding-block: clamp(1.5rem, 3vw, 2.5rem); }
+.categoria .todas { padding-block: 0 clamp(2rem, 5vw, 3.5rem); }
+.categoria .tema:first-child { margin-top: 0; }

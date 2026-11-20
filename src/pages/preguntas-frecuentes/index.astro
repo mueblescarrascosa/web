@@ -1,5 +1,5 @@
 ---
-// Dudas: buscador que responde al escribir, dos calculadoras (altura de encimera e isla) y todas las preguntas a la vista.
+// Dudas: buscador que responde al escribir y, por categorías (cocina, armarios, cómo trabajamos), sus calculadoras y sus preguntas juntas.
 import Base from '../../layouts/Base.astro';
 import { r, EMPRESA } from '../../lib/sitio.js';
 import { TEMAS, DUDAS } from '../../datos/dudas.js';
@@ -25,7 +25,10 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
 
   <section class="ancho respuestas" id="respuestas" aria-live="polite" hidden></section>
 
-  <section class="ancho calculadoras" id="calculadoras">
+  <nav class="ancho etiquetas cat-nav" aria-label="Categorías"><a href="#cat-cocina">Cocina</a><a href="#cat-armarios">Armarios y vestidores</a><a href="#cat-trabajo">Cómo trabajamos</a></nav>
+  <section class="ancho categoria" id="cat-cocina">
+    <div class="categoria-cabeza"><span class="etiqueta">Dudas de</span><h2>Cocina</h2><p class="suave">Medidas, materiales, colores y lo que hay que preparar antes del montaje, con sus calculadoras.</p></div>
+    <div class="calculadoras">
     <article class="calc" id="calc-encimera">
       <span class="etiqueta">Calculadora</span>
       <h2>¿A qué altura tu encimera?</h2>
@@ -48,7 +51,6 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
         </svg>
       </div>
     </article>
-
     <article class="calc" id="calc-isla">
       <span class="etiqueta">Calculadora</span>
       <h2>¿Te cabe una isla?</h2>
@@ -70,10 +72,37 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
       <p class="veredicto-isla" id="isla-veredicto"></p>
       <p class="suave" id="isla-detalle"></p>
     </article>
-  </section>
-
-
-  <section class="ancho calculadoras mas-calc" aria-label="Más calculadoras">
+    <article class="calc" id="calc-muebles">
+      <span class="etiqueta">Calculadora</span>
+      <h2>¿Cuántos muebles caben en tu pared?</h2>
+      <div class="calc-mandos">
+        <label>Largo de la pared <output id="mc-valor">420 cm</output><input id="mc-largo" type="range" min="150" max="600" value="420" step="5" /></label>
+        <fieldset class="chips"><legend>En esta pared van…</legend>
+          <label><input type="checkbox" id="mc-frigo" checked /><span>Frigorífico</span></label>
+          <label><input type="checkbox" id="mc-horno" checked /><span>Columna de horno</span></label>
+        </fieldset>
+        <fieldset class="chips"><legend>Lavavajillas</legend>
+          <label><input type="radio" name="mc-lava" value="60" checked /><span>De 60</span></label><label><input type="radio" name="mc-lava" value="45" /><span>De 45</span></label><label><input type="radio" name="mc-lava" value="0" /><span>Sin lavavajillas</span></label>
+        </fieldset>
+        <div class="tiras tiras-muebles" id="mc-tiras"></div>
+        <p class="veredicto-isla" id="mc-ver"></p>
+        <p class="suave" id="mc-det"></p>
+      </div>
+    </article>
+    <article class="calc" id="calc-triangulo">
+      <span class="etiqueta">Calculadora</span>
+      <h2>El triángulo de trabajo</h2>
+      <div class="calc-in">
+        <div class="calc-mandos">
+          <label>Frigorífico → fregadero <output id="tr-a-v">180 cm</output><input id="tr-a" type="range" min="40" max="500" value="180" step="10" /></label>
+          <label>Fregadero → placa <output id="tr-b-v">120 cm</output><input id="tr-b" type="range" min="40" max="500" value="120" step="10" /></label>
+          <label>Placa → frigorífico <output id="tr-c-v">240 cm</output><input id="tr-c" type="range" min="40" max="500" value="240" step="10" /></label>
+          <p class="veredicto-isla" id="tr-ver"></p>
+          <p class="suave" id="tr-det"></p>
+        </div>
+        <svg class="calc-dibujo" viewBox="0 0 220 200" aria-hidden="true" id="tr-dib"></svg>
+      </div>
+    </article>
     <article class="calc" id="calc-horno">
       <span class="etiqueta">Calculadora</span>
       <h2>Horno y microondas en la columna</h2>
@@ -95,7 +124,6 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
         </svg>
       </div>
     </article>
-
     <article class="calc" id="calc-frigo">
       <span class="etiqueta">Calculadora</span>
       <h2>¿Qué frigorífico integrable cabe?</h2>
@@ -106,7 +134,65 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
         <p class="suave" id="fr-det"></p>
       </div>
     </article>
-
+    <article class="calc" id="calc-enchufes">
+      <span class="etiqueta">Calculadora</span>
+      <h2>Enchufes y luz de tu cocina</h2>
+      <div class="calc-mandos">
+        <label>Largo de la encimera <output id="en-enc-v">300 cm</output><input id="en-enc" type="range" min="120" max="700" value="300" step="10" /></label>
+        <label>Largo de los muebles altos <output id="en-alt-v">240 cm</output><input id="en-alt" type="range" min="0" max="600" value="240" step="10" /></label>
+        <fieldset class="chips"><legend>Placa</legend>
+          <label><input type="radio" name="en-placa" value="induccion" checked /><span>Inducción o vitro</span></label><label><input type="radio" name="en-placa" value="gas" /><span>Gas</span></label>
+        </fieldset>
+        <fieldset class="chips"><legend>Electrodomésticos</legend>
+          <label><input type="checkbox" class="en-el" value="columna" checked /><span>Horno y micro en columna</span></label>
+          <label><input type="checkbox" class="en-el" value="lava" checked /><span>Lavavajillas</span></label>
+          <label><input type="checkbox" class="en-el" value="lavadora" /><span>Lavadora</span></label>
+          <label><input type="checkbox" class="en-el" value="frigo" checked /><span>Frigorífico</span></label>
+          <label><input type="checkbox" class="en-el" value="campana" checked /><span>Campana</span></label>
+        </fieldset>
+        <p class="dato-grande"><b id="en-total">9</b><span>tomas en total</span></p>
+        <ul class="lista-tomas" id="en-lista"></ul>
+        <p class="suave" id="en-det"></p>
+      </div>
+    </article>
+    </div>
+    <div class="todas">
+    {TEMAS.filter(([k]) => ["medidas","materiales","obra"].includes(k)).map(([k, t]) => (
+      <div class="tema" id={"tema-" + k}>
+        <h3>{t}</h3>
+        {DUDAS.filter((d) => d.tema === k).map((d) => (
+          <details class="duda" id={id(d.p)}>
+            <summary>{d.p}</summary>
+            <div class="duda-r">
+              <p>{d.r}</p>
+              {(d.ir || d.calc) && <p class="duda-ir">{d.calc && <a class="enlace" href={"#calc-" + d.calc}>Usar la calculadora</a>}{d.ir && d.calc && ' · '}{d.ir && <a class="enlace" href={r(d.ir[0])}>{d.ir[1]}</a>}</p>}
+            </div>
+          </details>
+        ))}
+      </div>
+    ))}
+    </div>
+  </section>
+  <section class="ancho categoria" id="cat-armarios">
+    <div class="categoria-cabeza"><span class="etiqueta">Dudas de</span><h2>Armarios y vestidores</h2><p class="suave">Fondo, barras, puertas, cuánto armario hace falta y vestidores.</p></div>
+    <div class="calculadoras">
+    <article class="calc" id="calc-cuanto">
+      <span class="etiqueta">Calculadora</span>
+      <h2>¿Cuánto armario necesitas?</h2>
+      <div class="calc-mandos">
+        <fieldset class="chips"><legend>Personas</legend>
+          {[1, 2, 3, 4].map((n, i) => <label><input type="radio" name="ca-per" value={n} checked={i === 1} /><span>{n}</span></label>)}
+        </fieldset>
+        <fieldset class="chips"><legend>Ropa larga (abrigos, vestidos)</legend>
+          <label><input type="radio" name="ca-larga" value="0" /><span>Poca</span></label><label><input type="radio" name="ca-larga" value="1" checked /><span>Normal</span></label><label><input type="radio" name="ca-larga" value="2" /><span>Mucha</span></label>
+        </fieldset>
+        <label>Pares de zapatos dentro del armario <output id="ca-zap-v">12</output><input id="ca-zap" type="range" min="0" max="60" value="12" step="2" /></label>
+        <p class="dato-grande"><b id="ca-total">2,4</b><span>metros de armario</span></p>
+        <div class="tiras tiras-muebles" id="ca-tiras"></div>
+        <p class="suave" id="ca-det"></p>
+        <p><a class="boton contorno" id="ca-juego" href={r('/disena-tu-armario/')}>Ábrelo en el juego</a></p>
+      </div>
+    </article>
     <article class="calc" id="calc-barras">
       <span class="etiqueta">Calculadora</span>
       <h2>¿A qué altura pongo las barras?</h2>
@@ -131,7 +217,6 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
         </svg>
       </div>
     </article>
-
     <article class="calc" id="calc-vestidor">
       <span class="etiqueta">Calculadora</span>
       <h2>¿Qué vestidor cabe en tu cuarto?</h2>
@@ -141,80 +226,6 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
         <p class="suave">Fondo de los muebles: 60 cm. Pasos de la guía del taller: con muebles a un lado, 70 mínimo y 90 cómodo; a los dos lados, 80 y 100; con isla de 50, 90 a cada lado. <a class="enlace" href={r('/disena-tu-armario/')}>Diséñalo en el juego</a></p>
       </div>
     </article>
-
-    <article class="calc" id="calc-muebles">
-      <span class="etiqueta">Calculadora</span>
-      <h2>¿Cuántos muebles caben en tu pared?</h2>
-      <div class="calc-mandos">
-        <label>Largo de la pared <output id="mc-valor">420 cm</output><input id="mc-largo" type="range" min="150" max="600" value="420" step="5" /></label>
-        <fieldset class="chips"><legend>En esta pared van…</legend>
-          <label><input type="checkbox" id="mc-frigo" checked /><span>Frigorífico</span></label>
-          <label><input type="checkbox" id="mc-horno" checked /><span>Columna de horno</span></label>
-        </fieldset>
-        <fieldset class="chips"><legend>Lavavajillas</legend>
-          <label><input type="radio" name="mc-lava" value="60" checked /><span>De 60</span></label><label><input type="radio" name="mc-lava" value="45" /><span>De 45</span></label><label><input type="radio" name="mc-lava" value="0" /><span>Sin lavavajillas</span></label>
-        </fieldset>
-        <div class="tiras tiras-muebles" id="mc-tiras"></div>
-        <p class="veredicto-isla" id="mc-ver"></p>
-        <p class="suave" id="mc-det"></p>
-      </div>
-    </article>
-
-    <article class="calc" id="calc-triangulo">
-      <span class="etiqueta">Calculadora</span>
-      <h2>El triángulo de trabajo</h2>
-      <div class="calc-in">
-        <div class="calc-mandos">
-          <label>Frigorífico → fregadero <output id="tr-a-v">180 cm</output><input id="tr-a" type="range" min="40" max="500" value="180" step="10" /></label>
-          <label>Fregadero → placa <output id="tr-b-v">120 cm</output><input id="tr-b" type="range" min="40" max="500" value="120" step="10" /></label>
-          <label>Placa → frigorífico <output id="tr-c-v">240 cm</output><input id="tr-c" type="range" min="40" max="500" value="240" step="10" /></label>
-          <p class="veredicto-isla" id="tr-ver"></p>
-          <p class="suave" id="tr-det"></p>
-        </div>
-        <svg class="calc-dibujo" viewBox="0 0 220 200" aria-hidden="true" id="tr-dib"></svg>
-      </div>
-    </article>
-
-    <article class="calc" id="calc-enchufes">
-      <span class="etiqueta">Calculadora</span>
-      <h2>Enchufes y luz de tu cocina</h2>
-      <div class="calc-mandos">
-        <label>Largo de la encimera <output id="en-enc-v">300 cm</output><input id="en-enc" type="range" min="120" max="700" value="300" step="10" /></label>
-        <label>Largo de los muebles altos <output id="en-alt-v">240 cm</output><input id="en-alt" type="range" min="0" max="600" value="240" step="10" /></label>
-        <fieldset class="chips"><legend>Placa</legend>
-          <label><input type="radio" name="en-placa" value="induccion" checked /><span>Inducción o vitro</span></label><label><input type="radio" name="en-placa" value="gas" /><span>Gas</span></label>
-        </fieldset>
-        <fieldset class="chips"><legend>Electrodomésticos</legend>
-          <label><input type="checkbox" class="en-el" value="columna" checked /><span>Horno y micro en columna</span></label>
-          <label><input type="checkbox" class="en-el" value="lava" checked /><span>Lavavajillas</span></label>
-          <label><input type="checkbox" class="en-el" value="lavadora" /><span>Lavadora</span></label>
-          <label><input type="checkbox" class="en-el" value="frigo" checked /><span>Frigorífico</span></label>
-          <label><input type="checkbox" class="en-el" value="campana" checked /><span>Campana</span></label>
-        </fieldset>
-        <p class="dato-grande"><b id="en-total">9</b><span>tomas en total</span></p>
-        <ul class="lista-tomas" id="en-lista"></ul>
-        <p class="suave" id="en-det"></p>
-      </div>
-    </article>
-
-    <article class="calc" id="calc-cuanto">
-      <span class="etiqueta">Calculadora</span>
-      <h2>¿Cuánto armario necesitas?</h2>
-      <div class="calc-mandos">
-        <fieldset class="chips"><legend>Personas</legend>
-          {[1, 2, 3, 4].map((n, i) => <label><input type="radio" name="ca-per" value={n} checked={i === 1} /><span>{n}</span></label>)}
-        </fieldset>
-        <fieldset class="chips"><legend>Ropa larga (abrigos, vestidos)</legend>
-          <label><input type="radio" name="ca-larga" value="0" /><span>Poca</span></label><label><input type="radio" name="ca-larga" value="1" checked /><span>Normal</span></label><label><input type="radio" name="ca-larga" value="2" /><span>Mucha</span></label>
-        </fieldset>
-        <label>Pares de zapatos dentro del armario <output id="ca-zap-v">12</output><input id="ca-zap" type="range" min="0" max="60" value="12" step="2" /></label>
-        <p class="dato-grande"><b id="ca-total">2,4</b><span>metros de armario</span></p>
-        <div class="tiras tiras-muebles" id="ca-tiras"></div>
-        <p class="suave" id="ca-det"></p>
-        <p><a class="boton contorno" id="ca-juego" href={r('/disena-tu-armario/')}>Ábrelo en el juego</a></p>
-      </div>
-    </article>
-
     <article class="calc" id="calc-buhardilla">
       <span class="etiqueta">Calculadora</span>
       <h2>Armario en buhardilla o bajo escalera</h2>
@@ -227,24 +238,42 @@ const id = (p) => 'p-' + p.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''
         <p class="suave" id="bu-det"></p>
       </div>
     </article>
-  </section>
-  <section class="ancho todas" id="todas">
-    <h2>Todas las preguntas</h2>
-    <nav class="etiquetas" aria-label="Temas">{TEMAS.map(([k, t]) => <a href={`#tema-${k}`}>{t}</a>)}</nav>
-    {TEMAS.map(([k, t]) => (
-      <div class="tema" id={`tema-${k}`}>
+    </div>
+    <div class="todas">
+    {TEMAS.filter(([k]) => ["armarios"].includes(k)).map(([k, t]) => (
+      <div class="tema" id={"tema-" + k}>
         <h3>{t}</h3>
         {DUDAS.filter((d) => d.tema === k).map((d) => (
           <details class="duda" id={id(d.p)}>
             <summary>{d.p}</summary>
             <div class="duda-r">
               <p>{d.r}</p>
-              {(d.ir || d.calc) && <p class="duda-ir">{d.calc && <a class="enlace" href={`#calc-${d.calc}`}>Usar la calculadora</a>}{d.ir && d.calc && ' · '}{d.ir && <a class="enlace" href={r(d.ir[0])}>{d.ir[1]}</a>}</p>}
+              {(d.ir || d.calc) && <p class="duda-ir">{d.calc && <a class="enlace" href={"#calc-" + d.calc}>Usar la calculadora</a>}{d.ir && d.calc && ' · '}{d.ir && <a class="enlace" href={r(d.ir[0])}>{d.ir[1]}</a>}</p>}
             </div>
           </details>
         ))}
       </div>
     ))}
+    </div>
+  </section>
+  <section class="ancho categoria" id="cat-trabajo">
+    <div class="categoria-cabeza"><span class="etiqueta">Dudas de</span><h2>Cómo trabajamos</h2><p class="suave">Presupuesto, medición, plazos, montaje, garantía y dónde estamos.</p></div>
+    <div class="todas">
+    {TEMAS.filter(([k]) => ["trabajo"].includes(k)).map(([k, t]) => (
+      <div class="tema" id={"tema-" + k}>
+        <h3>{t}</h3>
+        {DUDAS.filter((d) => d.tema === k).map((d) => (
+          <details class="duda" id={id(d.p)}>
+            <summary>{d.p}</summary>
+            <div class="duda-r">
+              <p>{d.r}</p>
+              {(d.ir || d.calc) && <p class="duda-ir">{d.calc && <a class="enlace" href={"#calc-" + d.calc}>Usar la calculadora</a>}{d.ir && d.calc && ' · '}{d.ir && <a class="enlace" href={r(d.ir[0])}>{d.ir[1]}</a>}</p>}
+            </div>
+          </details>
+        ))}
+      </div>
+    ))}
+    </div>
   </section>
 
   <section class="seccion claro cierre">
