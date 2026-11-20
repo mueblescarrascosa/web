@@ -262,7 +262,7 @@ export function montarCasa(seccion) {
       <pattern id="casa-azul-n" patternUnits="userSpaceOnUse" width=".3" height=".15" patternTransform="matrix(${EX[0] * U},${EX[1] * U},0,${-U},0,0)"><rect width=".3" height=".15" fill="#f6f4f0"/><path d="M0 0H.3M0 0V.15" stroke="#d9d4cb" stroke-width=".012"/></pattern>
       <pattern id="casa-azul-o" patternUnits="userSpaceOnUse" width=".3" height=".15" patternTransform="matrix(${EY[0] * U},${EY[1] * U},0,${-U},0,0)"><rect width=".3" height=".15" fill="#f6f4f0"/><path d="M0 0H.3M0 0V.15" stroke="#d9d4cb" stroke-width=".012"/></pattern>`;
     // tablero de la maqueta y su sombra sobre la mesa
-    let out = `<polygon points="${pts([[-0.4, -0.2, -0.5], [W + 0.9, -0.2, -0.5], [W + 0.9, Dtot + 0.9, -0.5], [-0.4, Dtot + 0.9, -0.5]])}" fill="rgba(70,50,30,.32)" filter="url(#casa-difu-g)"/>`;
+    let out = `<polygon points="${pts([[-0.4, -0.2, -0.5], [W + 0.5, -0.2, -0.5], [W + 0.5, Dtot + 0.6, -0.5], [-0.4, Dtot + 0.6, -0.5]])}" fill="rgba(70,50,30,.32)" filter="url(#casa-difu-g)"/>`;
     out += caja(-0.6, -0.6, -0.32, W + 1.2, Dtot + 1.1, 0.32, '#d9c4a2', { tapa: '#e6d5b8' });
     let etiquetas = '';
     const orden = plano.slice().sort((a, b) => (!!SALAS[a[0]].ext - !!SALAS[b[0]].ext) || a[2] - b[2] || a[1] - b[1]);
@@ -415,8 +415,8 @@ export function montarCasa(seccion) {
       }
       // etiqueta
       const [lx, ly] = P(x + w / 2, y + d / 2, ext ? 0.9 : 1.6), [bx, by] = P(x + w / 2, y + d / 2, 0);
-      const num = String(i + 1).padStart(2, '0'), tw = sala.n.length * (movil ? 7.7 : 6.8) + 36;
-      etiquetas += `<g class="etq" data-id="${id}"><line x1="${f1(bx)}" y1="${f1(by)}" x2="${f1(lx)}" y2="${f1(ly + 12)}"/><circle cx="${f1(bx)}" cy="${f1(by)}" r="2.8"/><g transform="translate(${f1(lx)},${f1(ly)})"><rect x="${-tw / 2}" y="-12.5" width="${tw}" height="25" rx="3"/><text class="num" x="${-tw / 2 + 10}" y="4">${num}</text><text x="${-tw / 2 + 29}" y="4">${sala.n}</text></g></g>`;
+      const num = String(i + 1).padStart(2, '0'), tw = sala.n.length * (movil ? 8.9 : 6.8) + (movil ? 42 : 36), th = movil ? 30 : 25, tx = movil ? 34 : 29;
+      etiquetas += `<g class="etq" data-id="${id}" style="--i:${i}"><line x1="${f1(bx)}" y1="${f1(by)}" x2="${f1(lx)}" y2="${f1(ly + th / 2)}"/><circle class="anillo" cx="${f1(bx)}" cy="${f1(by)}" r="2.8"/><circle cx="${f1(bx)}" cy="${f1(by)}" r="2.8"/><g transform="translate(${f1(lx)},${f1(ly)})"><rect x="${-tw / 2}" y="${-th / 2}" width="${tw}" height="${th}" rx="3"/><text class="num" x="${-tw / 2 + 10}" y="${movil ? 5 : 4}">${num}</text><text x="${-tw / 2 + tx}" y="${movil ? 5 : 4}">${sala.n}</text></g></g>`;
       cuerpo = g;
       svgSalas.push(`<g class="room" data-id="${id}" role="button" tabindex="0" aria-label="${sala.n}: ${sala.k}" style="--i:${i}">${cuerpo}</g>`);
       const H = ext ? 1.8 : 2.6, esq = [P(x, y, H), P(x + w, y, 0), P(x + w, y + d, 0), P(x, y + d, 0), P(x, y, 0), P(x + w, y, H), P(x, y + d, H)];
@@ -434,7 +434,7 @@ export function montarCasa(seccion) {
       ['mouseenter', 'focus'].forEach((e) => el.addEventListener(e, () => etq.classList.add('sobre')));
       ['mouseleave', 'blur'].forEach((e) => el.addEventListener(e, () => etq.classList.remove('sobre')));
       el.addEventListener('click', (ev) => { ev.stopPropagation(); entrar(el.dataset.id); });
-      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); entrar(el.dataset.id); } });
+      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); entrar(el.dataset.id, true); } });
     });
     actual = null; seccion.classList.remove('zoom'); cerrarPanel();
   }
@@ -451,8 +451,10 @@ export function montarCasa(seccion) {
     anim = requestAnimationFrame(paso);
   }
   function desplazar(y) { if (window.__lenis) window.__lenis.scrollTo(y, { duration: reducido ? 0 : 0.9 }); else scrollTo({ top: y, behavior: reducido ? 'auto' : 'smooth' }); }
-  function entrar(id) {
-    actual = id;
+  let origen = null;
+  function entrar(id, teclado) {
+    actual = id; seccion.classList.add('usada');
+    origen = teclado ? svg.querySelector(`.room[data-id="${id}"]`) : null;
     const [x, y, w, h] = cajasSala[id], r = svg.clientWidth / svg.clientHeight;
     let vb;
     if (movil) { const ww = Math.max(w * 1.9, h * 1.7 * r), hh = ww / r; vb = [x + w / 2 - ww / 2, y + h / 2 - hh * 0.36, ww, hh]; }
@@ -462,12 +464,15 @@ export function montarCasa(seccion) {
     seccion.classList.add('zoom');
     svg.querySelectorAll('.room').forEach((el) => el.classList.toggle('activa', el.dataset.id === id));
     abrirPanel(id);
+    if (teclado) setTimeout(() => panel.querySelector('.casa-t').focus({ preventScroll: true }), 50);
   }
   function salir() {
     if (!actual) return;
     actual = null; irA(vbCasa); seccion.classList.remove('zoom');
     svg.querySelectorAll('.room').forEach((r) => r.classList.remove('activa'));
     cerrarPanel();
+    if (origen && panel.contains(document.activeElement)) origen.focus({ preventScroll: true });
+    origen = null;
   }
   const pf = panel.querySelector('.casa-foto'), pi = pf.querySelector('img');
   function abrirPanel(id) {
@@ -485,11 +490,12 @@ export function montarCasa(seccion) {
   function cerrarPanel() { panel.classList.remove('abierto'); panel.setAttribute('aria-hidden', 'true'); }
 
   panel.querySelector('.casa-volver').addEventListener('click', salir);
+  panel.querySelector('.casa-cerrar').addEventListener('click', salir);
   addEventListener('keydown', (e) => { if (e.key === 'Escape') salir(); });
   svg.addEventListener('click', (e) => { if (!e.target.closest('.room')) salir(); });
   seccion.querySelectorAll('[data-sala]').forEach((b) => b.addEventListener('click', () => {
-    if (movil) entrar(b.dataset.sala);
-    else { desplazar(svg.getBoundingClientRect().top + scrollY - 90); setTimeout(() => entrar(b.dataset.sala), reducido ? 0 : 450); }
+    if (movil) entrar(b.dataset.sala, true);
+    else { desplazar(svg.getBoundingClientRect().top + scrollY - 90); setTimeout(() => entrar(b.dataset.sala, true), reducido ? 0 : 450); }
   }));
   // al salir de la sección se cierra el panel (en el móvil es fijo abajo)
   new IntersectionObserver(([e]) => { if (!e.isIntersecting) salir(); else seccion.classList.add('vista'); }, { threshold: 0.12 }).observe(svg);

@@ -52,10 +52,11 @@ const fuera = Object.entries(salas).filter(([, s]) => 'ext' in s);
   <div class="casa-escena">
     <svg class="casa-svg" role="group" aria-label="Maqueta de una casa con sus habitaciones"></svg>
     <aside class="casa-panel" aria-hidden="true" aria-live="polite">
+      <button type="button" class="casa-cerrar" aria-label="Cerrar y volver a la casa">×</button>
       <div class="casa-foto"><img alt="" width="800" height="500" /></div>
       <div class="casa-cuerpo">
         <span class="casa-k"></span>
-        <h3 class="casa-t"></h3>
+        <h3 class="casa-t" tabindex="-1"></h3>
         <p class="casa-d"></p>
         <div class="casa-enlaces"></div>
         <button type="button" class="casa-volver">← Volver a la casa</button>
@@ -120,7 +121,11 @@ const fuera = Object.entries(salas).filter(([, s]) => 'ext' in s);
 .casa .etq .num { fill: var(--madera); font: 700 10px var(--display); }
 .casa .etq.sobre rect, .casa .etq.sobre circle { fill: var(--azul); }
 .casa .etq.sobre .num { fill: #b9c3ff; }
-.casa.es-movil .etq text { font-size: 13px; } .casa.es-movil .etq .num { font-size: 11px; }
+.casa.es-movil .etq text { font-size: 15px; } .casa.es-movil .etq .num { font-size: 12px; }
+.casa .etq .anillo { fill: none; stroke: var(--tinta); stroke-width: 1.2; transform-box: fill-box; transform-origin: center; opacity: 0; }
+@keyframes casa-pulso { 0% { transform: scale(1); opacity: .7; } 70%, 100% { transform: scale(3.4); opacity: 0; } }
+.casa.vista:not(.usada) .etq .anillo { animation: casa-pulso 2.6s ease-out infinite; animation-delay: calc(1.6s + var(--i) * .22s); }
+.casa .etq.sobre .anillo { stroke: var(--azul); }
 
 .casa-panel { position: absolute; z-index: 5; right: clamp(1rem, 3vw, 2.5rem); top: 50%; width: min(370px, calc(100% - 2rem));
   max-height: calc(100% - 1rem); overflow-y: auto; background: var(--fondo-2); color: var(--texto); border: 1px solid var(--linea); border-radius: 16px;
@@ -132,7 +137,13 @@ const fuera = Object.entries(salas).filter(([, s]) => 'ext' in s);
 .casa-panel.abierto .casa-foto img { transform: scale(1); }
 .casa-cuerpo { padding: 1.2rem 1.4rem 1rem; }
 .casa-k { color: var(--madera); font: 600 .74rem var(--sans); letter-spacing: .14em; text-transform: uppercase; }
-.casa-t { font: 700 2rem/1.05 var(--display); letter-spacing: -.02em; margin: .35rem 0 .45rem; color: #fff; }
+.casa-t { font: 700 2rem/1.05 var(--display); letter-spacing: -.02em; margin: .35rem 0 .45rem; color: #fff; outline: none; }
+.casa-cerrar { position: absolute; top: .6rem; right: .6rem; z-index: 2; width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+  background: rgba(13, 13, 14, .62); color: #fff; font: 400 1.6rem/1 var(--sans); backdrop-filter: blur(6px); transition: background .2s, transform .2s; }
+.casa-cerrar:hover { background: rgba(13, 13, 14, .85); transform: scale(1.06); }
+.casa-cerrar:focus-visible { outline: 2px solid var(--azul-vivo); outline-offset: 2px; }
+.casa-panel:has(.casa-foto[hidden]) .casa-cerrar { background: var(--fondo-3); }
+@media (max-height: 820px) and (min-width: 760px) { .casa-foto { aspect-ratio: 16 / 8; } }
 .casa-d { color: var(--suave); line-height: 1.5; margin: 0 0 1rem; font-size: .95rem; }
 .casa-enlaces a { display: flex; justify-content: space-between; align-items: center; gap: .5rem; text-decoration: none; color: var(--texto);
   border-top: 1px solid var(--linea); padding: .8rem .1rem; font-weight: 500; min-height: 48px; transition: color .2s, padding .3s var(--t); }
@@ -172,6 +183,6 @@ const fuera = Object.entries(salas).filter(([, s]) => 'ext' in s);
   .casa-servicios a { padding: 1rem 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .casa .room, .casa .etiquetas, .casa-panel, .casa-foto img { animation: none !important; transition: none !important; }
+  .casa .room, .casa .etiquetas, .casa .etq .anillo, .casa-panel, .casa-foto img { animation: none !important; transition: none !important; }
 }
 </style>
