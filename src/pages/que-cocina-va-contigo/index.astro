@@ -101,7 +101,14 @@ const PREGUNTAS = [
         juntos: tam === 'pequena' ? 'Para cocinar juntos en una cocina pequeña, lineal y con el paso libre para no chocar.' : 'Como cocináis juntos, os viene bien tener dos frentes de trabajo para no estorbaros.',
       }[uso];
       const sin = tir === 'sin';
-      const nombre = { luz: sin ? 'Blanca total' : 'Nórdica', calido: sin ? 'Japandi' : 'Blanco y roble', color: tam === 'pequena' || sin ? 'Mediterránea' : 'Verde salvia y oro', oscuro: sin ? 'Negro y madera' : 'Industrial' }[amb];
+      // El estilo sale del ambiente y de lo que más te importa: 4 × 4 combinaciones con las 12 propuestas del juego
+      const ESTILO = {
+        luz: { limpieza: 'Blanca total', durar: 'Greige', guardar: 'Nórdica', bonita: 'Blanco y roble' },
+        calido: { limpieza: 'Gris y madera', durar: 'Rústica cálida', guardar: 'Blanco y roble', bonita: 'Japandi' },
+        color: { limpieza: 'Mediterránea', durar: 'Azul marino clásica', guardar: 'Mediterránea', bonita: 'Verde salvia y oro' },
+        oscuro: { limpieza: 'Negro y madera', durar: 'Industrial', guardar: 'Gris y madera', bonita: 'Negro y madera' },
+      };
+      const nombre = ESTILO[amb][pri];
       const prop = PROPUESTAS.find((p) => p.nombre === nombre) || PROPUESTAS[0];
       const { nombre: _n, ...valores } = prop;
       const estado = { ...INICIAL, ...valores, dist };
@@ -110,6 +117,13 @@ const PREGUNTAS = [
       if ((pri === 'limpieza' || pri === 'durar') && /roble-macizo|nogal-macizo/.test(estado.encimera)) estado.encimera = 'piedra';
       if (pri === 'bonita' && ['blanca', 'piedra', 'hormigon'].includes(estado.encimera) && !['negro', 'antracita'].includes(estado.bajos)) estado.encimera = 'calacatta';
       if (tam === 'pequena' && ['negro', 'antracita', 'marino', 'nogal'].includes(estado.altos)) estado.altos = 'blanco';
+      // el tamaño cambia el suelo: pequeña, claro para que parezca mayor; abierta al salón, madera como el salón
+      if (tam === 'pequena') { estado.suelo = 'porcelanico'; estado.pared = 'blanca'; } else if (tam === 'abierta') estado.suelo = amb === 'oscuro' ? 'roble-claro' : 'roble';
+      // quien cocina mucho o en compañía, frente de encimera (se limpia de una pasada); quien cocina poco, la pared tal cual
+      if (uso === 'mucho' || uso === 'juntos') estado.trasera = 'encimera'; else if (uso === 'poco' && estado.trasera === 'encimera') estado.trasera = 'azulejo-blanco';
+      // tiradores a la vista: puertas con moldura en los estilos clásicos y ranuradas en los cálidos; sin tiradores, siempre lisas
+      if (tir === 'vista') estado.puerta = ['color', 'calido'].includes(amb) ? (pri === 'bonita' ? 'moldura' : 'ranurada') : estado.puerta;
+      if (pri === 'guardar') estado.electro = 'inox';
       const L = LISTAS(), e = Object.fromEntries(Object.entries(estado).filter(([k]) => L[k]).map(([k, v]) => [k, L[k].find((x) => x.clave === v)]));
       const n = puntuar(e);
       const nombreDist = { lineal: 'lineal', L: 'en L', isla: 'con isla', peninsula: 'con península' }[dist];
