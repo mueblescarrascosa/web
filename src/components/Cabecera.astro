@@ -5,7 +5,7 @@ const servicios = [
   ['/cocinas/', 'Cocinas a medida'], ['/armarios/', 'Armarios y vestidores'], ['/muebles-de-bano-a-medida/', 'Muebles de baño'],
   ['/puertas/', 'Puertas de madera'], ['/disenos-3d/', 'Diseños en 3D'], ['/miscelanea/', 'Otros trabajos'], ['/destacado/', 'Todos los trabajos'],
 ];
-const juegos = [['/combina-tu-cocina/', 'Combina tu cocina'], ['/disena-tu-armario/', 'Diseña tu armario o vestidor'], ['/combina-tu-bano/', 'Combina tu baño'], ['/configura-tu-puerta/', 'Configura tu puerta'], ['/disena-tu-salon/', 'Diseña tu salón'], ['/elige-tu-encimera/', 'Elige tu encimera'], ['/que-cocina-va-contigo/', '¿Qué cocina va contigo? (quiz)'], ['/mi-proyecto/', 'Mi proyecto']];
+const juegos = [['/combina-tu-cocina/', 'Combina tu cocina'], ['/disena-tu-armario/', 'Diseña tu armario o vestidor'], ['/combina-tu-bano/', 'Combina tu baño'], ['/configura-tu-puerta/', 'Configura tu puerta'], ['/disena-tu-salon/', 'Diseña tu salón'], ['/elige-tu-encimera/', 'Elige tu encimera'], ['/que-cocina-va-contigo/', '¿Qué cocina va contigo? (quiz)'], ['/que-armario-va-contigo/', '¿Qué armario va contigo? (quiz)'], ['/mi-proyecto/', 'Mi proyecto']];
 const ruta = Astro.url.pathname;
 const activo = (p) => ruta.endsWith(p) ? 'page' : undefined;
 ---

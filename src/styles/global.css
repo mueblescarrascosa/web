@@ -818,3 +818,4 @@ input[type="range"], input[type="checkbox"], input[type="radio"] { accent-color:
 .categoria .calculadoras { padding-block: clamp(1.5rem, 3vw, 2.5rem); }
 .categoria .todas { padding-block: 0 clamp(2rem, 5vw, 3.5rem); }
 .categoria .tema:first-child { margin-top: 0; }
+.quiz-armario iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: var(--radio); background: #e9e6df; box-shadow: 0 30px 60px -36px rgb(60 40 20 / .55); }

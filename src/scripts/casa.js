@@ -197,7 +197,7 @@ const HAB = {
     c.maceta(c.w - 0.5, 3.3, 0, 1, null);
   },
   ocio(c) {
-    c.ven('o', 1.2, 0.9, 1.1, 1.2);
+    c.ven('o', 1.2, 0.9, 1.1, 1.2); c.buganvilla('o', 2.5, 3.8);
     c.forma('M.2 .3H3.3V3.7H.2Z', 0.008, '#8796ab');
     c.b(0.45, 0.7, 0, 2.3, 1.3, 0.72, '#6b4f38');
     c.b(0.55, 0.8, 0.72, 2.1, 1.1, 0.05, '#3f7a5a');
@@ -236,6 +236,7 @@ const HAB = {
     if (c.w > 6) {
       c.olivo(1.4, 1.2, 1.05); c.cipres(3.5, 0.6); c.cipres(4.2, 0.6);
       c.poyo(2.5, 2.05, 1.6); c.lavanda(5.6, 1.6); c.lavanda(6.3, 1.9);
+      c.naranjo(6.75, 0.85); c.buganvillaTapia(0.2, 2.4);
     } else { c.cipres(0.5, 0.6); c.lavanda(1.2, 1.4); }
   },
   // El olivar: tierra labrada, olivos en hilera, un pozo y el indicador hacia el taller.
@@ -244,6 +245,7 @@ const HAB = {
     if (c.w > 5) {
       c.olivo(1.2, 1.35); c.olivo(3.5, 1.9, 0.95); c.olivo(5.6, 1.4);
       c.pozo(2.4, 0.75); c.indicador(4.7, 0.7); c.chumbera(6.1, 2.2);
+      c.naranjo(4.5, 2.05); c.buganvillaTapia(0.3, 2.9);
     } else { c.olivo(1.3, 1.5); c.olivo(3.5, 1.7, 0.9); c.indicador(2.5, 0.6); }
   },
 };
@@ -255,14 +257,14 @@ const PLANO_ANCHO = [
   ['taller', 0, 0, 5, 4], ['cocina', 5, 0, 5.5, 4], ['vestidor', 10.5, 0, 5.5, 4],
   ['ocio', 0, 4, 5, 4], ['galeria', 5, 4, 5.5, 4], ['dormitorio', 10.5, 4, 5.5, 4],
   ['despacho', 0, 8, 5, 4], ['salon', 5, 8, 5.5, 4], ['bano', 10.5, 8, 5.5, 4],
-  ['entrada', 0, 12, 9.5, 2.8], ['jardin', 9.5, 12, 6.5, 2.8]];
+  ['entrada', 0, 12.45, 9.5, 2.8], ['jardin', 9.5, 12.45, 6.5, 2.8]];
 const PLANO_ALTO = [
   ['cocina', 0, 0, 4.5, 4], ['taller', 4.5, 0, 4.5, 4],
   ['galeria', 0, 4, 9, 4],
   ['despacho', 0, 8, 4.5, 4], ['dormitorio', 4.5, 8, 4.5, 4],
   ['ocio', 0, 12, 4.5, 4], ['vestidor', 4.5, 12, 4.5, 4, 'alto'],
   ['salon', 0, 16, 4.5, 4], ['bano', 4.5, 16, 4.5, 4],
-  ['entrada', 0, 20, 4.5, 2.8], ['jardin', 4.5, 20, 4.5, 2.8]];
+  ['entrada', 0, 20.45, 4.5, 2.8], ['jardin', 4.5, 20.45, 4.5, 2.8]];
 const PUERTA = [3.5, 4.3]; // hueco de la puerta en la fachada del salón
 
 const SUELOS = {
@@ -361,31 +363,23 @@ export function montarCasa(seccion) {
       <linearGradient id="casa-cristal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3eef4"/><stop offset="1" stop-color="#9db7c8"/></linearGradient>
       <pattern id="casa-rayado" patternUnits="userSpaceOnUse" width="3.4" height="3.4" patternTransform="rotate(32)"><path d="M0 0V3.4" stroke="#4a3626" stroke-width=".7" stroke-opacity=".3"/></pattern>
       ${azul(EX)}${azul(EY)}${patron('chino', ['chino', '#c9bea8'])}${patron('surcos', ['surcos', '#d4b07c'])}`;
-    // la casa está en medio del olivar: márgenes de campo alrededor (más por detrás, donde los árboles no tapan la casa)
-    const [MO, MN, ME, MS] = movil ? [1.7, 3.9, 0.8, 0.9] : [5.2, 5.2, 1.9, 1.7];
-    const x0 = -MO - 0.3, y0 = -MN - 0.3, x1 = W + ME + 0.3, y1 = Dtot + MS + 0.3;
-    // tablero de la maqueta y su sombra rayada sobre la mesa
-    const somb = [[x0 + 0.3, y0 + 0.3, -0.32], [x1 + 0.6, y0 + 0.3, -0.32], [x1 + 0.6, y1 + 0.6, -0.32], [x0 + 0.3, y1 + 0.6, -0.32]];
-    let out = `<polygon points="${pts(somb)}" fill="rgba(110,80,45,.1)"/><polygon points="${pts(somb)}" fill="url(#casa-rayado)"/>`;
-    out += caja(x0, y0, -0.32, x1 - x0, y1 - y0, 0.32, '#c9ab7c', { tapa: '#d6b98a' });
-    out += `<polygon points="${pts([[-MO, -MN, 0], [W + ME, -MN, 0], [W + ME, Dtot + MS, 0], [-MO, Dtot + MS, 0]])}" fill="url(#p-surcos)"/>`;
-    // hileras de olivos (detrás y a la izquierda de la casa) y plantones jóvenes delante
-    const arboles = [], somArb = [], jovenes = [];
-    for (let gy = -MN + 0.85; gy < Dtot + MS - 0.3; gy += 1.75) for (let gx = -MO + 0.85; gx < W + ME - 0.3; gx += 1.85) {
-      const r = azar(gx + 11, gy + 7), X = gx + (r() - 0.5) * 0.3, Y = gy + (r() - 0.5) * 0.3;
-      if (gy < -1 || gx < -1) { arboles.push([X, Y, 0.72 + r() * 0.12, 15]); somArb.push(sombraDisco(X + 0.25, Y + 0.22, 0.7)); }
+    // el campo de olivos va de fondo en toda la sección (CSS); el tablero se queda con un borde de tierra
+    // sin tablero: la casa se asienta en una mancha de tierra que se funde con el olivar del fondo
+    const [MO, MN, ME, MS] = [1.3, 1.3, 1.3, 1.3];
+    const x0 = -MO, y0 = -MN, x1 = W + ME, y1 = Dtot + MS;
+    defs += '<radialGradient id="casa-tierra"><stop offset="0" stop-color="#dcc49a" stop-opacity=".9"/><stop offset=".72" stop-color="#dcc49a" stop-opacity=".55"/><stop offset="1" stop-color="#dcc49a" stop-opacity="0"/></radialGradient>';
+    let out = `<ellipse cx="${f1(W / 2)}" cy="${f1(Dtot / 2)}" rx="${f1(W / 2 + 1.25)}" ry="${f1(Dtot / 2 + 1.25)}" fill="url(#casa-tierra)" transform="${mPlano(0, 0, 0)}"/>`;
+    const huella = [[-0.5, -0.5, 0], [W + 0.7, -0.5, 0], [W + 0.7, Dtot + 0.4, 0], [-0.5, Dtot + 0.4, 0]];
+    out += `<polygon points="${pts(huella)}" fill="rgba(110,80,45,.1)"/><polygon points="${pts(huella)}" fill="url(#casa-rayado)"/>`;
+    { // matas de hierba sueltas alrededor
+      const r = azar(W, Dtot); let h = '';
+      for (let k = 0; k < (movil ? 26 : 46); k++) {
+        const a = r() * 6.283, q = 0.9 + r() * 0.12, X = W / 2 + Math.cos(a) * (W / 2 + 0.9) * q, Y = Dtot / 2 + Math.sin(a) * (Dtot / 2 + 0.9) * q;
+        const [px, py] = P(X, Y, 0); h += `M${f1(px - 2)} ${f1(py)}l-1.2 -3.6M${f1(px)} ${f1(py)}l.2 -4.6M${f1(px + 2)} ${f1(py)}l1.3 -3.4`;
+      }
+      out += `<path d="${h}" stroke="#7f8b5c" stroke-width="1.1" stroke-linecap="round" stroke-opacity=".55" fill="none"/>`;
     }
-    const joven = (X, Y, lista) => { lista.push([X, Y, 0.36, 9]); somArb.push(sombraDisco(X + 0.12, Y + 0.12, 0.33)); };
-    if (movil) for (let gy = 0.6; gy < Dtot; gy += 1.6) joven(-0.85, gy, arboles);
-    else {
-      for (let gy = 0.7; gy < Dtot + 0.5; gy += 1.75) joven(W + 0.95, gy, jovenes);
-      for (let gx = 0.7; gx < W; gx += 1.85) joven(gx, Dtot + 0.85, jovenes);
-    }
-    out += `<g fill="rgba(110,80,45,.12)">${somArb.join('')}</g><g fill="url(#casa-rayado)">${somArb.join('')}</g>`;
-    arboles.sort((a, b) => (a[0] * EX[1] + a[1] * EY[1]) - (b[0] * EX[1] + b[1] * EY[1]));
-    out += arboles.map(([X, Y, t, n]) => dibujaOlivo(X, Y, t, n)).join('');
-    jovenes.sort((a, b) => (a[0] * EX[1] + a[1] * EY[1]) - (b[0] * EX[1] + b[1] * EY[1]));
-    const delante = jovenes.map(([X, Y, t, n]) => dibujaOlivo(X, Y, t, n)).join('');
+    const delante = '';
     let etiquetas = '';
     const numeros = {};
     const orden = plano.slice().sort((a, b) => (!!SALAS[a[0]].ext - !!SALAS[b[0]].ext) || a[2] - b[2] || a[1] - b[1]);
@@ -586,6 +580,14 @@ export function montarCasa(seccion) {
           c.b(a, d - 0.18, 0, b - a, 0.18, 0.5, CAL, { tapa: CAL });
           pon(caja(x + a - 0.03, y + d - 0.22, 0.5, b - a + 0.06, 0.26, 0.06, TEJA, { tapa: '#cf8058' }), a, d - 0.22, 0.5, b, d, 0.56);
         },
+        // buganvilla que cae por encima de una tapia (hojas y flores fucsia)
+        buganvillaTapia(a, b) {
+          b = Math.min(b, w); if (b - a < 0.3) return;
+          const r = azar(a + x + 3, b + y); let s = '';
+          for (let k = 0; k < Math.round((b - a) * 9); k++) { const [px, py] = P(x + a + r() * (b - a), y + d - 0.12, 0.5 + r() * 0.35); s += mancha(px, py, 4 + r() * 3, 3 + r() * 2, VERDES[k % 5], false); }
+          for (let k = 0; k < Math.round((b - a) * 12); k++) { const [px, py] = P(x + a + r() * (b - a), y + d - 0.12, 0.55 + r() * 0.4); s += mancha(px, py, 2 + r() * 2, 1.8 + r() * 1.4, ['#c2376f', '#d9558a', '#b02a62'][k % 3], false, 0.3); }
+          pon(s, a, d - 0.25, 0.5, b, d, 1);
+        },
         poyo(mx, my, len) { c.b(mx, my, 0, len, 0.45, 0.42, CAL, { tapa: '#ece6da' }); c.maceta(mx + 0.25, my + 0.22, 0.42, 0.6, '#d8463a'); c.maceta(mx + len - 0.25, my + 0.22, 0.42, 0.6, '#e2557a'); },
         pozo(mx, my) {
           c.cil(mx, my, 0, 0.36, 0.6, CAL, '#e4ddcf');
@@ -624,27 +626,29 @@ export function montarCasa(seccion) {
       let g = `<polygon class="suelo" points="${pts(sq)}" fill="url(#p-${id})"/>`;
       g += luces + `<g fill="rgba(110,80,45,.12)">${sombras}</g><g fill="url(#casa-rayado)">${sombras}</g>`;
       // muros: los exteriores, altos, encalados, con zócalo de almagra y remate de teja; los interiores, cortados
-      const corte = '#2f2a25';
+      const corte = '#7a5f4b', GE = 0.42, GI = 0.2; // muros de cortijo: los de fuera gordos, los de dentro algo menos
       const muroAlto = (n) => {
-        let s = n ? caja(x, y - 0.15, 0, w, 0.15, 2.6, CAL, { tapa: corte }) : caja(x - 0.15, y, 0, 0.15, d, 2.6, '#efe9de', { tapa: corte });
+        const iz = oExt ? GE : 0, de = x + w === W ? GE : 0;
+        let s = n ? caja(x - iz, y - GE, 0, w + iz + de, GE, 2.6, CAL, { tapa: CAL, blando: 1.2 }) : caja(x - GE, y, 0, GE, d, 2.6, '#efe9de', { tapa: CAL, blando: 1.2 });
         s += n ? poli([[x, y + 0.005, 0], [x + w, y + 0.005, 0], [x + w, y + 0.005, 0.38], [x, y + 0.005, 0.38]], '#c0694b', true) : poli([[x + 0.005, y, 0], [x + 0.005, y + d, 0], [x + 0.005, y + d, 0.38], [x + 0.005, y, 0.38]], '#b8644a', true);
-        s += n ? caja(x - 0.05, y - 0.22, 2.6, w + 0.1, 0.3, 0.09, TEJA, { tapa: '#cf8058' }) : caja(x - 0.22, y - 0.05, 2.6, 0.3, d + 0.1, 0.09, TEJA, { tapa: '#cf8058' });
+        s += n ? caja(x - iz - 0.06, y - GE - 0.08, 2.6, w + iz + de + 0.12, GE + 0.16, 0.1, TEJA, { tapa: '#cf8058' }) : caja(x - GE - 0.08, y - 0.06, 2.6, GE + 0.16, d + 0.12, 0.1, TEJA, { tapa: '#cf8058' });
         let t = '';
-        const L = n ? w : d;
-        for (let u = 0.2; u < L; u += 0.24) t += n ? lin([x + u, y - 0.22, 2.69], [x + u, y + 0.08, 2.69]) : lin([x - 0.22, y + u, 2.69], [x + 0.08, y + u, 2.69]);
+        const L = n ? w + iz + de : d;
+        for (let u = 0.2; u < L; u += 0.24) t += n ? lin([x - iz + u, y - GE - 0.08, 2.7], [x - iz + u, y + 0.08, 2.7]) : lin([x - GE - 0.08, y + u, 2.7], [x + 0.08, y + u, 2.7]);
         return s + `<path d="${t}" stroke="#8f4a2e" stroke-width=".8"/>`;
       };
       if (!ext) {
-        g += nExt ? muroAlto(true) : caja(x, y - 0.15, 0, w, 0.15, 0.35, '#efeae1', { tapa: corte });
-        g += oExt ? muroAlto(false) : caja(x - 0.15, y, 0, 0.15, d, 0.35, '#e6e0d5', { tapa: corte });
+        g += nExt ? muroAlto(true) : caja(x, y - GI, 0, w, GI, 0.35, '#efeae1', { tapa: corte });
+        g += oExt ? muroAlto(false) : caja(x - GI, y, 0, GI, d, 0.35, '#e6e0d5', { tapa: corte });
       }
       g += pared + ordenar(items);
       if (!ext) {
         if (y + d === Dint) {
-          if (id === 'salon') { g += caja(x, y + d, 0, PUERTA[0], 0.15, 0.35, '#efeae1', { tapa: corte }); g += caja(x + PUERTA[1], y + d, 0, w - PUERTA[1], 0.15, 0.35, '#efeae1', { tapa: corte }); }
-          else g += caja(x, y + d, 0, w, 0.15, 0.35, '#efeae1', { tapa: corte });
+          const iz2 = oExt ? GE : 0, de2 = x + w === W ? GE : 0;
+          if (id === 'salon') { g += caja(x - iz2, y + d, 0, PUERTA[0] + iz2, GE, 0.45, CAL, { tapa: corte }); g += caja(x + PUERTA[1], y + d, 0, w - PUERTA[1] + de2, GE, 0.45, CAL, { tapa: corte }); }
+          else g += caja(x - iz2, y + d, 0, w + iz2 + de2, GE, 0.45, CAL, { tapa: corte });
         }
-        if (x + w === W) g += caja(x + w, y, 0, 0.15, d, 0.35, '#e6e0d5', { tapa: corte });
+        if (x + w === W) g += caja(x + w, y, 0, GE, d, 0.45, '#efe9de', { tapa: corte });
       }
       // etiqueta
       // etiqueta: solo un sello pequeño con el número; el nombre sale al pasar o tocar (y está en la leyenda de abajo)

@@ -1,0 +1,145 @@
+---
+// Quiz «¿Qué armario va contigo?»: cinco preguntas (qué buscas, sitio, personas, ropa y estilo) y una propuesta de armario
+// o vestidor que se ve dibujada (el juego en modo «solo dibujo») y se abre en «Diseña tu armario» para retocarla.
+import Base from '../../layouts/Base.astro';
+import { r, EMPRESA } from '../../lib/sitio.js';
+
+const PREGUNTAS = [
+  { id: 'tipo', p: '¿Qué buscas?', o: [['dormitorio', 'Armario de dormitorio', 'Empotrado, de pared a pared'], ['vestidor', 'Vestidor', 'Todo a la vista, sin puertas'], ['infantil', 'Para los niños', 'Que crezca con ellos'], ['entrada', 'Entrada o pasillo', 'Abrigos, zapatos y lo de cada día']] },
+  { id: 'sitio', p: '¿Cuánto sitio tienes?', o: [['poco', 'Menos de 2 metros', 'Un hueco justo'], ['medio', 'Entre 2 y 3 metros', 'Una pared normal'], ['mucho', 'Más de 3 metros', 'Una pared larga'], ['cuarto', 'Una habitación entera', 'Para hacer un vestidor']] },
+  { id: 'pers', p: '¿Para quién es?', o: [['uno', 'Para una persona', 'Todo el armario para mí'], ['dos', 'Para dos', 'Lo compartimos'], ['familia', 'Para toda la familia', 'Ropa de todos y de cada temporada']] },
+  { id: 'ropa', p: '¿Qué ropa tienes más?', o: [['larga', 'Abrigos y vestidos', 'Ropa larga de colgar'], ['camisas', 'Camisas y chaquetas', 'Ropa corta de colgar'], ['doblada', 'Ropa doblada', 'Jerséis, camisetas, vaqueros'], ['zapatos', 'Zapatos y bolsos', 'Y complementos']] },
+  { id: 'est', p: '¿Qué estilo te gusta?', o: [['luz', 'Luminoso', 'Blanco y limpio'], ['calido', 'Cálido', 'Madera y tonos suaves'], ['color', 'Con color', 'Verde salvia, clásico'], ['oscuro', 'Elegante', 'Negro, nogal y luz LED']] },
+];
+---
+<Base titulo="¿Qué armario va contigo? Quiz" descripcion="Cinco preguntas sobre tu espacio y tu ropa, y te proponemos armario o vestidor, puertas, interior y colores. Ábrelo en nuestro juego para retocarlo. Por Muebles Carrascosa, Jaén.">
+  <header class="cabeza-pagina ancho" data-entra>
+    <span class="etiqueta">Juego · Quiz</span>
+    <h1>¿Qué armario va contigo?</h1>
+    <p class="entradilla">Cinco preguntas rápidas sobre tu espacio y tu ropa. Al final te proponemos armario o vestidor, con sus puertas, su interior y sus colores, y lo abres en nuestro juego para retocarlo.</p>
+  </header>
+
+  <section class="ancho quiz" id="quiz">
+    <div class="quiz-progreso" aria-hidden="true"><i></i></div>
+    <p class="quiz-paso"><span id="q-n">1</span> de {PREGUNTAS.length}</p>
+    {PREGUNTAS.map((q, i) => (
+      <fieldset class="quiz-pregunta" data-i={i} data-id={q.id} hidden={i > 0}>
+        <legend>{q.p}</legend>
+        <div class="quiz-opciones">
+          {q.o.map(([v, t, s]) => <button type="button" class="quiz-op" data-v={v}><b>{t}</b><span>{s}</span></button>)}
+        </div>
+      </fieldset>
+    ))}
+    <button type="button" class="enlace quiz-atras" hidden>← Anterior</button>
+
+    <div class="quiz-resultado" hidden>
+      <div class="quiz-dibujo quiz-armario"><iframe title="Dibujo del armario propuesto" loading="lazy"></iframe></div>
+      <div>
+        <span class="etiqueta">Tu armario</span>
+        <h2 id="q-titulo"></h2>
+        <ul class="motivos" id="q-motivos"></ul>
+        <div class="botones">
+          <a class="boton" id="q-juego" href={r('/disena-tu-armario/')}>Ábrelo en el juego <span class="flecha" aria-hidden="true">→</span></a>
+          <a class="boton contorno" id="q-wa" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Pídenos presupuesto</a>
+          <button type="button" class="boton contorno" id="q-otra">Volver a empezar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion claro cierre">
+    <div class="ancho">
+      <span class="etiqueta">¿Hablamos de tu armario?</span><br />
+      <a class="frase" href={r('/contacto/')}>Hablemos <span aria-hidden="true">→</span></a>
+      <div class="botones"><a class="boton" href={r('/contacto/')}>Pide presupuesto</a><a class="boton contorno" href={r('/disena-tu-armario/')}>Diseña tu armario</a></div>
+    </div>
+  </section>
+
+  <script>
+    import { INICIAL_A, TIPOS } from '../../datos/armario.js';
+    import { modulosPara, correderas } from '../../scripts/armario-dibujo.js';
+    const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const base = (document.querySelector('link[rel=icon]')?.getAttribute('href') || '/favicon.png').replace(/\/favicon\.png$/, '');
+    const preguntas = $$('.quiz-pregunta'), total = preguntas.length, resp = {};
+    let actual = 0;
+
+    function ver(i, dir = 1) {
+      const antes = preguntas[actual], luego = preguntas[i];
+      actual = i;
+      $('#q-n').textContent = i + 1; $('.quiz-progreso i').style.transform = `scaleX(${i / total})`;
+      $('.quiz-atras').hidden = i === 0;
+      if (antes !== luego) { antes.hidden = true; luego.hidden = false; if (!quieto) luego.animate([{ opacity: 0, transform: `translateX(${dir * 40}px)` }, { opacity: 1, transform: 'none' }], { duration: 380, easing: 'cubic-bezier(.2,.75,.2,1)' }); }
+      $$('.quiz-op', luego).forEach((b) => b.setAttribute('aria-pressed', String(resp[luego.dataset.id] === b.dataset.v)));
+    }
+    $('#quiz').addEventListener('click', (ev) => {
+      const b = ev.target.closest('.quiz-op'); if (!b) return;
+      const f = b.closest('.quiz-pregunta'); resp[f.dataset.id] = b.dataset.v;
+      $$('.quiz-op', f).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      setTimeout(() => (actual < total - 1 ? ver(actual + 1) : resultado()), quieto ? 0 : 220);
+    });
+    const volver = () => { $('.quiz-resultado').hidden = true; $('.quiz-paso').hidden = false; };
+    $('.quiz-atras').addEventListener('click', () => { if (!$('.quiz-resultado').hidden) { volver(); preguntas[actual].hidden = false; $('.quiz-progreso i').style.transform = `scaleX(${actual / total})`; return; } if (actual > 0) ver(actual - 1, -1); });
+    $('#q-otra').addEventListener('click', () => { Object.keys(resp).forEach((k) => delete resp[k]); volver(); preguntas.forEach((p) => (p.hidden = true)); actual = 0; preguntas[0].hidden = false; ver(0); });
+
+    // ── De las respuestas a un armario ──
+    // Qué va en cada hueco según la ropa que más tienes (se reparte en orden por los cuerpos del armario)
+    const RELLENO = {
+      larga: ['largo', 'cajones', 'largo', 'doble', 'baldas', 'zapatero'],
+      camisas: ['doble', 'cajones', 'doble', 'largo', 'baldas', 'pantalonero'],
+      doblada: ['baldas', 'cajones', 'doble', 'accesorios', 'largo', 'baldas'],
+      zapatos: ['zapatero', 'doble', 'largo', 'accesorios', 'cajones', 'zapatero'],
+    };
+    // Colores y puertas según el estilo
+    const ESTILO = {
+      luz: { ext: 'blanco', int: 'blanco', perfil: 'blanco', tir: 'negro', corr: 'japonesa3', abat: 'lisa', nombre: 'luminoso' },
+      calido: { ext: 'roble-claro', int: 'roble-claro', perfil: 'madera', tir: 'negro', corr: 'rayas', abat: 'lisa', nombre: 'de madera' },
+      color: { ext: 'salvia', int: 'blanco', perfil: 'blanco', tir: 'oro', corr: 'japonesa', abat: 'moldura', nombre: 'verde salvia' },
+      oscuro: { ext: 'negro', int: 'nogal', perfil: 'negro', tir: 'negro', corr: 'cristal', abat: 'lisa', nombre: 'negro y nogal', led: '1', cristal: 'ahumado' },
+    };
+    function resultado() {
+      const { tipo, sitio, pers, ropa, est } = resp, s = ESTILO[est];
+      const vestidor = tipo === 'vestidor' || sitio === 'cuarto';
+      let ancho = { poco: 180, medio: 240, mucho: 320, cuarto: 340 }[sitio];
+      if (tipo === 'infantil') ancho = Math.min(ancho, 200);
+      if (pers === 'familia' && !vestidor) ancho = Math.max(ancho, sitio === 'poco' ? 200 : 280);
+      const alto = tipo === 'infantil' ? 230 : 250;
+      // Puertas: correderas si el hueco es justo o el cuarto pequeño (no necesitan sitio para abrir); abatibles en pasillos e infantiles
+      let puertas = vestidor ? 'vestidor' : tipo === 'entrada' || tipo === 'infantil' ? 'abatibles' : 'correderas';
+      if (puertas === 'correderas' && !correderas(ancho, alto).ok) puertas = 'abatibles';
+      const forma = !vestidor ? 'lineal' : sitio === 'cuarto' ? (pers === 'uno' ? 'C' : 'isla') : sitio === 'mucho' ? 'L' : 'lineal';
+      const lado = forma === 'lineal' ? 180 : sitio === 'cuarto' ? 220 : 200;
+      const n = puertas === 'correderas' ? correderas(ancho, alto).k : modulosPara(ancho);
+      let rel = RELLENO[ropa].slice();
+      if (tipo === 'entrada') rel = ['largo', 'zapatero', 'accesorios', 'zapatero', 'largo'];
+      if (tipo === 'infantil') rel = ['doble', 'baldas', 'cajones', 'doble'];
+      if (pers === 'familia') rel.splice(1, 0, 'pantalonero');
+      const mods = rel.slice(0, n), lat = modulosPara(lado);
+      const e = {
+        ...INICIAL_A, ancho, alto, puertas, forma, lado, ext: s.ext, int: s.int, perfil: s.perfil, tir: tipo === 'infantil' ? 'unero' : s.tir,
+        modelo: puertas === 'correderas' ? s.corr : s.abat, cristal: s.cristal || 'mate', led: s.led || (vestidor && sitio === 'cuarto' ? '1' : '0'),
+        mods: mods.join(','), modsI: rel.slice(n, n + lat).concat(['zapatero', 'accesorios']).slice(0, lat).join(','), modsD: ['pantalonero', 'baldas', 'doble'].slice(0, lat).join(','),
+      };
+      if (tipo === 'infantil' && est === 'oscuro') { e.ext = 'blanco'; e.led = '0'; }
+      const hash = new URLSearchParams(e).toString();
+      const nombre = vestidor ? `Vestidor ${{ lineal: 'lineal', L: 'en L', C: 'en C', isla: 'con isla' }[forma]}` : tipo === 'infantil' ? 'Armario infantil' : tipo === 'entrada' ? 'Armario de entrada' : `Armario de ${puertas}`;
+      $('#q-titulo').textContent = `${nombre}, ${s.nombre}`;
+      const m = [];
+      m.push(vestidor ? ({ lineal: 'Vestidor lineal: todo en una pared, con al menos 70 cm de paso (90 cómodo).', L: 'En L: dos paredes de vestidor y el rincón aprovechado; deja 80 cm de paso.', C: 'En C: tres paredes y todo a mano, para una persona; 80–100 cm de paso en el centro.', isla: 'Con isla: cajonera en el centro para dos, con 90 cm de paso a cada lado.' })[forma]
+        : puertas === 'correderas' ? `Correderas de ${n} hojas: no ocupan sitio al abrir, ideales si el cuarto va justo. El armario necesita 65 cm de fondo.` : `Abatibles: ves todo el interior de una vez. Deja unos 60 cm delante para abrir las puertas.`);
+      m.push(`${(ancho / 100).toFixed(1).replace('.', ',')} m de ancho y ${alto} cm de alto${pers === 'dos' ? ': unos 100 cm por persona y algo más si hay mucha ropa larga.' : pers === 'familia' ? ': con un pantalonero y ropa de cada temporada en el altillo.' : '.'}`);
+      m.push('Por dentro: ' + mods.map((t) => TIPOS[t].toLowerCase()).join(', ') + '.');
+      m.push({ larga: 'Para la ropa larga, barra a unos 175 cm con 150–170 de hueco libre.', camisas: 'Con dos barras (a unos 195 y 100 cm) cuelgas el doble de camisas en el mismo ancho.', doblada: 'Baldas cada 30–40 cm y cajones de 15–20: la ropa doblada se ve y no se arruga.', zapatos: 'Zapatero con baldas inclinadas o extraíbles: unos 8 pares por cada 60 cm.' }[ropa]);
+      if (e.led === '1') m.push('Con luz LED en las barras: se ve todo sin encender la del cuarto.');
+      $('#q-motivos').innerHTML = m.map((t) => `<li class="bien">${t}</li>`).join('');
+      $('.quiz-armario iframe').src = `${base}/disena-tu-armario/?solo=1#${hash}`;
+      $('#q-juego').href = `${base}/disena-tu-armario/#${hash}`;
+      $('#q-wa').href = 'https://wa.me/34653451270?text=' + encodeURIComponent(`Hola, he hecho el quiz de armarios de vuestra web y me sale: ${nombre}. ${location.origin}${base}/disena-tu-armario/#${hash}`);
+      preguntas.forEach((p) => (p.hidden = true)); $('.quiz-paso').hidden = true; $('.quiz-progreso i').style.transform = 'scaleX(1)';
+      const res = $('.quiz-resultado'); res.hidden = false; window.medir?.('quiz-armario/resultado/' + (vestidor ? forma : puertas));
+      if (!quieto) res.animate([{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'none' }], { duration: 500, easing: 'cubic-bezier(.2,.75,.2,1)' });
+      res.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'start' });
+    }
+    ver(0);
+  </script>
+</Base>
