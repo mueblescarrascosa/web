@@ -26,6 +26,15 @@ export const EMPRESA = {
   ],
 };
 
+// El mismo horario, para los datos estructurados (portada y contacto)
+export const HORARIO_SCHEMA = [
+  { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], opens: '08:30', closes: '14:00' },
+  { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], opens: '16:00', closes: '19:00' },
+  { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Friday', opens: '08:30', closes: '14:00' },
+];
+// Pueblos de «Dónde trabajamos»
+export const ZONA = ['Villanueva del Arzobispo', 'Villacarrillo', 'Iznatoraf', 'Sorihuela del Guadalimar', 'Santo Tomé', 'Beas de Segura', 'Úbeda', 'Baeza', 'Cazorla', 'Jaén'];
+
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 // Ruta con la base delante (en pruebas, /web).
 export const r = (p = '/') => (/^(https?:|mailto:|tel:|#)/.test(p) ? p : BASE + (p.startsWith('/') ? p : '/' + p));

@@ -26,7 +26,7 @@ const salas = {
     l: L([['Muebles de baño a medida', '/muebles-de-bano-a-medida/'], ['Combina tu baño', '/combina-tu-bano/']]) },
   dormitorio: { n: 'Dormitorio', k: 'Descanso', d: 'Armarios empotrados, cabeceros y mesitas a juego.', foto: img('pxl-20250819-112656696'), alt: 'Dormitorio con cabecero de madera',
     l: L([['Diseña tu armario', '/disena-tu-armario/'], ['Armarios a medida', '/armarios/']]) },
-  ocio: { n: 'Sala de juegos', k: 'Para trastear', d: 'Prueba combinaciones, compara y guarda las que te gusten. Sin compromiso.', foto: img('casa-juegos'), alt: 'Juego «Combina tu cocina»',
+  ocio: { n: 'Inspírate', k: 'Prueba combinaciones', d: 'Prueba combinaciones, compara y guarda las que te gusten. Sin compromiso.', foto: img('casa-juegos'), alt: 'Juego «Combina tu cocina»',
     l: L(JUEGOS), chips: true },
   despacho: { n: 'Despacho', k: 'Dudas y lecturas', d: 'Respuestas claras, calculadoras de medidas, el blog y tu proyecto guardado.', foto: img('pxl-20250213-165920096'), alt: 'Mesa de madera maciza hecha en el taller',
     l: L([['Preguntas frecuentes', '/preguntas-frecuentes/'], ['Blog', '/entradas-del-blog/'], ['Mi proyecto', '/mi-proyecto/'], ['Diseño 3D de tu proyecto', '/disenos-3d/']]) },
@@ -101,7 +101,7 @@ const fuera = Object.entries(salas).filter(([, s]) => 'ext' in s);
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .14 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); }
 .casa .tinta { fill: none; stroke: #3d2f25; stroke-width: .85; stroke-linecap: round; stroke-opacity: .82; }
 .casa .tinta-f { stroke: #3d2f25; stroke-width: .8; stroke-opacity: .8; stroke-linejoin: round; }
-.casa .etiqueta { color: #8a6a4c; }
+.casa .etiqueta { color: #7f4b28; }
 /* de noche (modo oscuro): el campo en penumbra y la casa con sus luces */
 html[data-tema="oscuro"] .casa { --papel: #1a1712; --tinta: #efe7da; --tinta-suave: #b1a594; --casa-luz: rgba(52, 44, 33, .85); --casa-luz2: rgba(34, 29, 22, .4); }
 html[data-tema="oscuro"] .casa .etiqueta { color: var(--madera); }

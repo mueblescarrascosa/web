@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Casa from '../components/Casa.astro';
-import { r, peq, EMPRESA, entradasVisibles } from '../lib/sitio.js';
+import { r, peq, EMPRESA, HORARIO_SCHEMA, ZONA, entradasVisibles } from '../lib/sitio.js';
 import medios from '../datos/medios.json';
 
 const f = (id) => medios[id] || { src: '', alt: '' };
@@ -11,15 +11,12 @@ const servicios = [
   [1619, '/muebles-de-bano-a-medida/', 'Baños', 'A la medida exacta del hueco y con materiales que aguantan la humedad.'],
   [542, '/puertas/', 'Puertas', 'De paso y de entrada, fabricadas y restauradas en el taller.'],
 ];
-// Pasos 01 y 03 con fotos de archivo CC0 (dominio público) de rawpixel, mientras no haya fotos propias de medir y del taller:
-// https://www.rawpixel.com/image/5907222 y https://www.rawpixel.com/image/3304149
-const ARCHIVO_MEDIR = { src: '/img/archivo-medir.webp', alt: 'Cinta métrica para tomar medidas' };
-const ARCHIVO_TALLER = { src: '/img/archivo-taller.webp', alt: 'Carpintero trabajando la madera en el taller' };
+// Pasos 01 y 03 sin foto hasta tener fotos propias de medir y del taller (nada de fotos de banco donde se habla del taller propio).
 const fotoDe = (x) => (typeof x === 'object' ? x : f(x));
 const pasos = [
-  ['01', 'Vamos a tu casa y medimos', 'Tomamos las medidas reales y vemos contigo cómo vives el espacio: qué guardas, cómo cocinas, qué te sobra y qué te falta.', ARCHIVO_MEDIR],
+  ['01', 'Vamos a tu casa y medimos', 'Tomamos las medidas reales y vemos contigo cómo vives el espacio: qué guardas, cómo cocinas, qué te sobra y qué te falta.', null],
   ['02', 'Lo ves en 3D antes de fabricar', 'Te enseñamos cómo quedará, con sus colores y materiales, y lo cambiamos las veces que haga falta.', 1679],
-  ['03', 'Lo fabricamos en nuestro taller', 'Pieza a pieza, en Villanueva del Arzobispo. Nada de catálogo ni de muebles en serie.', ARCHIVO_TALLER],
+  ['03', 'Lo fabricamos en nuestro taller', 'Pieza a pieza, en Villanueva del Arzobispo. Nada de catálogo ni de muebles en serie.', null],
   ['04', 'Lo montamos y lo dejamos limpio', 'Nuestro propio equipo lo instala, lo ajusta y no se va hasta que está terminado.', 618],
 ];
 const trabajos = [620, 609, 608, 536, 611, 589, 606, 572, 587, 588];
@@ -28,6 +25,10 @@ const schema = {
   '@context': 'https://schema.org', '@type': 'HomeAndConstructionBusiness', name: EMPRESA.nombre, url: 'https://mueblescarrascosa.com/',
   telephone: EMPRESA.tel, email: EMPRESA.email, foundingDate: '1969',
   address: { '@type': 'PostalAddress', streetAddress: EMPRESA.calle, postalCode: EMPRESA.cp, addressLocality: EMPRESA.pueblo, addressRegion: EMPRESA.provincia, addressCountry: 'ES' },
+  logo: 'https://mueblescarrascosa.com/logo-negro.png',
+  image: 'https://mueblescarrascosa.com/img/compartir-portada.jpg',
+  openingHoursSpecification: HORARIO_SCHEMA,
+  areaServed: ZONA.map((name) => ({ '@type': 'City', name })),
   sameAs: [EMPRESA.facebook, EMPRESA.instagram],
 };
 ---
@@ -48,7 +49,7 @@ const schema = {
       </div>
     </div>
     <div class="heroe-foto">
-      <img src={r(f(618).src)} alt={f(618).alt} fetchpriority="high" width="1600" height="1200" />
+      <img src={r('/img/cocina-isla-porcelanico-negro-portada.webp')} srcset={`${r('/img/cocina-isla-porcelanico-negro-portada-800.webp')} 800w, ${r('/img/cocina-isla-porcelanico-negro-portada.webp')} 1056w`} sizes="(max-width: 860px) 100vw, 50vw" alt={f(618).alt} fetchpriority="high" width="1056" height="1200" />
       <span class="heroe-sello"><b>1969</b>Villanueva del Arzobispo, Jaén</span>
     </div>
   </section>
@@ -63,11 +64,12 @@ const schema = {
         <span class="linea-corte" aria-hidden="true"></span>
         <span class="rotulo rotulo-3d">Así la diseñamos</span>
         <span class="rotulo rotulo-real">Así quedó</span>
+        <input type="range" min="0" max="100" value="50" aria-label="Desliza para comparar el diseño en 3D con la cocina terminada" />
       </div>
       <div class="escena-3d-texto">
         <span class="etiqueta">Del 3D a tu casa</span>
         <h2>Lo que ves es lo que montamos.</h2>
-        <p class="suave">Antes de cortar una sola tabla, ves tu cocina en 3D con sus colores y materiales. Luego la fabricamos tal cual.</p>
+        <p class="suave">Antes de cortar una sola tabla, ves tu cocina en 3D con sus colores y materiales. Luego la fabricamos tal cual. Desliza la foto para compararlas.</p>
         <a class="enlace" href={r('/disenos-3d/')}>Ver más diseños en 3D</a>
       </div>
     </div>
@@ -98,20 +100,19 @@ const schema = {
     <div class="pelicula-cabeza ancho">
       <div>
         <span class="etiqueta">Trabajos</span>
-        <h2>Hecho en el taller.<br /><span class="suave">Montado en casas de Jaén.</span></h2>
+        <h2>Hecho en el taller.<br /><span class="suave">Cocinas y armarios a medida en Jaén.</span></h2>
       </div>
       <a class="enlace" href={r('/destacado/')}>Ver todos los trabajos</a>
     </div>
     <div class="pista">
       {trabajos.map((id, i) => (
         <figure class="fotograma">
-          <a href={r(f(id).src)}><img src={r(f(id).src)} alt={f(id).alt} loading="lazy" /></a>
+          <a href={r(f(id).src)}><img src={r(peq(f(id).src))} alt={f(id).alt} loading="lazy" width="800" height={Math.round((800 * f(id).alto) / f(id).ancho)} /></a>
           <figcaption><span>{String(i + 1).padStart(2, '0')}</span>{f(id).alt}</figcaption>
         </figure>
       ))}
     </div>
-    <div class="progreso ancho" aria-hidden="true"><i></i></div>
-  </section>
+      </section>
 
   <section class="seccion claro" style="overflow:hidden">
     <p class="anio-gigante" aria-hidden="true">1969</p>
@@ -120,7 +121,7 @@ const schema = {
       <div>
         <span class="etiqueta">Nuestra historia</span>
         <h2>Tres generaciones en el mismo taller.</h2>
-        <p data-palabras>Lo que mi abuelo empezó como un pequeño taller de carpintería en Villanueva del Arzobispo es hoy un negocio familiar de tres generaciones. Seguimos haciendo lo mismo que entonces: muebles a medida, uno a uno, para cada casa.</p>
+        <p>Lo que mi abuelo empezó como un pequeño taller de carpintería en Villanueva del Arzobispo es hoy un negocio familiar de tres generaciones. Seguimos haciendo lo mismo que entonces: muebles a medida, uno a uno, para cada casa.</p>
         <p><a class="enlace" href={r('/acerca-de/')}>Conoce nuestra historia</a></p>
       </div>
     </div>
@@ -160,7 +161,7 @@ const schema = {
     <div class="ancho">
       <span class="etiqueta">¿Empezamos?</span><br />
       <a class="frase" href={r('/contacto/')}>Hablemos <span aria-hidden="true">→</span></a>
-      <p>Llámanos al <a class="enlace" href={`tel:${EMPRESA.tel}`}>{EMPRESA.telefono}</a>, escríbenos o pásate por el taller de {EMPRESA.pueblo}.</p>
+      <p>Llámanos al <a class="enlace" href={`tel:${EMPRESA.tel}`}>{EMPRESA.telefono}</a>, escríbenos o pásate por el taller de {EMPRESA.pueblo}. El presupuesto es sin compromiso y <a class="enlace" href={r('/preguntas-frecuentes/#p-el-precio-puede-cambiar')}>cerrado: pagas lo que pone</a>.</p>
     </div>
   </section>
   <script>import '../scripts/inmersivo.js';</script>

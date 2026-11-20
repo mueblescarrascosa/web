@@ -12,9 +12,9 @@ const PREGUNTAS = [
   { id: 'est', p: '¿Qué estilo te gusta?', o: [['luz', 'Luminoso', 'Blanco y limpio'], ['calido', 'Cálido', 'Madera y tonos suaves'], ['color', 'Con color', 'Verde salvia, clásico'], ['oscuro', 'Elegante', 'Negro, nogal y luz LED']] },
 ];
 ---
-<Base titulo="¿Qué armario va contigo? Quiz" descripcion="Cinco preguntas sobre tu espacio y tu ropa, y te proponemos armario o vestidor, puertas, interior y colores. Ábrelo en nuestro juego para retocarlo. Por Muebles Carrascosa, Jaén.">
+<Base titulo="¿Qué armario va contigo? Quiz" descripcion="Cinco preguntas sobre tu espacio y tu ropa, y te proponemos armario o vestidor, puertas, interior y colores. Ábrelo en nuestro diseñador para retocarlo. Por Muebles Carrascosa, Jaén.">
   <header class="cabeza-pagina ancho" data-entra>
-    <span class="etiqueta">Juego · Quiz</span>
+    <span class="etiqueta">Inspírate · Quiz</span>
     <h1>¿Qué armario va contigo?</h1>
     <p class="entradilla">Cinco preguntas rápidas sobre tu espacio y tu ropa. Al final te proponemos armario o vestidor, con sus puertas, su interior y sus colores, y lo abres en nuestro juego para retocarlo.</p>
   </header>
@@ -39,7 +39,7 @@ const PREGUNTAS = [
         <h2 id="q-titulo"></h2>
         <ul class="motivos" id="q-motivos"></ul>
         <div class="botones">
-          <a class="boton" id="q-juego" href={r('/disena-tu-armario/')}>Ábrelo en el juego <span class="flecha" aria-hidden="true">→</span></a>
+          <a class="boton" id="q-juego" href={r('/disena-tu-armario/')}>Ábrelo en el diseñador <span class="flecha" aria-hidden="true">→</span></a>
           <a class="boton contorno" id="q-wa" href={EMPRESA.whatsapp} target="_blank" rel="noopener">Pídenos presupuesto</a>
           <button type="button" class="boton contorno" id="q-otra">Volver a empezar</button>
         </div>

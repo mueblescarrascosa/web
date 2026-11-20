@@ -36,7 +36,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
 ---
 <Base titulo="Diseña tu armario o vestidor" descripcion="Juega a diseñar tu armario o vestidor: correderas, abatibles, japonesa o de cristal; vestidor lineal, en L, en C o con isla; colores y el interior de cada hueco. Te decimos cuánta ropa cabe y cómo mejorarlo. Por Muebles Carrascosa, Jaén." schema={schema}>
   <header class="cabeza-pagina ancho" data-entra>
-    <span class="etiqueta">Juego · Diseña tu armario o vestidor</span>
+    <span class="etiqueta">Inspírate · Diseña tu armario o vestidor</span>
     <h1>¿Cabe todo en tu armario?</h1>
     <p class="entradilla">Pon las medidas, elige armario o vestidor, el modelo de puerta y los colores, y toca cada hueco para cambiar su interior. Te diremos cuánta ropa cabe y qué mejorarías, con las medidas que usamos en el taller.</p>
   </header>
@@ -142,12 +142,12 @@ const schema = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   </section>
 
   <section class="ancho de-la-casa" id="de-la-casa">
-    <div class="favoritas-cabeza"><h2>Armarios y vestidores que hemos hecho</h2><p class="suave">Cárgalos en el juego y cámbiales lo que quieras: es una aproximación a la foto.</p></div>
+    <div class="favoritas-cabeza"><h2>Armarios y vestidores que hemos hecho</h2><p class="suave">Cárgalos en el diseñador y cámbiales lo que quieras: es una aproximación a la foto.</p></div>
     <div class="casa-lista">
       {DE_LA_CASA_A.map((c, i) => (
         <button type="button" class="casa-tarjeta" data-casa={i}>
           <img src={r(peq(medios[c.foto].src))} alt={medios[c.foto].alt} loading="lazy" width="400" height="300" />
-          <span>{c.nombre}</span><em>Cárgalo en el juego →</em>
+          <span>{c.nombre}</span><em>Cárgalo en el diseñador →</em>
         </button>
       ))}
     </div>

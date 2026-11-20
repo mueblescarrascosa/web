@@ -13,7 +13,7 @@ const juegos = [
   ['quiz', '¿Qué cocina va contigo?', '/que-cocina-va-contigo/', 'Hacer el quiz'],
 ];
 ---
-<Base titulo="Mi proyecto" descripcion="Todo lo que has diseñado en los juegos de Muebles Carrascosa, junto: cocina, armario, baño, puertas y salón. Mándalo al taller en un solo mensaje." noindex>
+<Base titulo="Mi proyecto" descripcion="Todo lo que has diseñado en los configuradores de Muebles Carrascosa, junto: cocina, armario, baño, puertas y salón. Mándalo al taller en un solo mensaje." noindex>
   <header class="cabeza-pagina ancho" data-entra>
     <span class="etiqueta" id="mp-etiqueta">Mi proyecto</span>
     <h1 id="mp-titulo">Todo lo que has diseñado.</h1>
@@ -63,7 +63,7 @@ const juegos = [
     if (compartido) {
       $('#mp-etiqueta').textContent = 'Proyecto compartido';
       $('#mp-titulo').textContent = 'Un proyecto que te han mandado.';
-      $('#mp-entradilla').textContent = 'Esto es lo que han diseñado en nuestros juegos. Ábrelo para cambiarlo, guárdalo en tu proyecto o mándanoslo.';
+      $('#mp-entradilla').textContent = 'Esto es lo que han diseñado en nuestros configuradores. Ábrelo para cambiarlo, guárdalo en tu proyecto o mándanoslo.';
       $('#tp-importar').hidden = false; $('#tp-compartir').hidden = true; $('#mp-pie').textContent = 'Si lo guardas en tu proyecto, se queda solo en tu navegador.';
       if (compartido.nota) $('#tp-nota').value = compartido.nota;
     }

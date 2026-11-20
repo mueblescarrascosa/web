@@ -19,9 +19,7 @@ window.medir = (nombre) => { try { window.goatcounter?.count?.({ path: 'evento/'
     boton.setAttribute('aria-expanded', String(abrir)); boton.setAttribute('aria-label', abrir ? 'Cerrar el menú' : 'Abrir el menú');
     menu.classList.toggle('abierto', abrir); document.body.classList.toggle('menu-abierto', abrir);
     // Con el menú abierto, el desplazamiento suave se para para poder bajar dentro del menú
-    if (window.__lenis) abrir ? window.__lenis.stop() : window.__lenis.start();
   });
-  if (menu) menu.setAttribute('data-lenis-prevent', '');
   // Al tocar un enlace del menú, se cierra
   if (menu) menu.addEventListener('click', e => { if (e.target.closest('a') && menu.classList.contains('abierto')) boton.click(); });
   $$('.desplegable > button').forEach(b => b.addEventListener('click', () => {
@@ -217,15 +215,18 @@ window.medir = (nombre) => { try { window.goatcounter?.count?.({ path: 'evento/'
     const d = new FormData(form);
     const texto = `Hola, soy ${d.get('nombre')}. Me interesa: ${d.get('tipo')}.${d.get('pueblo') ? ' Pueblo: ' + d.get('pueblo') + '.' : ''}\n${d.get('mensaje')}${d.get('telefono') ? '\nMi teléfono: ' + d.get('telefono') : ''}`;
     const via = e.submitter?.value || 'whatsapp';
-    const fotos = [...(form.querySelector('input[name=fotos]')?.files || [])];
-    if (fotos.length && matchMedia('(pointer: coarse)').matches && navigator.canShare && navigator.canShare({ files: fotos })) {
-      navigator.share({ files: fotos, text: texto, title: 'Presupuesto: ' + d.get('tipo') }).catch(() => {});
-      return;
-    }
-    if (fotos.length) { const av = form.querySelector('.fotos-aviso'); av.hidden = false; av.textContent = via === 'correo' ? 'Recuerda adjuntar tus fotos en el correo que se abre.' : 'Recuerda adjuntar tus fotos en el chat de WhatsApp que se abre (el clip 📎).'; }
+    const fotos = form.querySelector('input[name=fotos]')?.files.length || 0;
     const destino = via === 'correo'
       ? `mailto:carrascosamuebles@gmail.com?subject=${encodeURIComponent('Presupuesto: ' + d.get('tipo'))}&body=${encodeURIComponent(texto)}`
-      : `https://wa.me/34653451270?text=${encodeURIComponent(texto)}`;
-    setTimeout(() => { location.href = destino; }, fotos.length ? 2200 : 0);
+      : `https://wa.me/34653451270?text=${encodeURIComponent(texto + (fotos ? '\n(Ahora te mando las fotos)' : ''))}`;
+    if (!fotos) { location.href = destino; return; }
+    // Con fotos: el chat o el correo no las pueden llevar solas; se avisa y se abre con un botón cuando la persona lo haya leído
+    const av = form.querySelector('.fotos-aviso'), bt = av.querySelector('a');
+    av.querySelector('p').textContent = via === 'correo'
+      ? `Se abrirá tu correo con el mensaje escrito. Adjunta allí ${fotos === 1 ? 'tu foto' : 'tus ' + fotos + ' fotos'} con el clip 📎 antes de enviarlo.`
+      : `Se abrirá nuestro chat de WhatsApp con el mensaje escrito. Mándalo y, después, pulsa el clip 📎 para enviarnos ${fotos === 1 ? 'tu foto' : 'tus ' + fotos + ' fotos'}.`;
+    bt.textContent = via === 'correo' ? 'Abrir el correo' : 'Abrir WhatsApp';
+    bt.href = destino; if (via !== 'correo') { bt.target = '_blank'; bt.rel = 'noopener'; } else bt.removeAttribute('target');
+    av.hidden = false; bt.focus();
   });
 })();

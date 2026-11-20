@@ -8,4 +8,8 @@ export default defineConfig({
   base,
   trailingSlash: 'always',
   build: { format: 'directory' },
+  // Direcciones de la web de WordPress que ya no existen igual: llevan a su página equivalente (en GitHub Pages no hay 301)
+  redirects: Object.fromEntries(
+    ['comparativa', 'mejor-puerta-de-cocina', 'puertas-de-cocina', 'puertas', 'tipos-de-puertas'].map((t) => [`/tag/${t}/`, `${base.replace(/\/$/, '')}/2024/02/05/tipos-de-puertas-de-cocina/`]),
+  ),
 });

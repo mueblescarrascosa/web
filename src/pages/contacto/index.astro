@@ -1,16 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { r, EMPRESA } from '../../lib/sitio.js';
+import { r, EMPRESA, HORARIO_SCHEMA } from '../../lib/sitio.js';
 import paginas from '../../datos/paginas.json';
 const p = paginas.find((x) => x.slug === 'contacto');
 const schema = {
   '@context': 'https://schema.org', '@type': 'HomeAndConstructionBusiness', name: EMPRESA.nombre, telephone: EMPRESA.tel, email: EMPRESA.email,
   address: { '@type': 'PostalAddress', streetAddress: EMPRESA.calle, postalCode: EMPRESA.cp, addressLocality: EMPRESA.pueblo, addressRegion: EMPRESA.provincia, addressCountry: 'ES' },
-  openingHoursSpecification: [
-    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], opens: '08:30', closes: '14:00' },
-    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], opens: '16:00', closes: '19:00' },
-    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Friday', opens: '08:30', closes: '14:00' },
-  ],
+  openingHoursSpecification: HORARIO_SCHEMA,
 };
 ---
 <Base titulo={p?.tituloSeo || 'Contacto y presupuesto'} descripcion={p?.descripcion} schema={schema}>
@@ -39,8 +35,8 @@ const schema = {
         <button class="boton" type="submit" value="whatsapp">Enviar por WhatsApp</button>
         <button class="boton contorno" type="submit" value="correo">Enviar por correo</button>
       </div>
-      <p class="nota fotos-aviso" hidden></p>
-      <p class="nota">Al enviar se abre WhatsApp o tu correo con el mensaje ya escrito (y, en el móvil, con tus fotos). Usamos tus datos solo para responderte. <a href={r('/politica-de-privacidad/')}>Política de privacidad</a>.</p>
+      <div class="fotos-aviso" hidden role="status"><p></p><a class="boton" href="#">Abrir WhatsApp</a></div>
+      <p class="nota">Al enviar se abre WhatsApp o tu correo con el mensaje ya escrito; si has elegido fotos, las adjuntas allí con el clip 📎. El presupuesto es sin compromiso y <a href={r('/preguntas-frecuentes/#p-el-precio-puede-cambiar')}>cerrado</a>. Usamos tus datos solo para responderte. <a href={r('/politica-de-privacidad/')}>Política de privacidad</a>.</p>
     </form>
     <aside class="ficha">
       <h2>El taller</h2>

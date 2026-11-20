@@ -840,10 +840,11 @@ export function montarCasa(seccion) {
     };
     anim = requestAnimationFrame(paso);
   }
-  function desplazar(y) { if (window.__lenis) window.__lenis.scrollTo(y, { duration: reducido ? 0 : 0.9 }); else scrollTo({ top: y, behavior: reducido ? 'auto' : 'smooth' }); }
+  function desplazar(y) { scrollTo({ top: y, behavior: reducido ? 'auto' : 'smooth' }); }
   let origen = null;
   function entrar(id, teclado) {
     actual = id; seccion.classList.add('usada');
+    window.medir?.('casa/' + id);
     origen = teclado ? svg.querySelector(`.room[data-id="${id}"]`) : null;
     const [x, y, w, h] = cajasSala[id], r = svg.clientWidth / svg.clientHeight;
     let vb;
@@ -942,6 +943,7 @@ export function montarCasa(seccion) {
 
   function cerrarPanel() { panel.classList.remove('abierto'); panel.setAttribute('aria-hidden', 'true'); }
 
+  panel.querySelector('.casa-enlaces').addEventListener('click', (e) => { if (e.target.closest('a')) window.medir?.('casa/enlace'); });
   panel.querySelector('.casa-volver').addEventListener('click', salir);
   panel.querySelector('.casa-cerrar').addEventListener('click', salir);
   addEventListener('keydown', (e) => { if (e.key === 'Escape') salir(); });

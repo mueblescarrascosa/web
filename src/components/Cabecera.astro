@@ -1,5 +1,5 @@
 ---
-import { r } from '../lib/sitio.js';
+import { r, EMPRESA } from '../lib/sitio.js';
 const { portada = false } = Astro.props;
 const servicios = [
   ['/cocinas/', 'Cocinas a medida'], ['/armarios/', 'Armarios y vestidores'], ['/muebles-de-bano-a-medida/', 'Muebles de baño'],
@@ -13,6 +13,9 @@ const activo = (p) => ruta.endsWith(p) ? 'page' : undefined;
   <div class="cabecera-in">
     <a class="logo" href={r('/')} aria-label="Muebles Carrascosa, inicio">
       <img src={r('/img/carrascosa-horizontal-blanco-4096-800.webp')} alt="Carrascosa, madera de diseño" width="176" height="32" />
+    </a>
+    <a class="tel-cabecera" href={`tel:${EMPRESA.tel}`} aria-label={`Llámanos al ${EMPRESA.telefono}`}>
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>
     </a>
     <button class="tema-boton" type="button" aria-label="Cambiar a modo oscuro" title="Modo claro u oscuro">
       <svg class="t-luna" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="currentColor"/></svg>
@@ -39,7 +42,7 @@ const activo = (p) => ruta.endsWith(p) ? 'page' : undefined;
           <ul>{servicios.map(([h, t]) => <li><a href={r(h)} aria-current={activo(h)}>{t}</a></li>)}</ul>
         </li>
         <li class="desplegable">
-          <button type="button" aria-expanded="false">Juegos</button>
+          <button type="button" aria-expanded="false">Inspírate</button>
           <ul>{juegos.map(([h, t]) => <li><a href={r(h)} aria-current={activo(h)}>{t}</a></li>)}</ul>
         </li>
         <li><a href={r('/preguntas-frecuentes/')} aria-current={activo('/preguntas-frecuentes/')}>Dudas</a></li>

@@ -9,7 +9,7 @@ import { r, EMPRESA } from '../lib/sitio.js';
 const { titulo, descripcion = EMPRESA.lema, imagen, noindex = false, portada = false, schema } = Astro.props;
 const tituloCompleto = titulo ? (titulo.includes('Carrascosa') ? titulo : `${titulo} | ${EMPRESA.nombre}`) : `${EMPRESA.nombre} · ${EMPRESA.lema}`;
 const canonica = new URL(Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), '') || '/', 'https://mueblescarrascosa.com').href;
-const og = imagen ? new URL(r(imagen), Astro.site).href : new URL(r('/img/imagen-de-whatsapp-2024-01-12-a-las-11.55.13-b35fe81d.webp'), Astro.site).href;
+const og = imagen ? new URL(r(imagen), Astro.site).href : new URL(r('/img/compartir-portada.jpg'), Astro.site).href;
 ---
 <!doctype html>
 <html lang="es">
