@@ -11,12 +11,12 @@ const servicios = [
   [1619, '/muebles-de-bano-a-medida/', 'Baños', 'A la medida exacta del hueco y con materiales que aguantan la humedad.'],
   [542, '/puertas/', 'Puertas', 'De paso y de entrada, fabricadas y restauradas en el taller.'],
 ];
-// Pasos 01 y 03 sin foto hasta tener fotos propias de medir y del taller (nada de fotos de banco donde se habla del taller propio).
+// Paso 01 sin foto hasta tener una propia de medir (nada de fotos de banco). La del 03 es la fachada real del taller, recortada para que no salga el teléfono antiguo del rótulo.
 const fotoDe = (x) => (typeof x === 'object' ? x : f(x));
 const pasos = [
   ['01', 'Vamos a tu casa y medimos', 'Tomamos las medidas reales y vemos contigo cómo vives el espacio: qué guardas, cómo cocinas, qué te sobra y qué te falta.', null],
   ['02', 'Lo ves en 3D antes de fabricar', 'Te enseñamos cómo quedará, con sus colores y materiales, y lo cambiamos las veces que haga falta.', 1679],
-  ['03', 'Lo fabricamos en nuestro taller', 'Pieza a pieza, en Villanueva del Arzobispo. Nada de catálogo ni de muebles en serie.', null],
+  ['03', 'Lo fabricamos en nuestro taller', 'Pieza a pieza, en Villanueva del Arzobispo. Nada de catálogo ni de muebles en serie.', { src: '/img/taller-fachada.webp', alt: 'Entrada del taller de Muebles Carrascosa en la calle Fuenclara, Villanueva del Arzobispo' }],
   ['04', 'Lo montamos y lo dejamos limpio', 'Nuestro propio equipo lo instala, lo ajusta y no se va hasta que está terminado.', 618],
 ];
 const trabajos = [620, 609, 608, 536, 611, 589, 606, 572, 587, 588];
