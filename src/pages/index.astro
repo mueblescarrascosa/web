@@ -29,7 +29,13 @@ const schema = {
   image: 'https://mueblescarrascosa.com/img/compartir-portada.jpg',
   openingHoursSpecification: HORARIO_SCHEMA,
   areaServed: ZONA.map((name) => ({ '@type': 'City', name })),
-  sameAs: [EMPRESA.facebook, EMPRESA.instagram],
+  // Coordenadas de la ficha de Google Maps del taller (23/11/2026)
+  geo: { '@type': 'GeoCoordinates', latitude: 38.1648448, longitude: -3.0053067 },
+  hasMap: 'https://maps.google.com/?cid=18253800201549540277',
+  description: 'Carpintería familiar en Villanueva del Arzobispo (Jaén) desde 1969. Diseñamos en 3D, fabricamos en nuestro taller y montamos cocinas, armarios empotrados, vestidores, muebles de baño, puertas y suelos de madera a medida.',
+  priceRange: '€€',
+  knowsAbout: ['Cocinas a medida', 'Armarios empotrados', 'Vestidores', 'Muebles de baño', 'Puertas de madera', 'Suelos de madera', 'Carpintería a medida'],
+  sameAs: [EMPRESA.facebook, EMPRESA.instagram, 'https://maps.google.com/?cid=18253800201549540277'],
 };
 ---
 <Base titulo="Muebles Carrascosa · Cocinas, armarios y vestidores a medida en Jaén" descripcion="Carpintería familiar en Villanueva del Arzobispo desde 1969. Diseñamos, fabricamos y montamos cocinas, armarios, vestidores y muebles de baño a medida en Jaén." portada schema={schema}>
