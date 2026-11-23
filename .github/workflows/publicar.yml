@@ -24,11 +24,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # Mientras se prueba vive en mueblescarrascosa.github.io/web.
+      # Desde el 23/11/2026 la web vive en mueblescarrascosa.com (public/CNAME). Para volver a probar en
+      # mueblescarrascosa.github.io/web: añadir env BASE: /web y SITIO: https://mueblescarrascosa.github.io
       - run: npx astro build
-        env:
-          BASE: /web   # al apuntar el dominio: quitar esta línea
-          SITIO: https://mueblescarrascosa.github.io
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
